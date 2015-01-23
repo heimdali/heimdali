@@ -1,0 +1,22 @@
+os:
+  - linux
+
+language: cpp
+
+compiler:
+  - gcc
+
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update conda
+  - conda info -a
+
+install:
+  - conda build --no-test conda-recipe
+
+script:
+  - conda build --test conda-recipe

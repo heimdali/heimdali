@@ -1,0 +1,31 @@
+package:
+  name: heimdali
+  version: 0.0.0
+
+source:
+  path: ..
+  #fn: InsightToolkit-4.7.0.tar.gz
+  #url: http://downloads.sourceforge.net/project/itk/itk/4.7/InsightToolkit-4.7.0.tar.gz
+
+build:
+  number: 0
+  binary_relocation: true
+
+requirements:
+  build:
+    - cmake
+    - tclap
+    - itk
+    - h5unixpipe
+  run:
+    - tclap
+    - itk
+    - h5unixpipe
+
+test:
+  comamnds:
+    - par --help
+
+about:
+  home: https://github.com/dfroger/heimdali 
+  license: GPL
