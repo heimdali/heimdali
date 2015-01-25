@@ -23,7 +23,7 @@ requirements:
     - h5unixpipe
 
 test:
-  comamnds:
+  commands:
     - par --help
 
 about:
