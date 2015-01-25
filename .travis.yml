@@ -13,6 +13,7 @@ before_install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update conda
+  - conda install conda-build
   - conda info -a
 
 install:
