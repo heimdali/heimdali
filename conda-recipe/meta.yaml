@@ -23,12 +23,8 @@ requirements:
     - h5unixpipe
 
 test:
-  requires:
-    - pip
   commands:
-    - pip install lettuce
-    - cd tests
-    - lettuce
+    - par --help
 
 about:
   home: https://github.com/dfroger/heimdali 
