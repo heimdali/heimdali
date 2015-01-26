@@ -6,6 +6,9 @@ language: cpp
 compiler:
   - gcc
 
+env:
+  - HEIMDALI_DATA_DIR=$TRAVIS_BUILD_DIR/heimdali_data
+
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
@@ -23,5 +26,6 @@ install:
 
 script:
   - conda install --use-local heimdali
+  - git clone https://github.com/dfroger/heimdali-data
   - cd tests
   - lettuce
