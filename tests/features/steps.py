@@ -3,6 +3,10 @@ from os.path import realpath, expandvars
 
 from lettuce import *
 
+@step('I am in the heimdali data directory')
+def in_the_data_directory(step):
+    world.cwd = world.data_dir
+
 @step('I am in directory (.*)')
 def in_the_directory(step,cwd):
     world.cwd = realpath( expandvars(cwd) )

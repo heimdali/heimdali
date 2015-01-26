@@ -1,6 +1,7 @@
 from lettuce import *
 
-from os.path import dirname, realpath, join
+from os.path import dirname, realpath, join, expanduser, isdir, isfile
+from os import getenv
 
 def get_invocation_dir():
     this_script_dir = dirname(realpath(__file__))
