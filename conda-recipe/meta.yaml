@@ -3,9 +3,8 @@ package:
   version: 0.0.0
 
 source:
-  path: ..
-  #fn: InsightToolkit-4.7.0.tar.gz
-  #url: http://downloads.sourceforge.net/project/itk/itk/4.7/InsightToolkit-4.7.0.tar.gz
+  fn: heimdali-0.0.0.tar.gz
+  url: https://github.com/dfroger/heimdali/archive/0.0.0.tar.gz
 
 build:
   number: 0
