@@ -3,14 +3,32 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Heimdali's documentation!
+Heimdali's overview
 ====================================
 
-Contents:
+Heimdali is a set of commmand line tools to perform Image processing tools,
+based on ITK and HDF5
+
+User guide
+####################################
 
 .. toctree::
    :maxdepth: 2
 
+   options
+   par
+
+
+Heimdali API
+####################################
+
+
+Community
+####################################
+
+
+Developer guide
+####################################
 
 
 Indices and tables
