@@ -8,8 +8,8 @@ Synopsis
 
 .. code-block:: bash
 
-   par  [--wr <output.txt>] [--x0] [--y0] [--z0] [-o] [-x] [-y] [-z] [--]
-        [--version] [-h] <INPUT> ...
+    par  [--wr <output.txt>] [--x0] [--y0] [--z0] [-o] [-x] [-y] [-z] [--]
+         [--version] [-h] <INPUT> ...
 
 Description
 ------------------------------------

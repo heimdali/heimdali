@@ -17,6 +17,7 @@ User guide
 
    options
    par
+   arithmetic.rst
 
 
 Heimdali API
@@ -29,6 +30,11 @@ Community
 
 Developer guide
 ####################################
+
+.. toctree::
+   :maxdepth: 2
+
+   develop
 
 
 Indices and tables
