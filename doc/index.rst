@@ -18,6 +18,7 @@ User guide
    options
    par
    arithmetic.rst
+   local_arithmetic.rst
 
 
 Heimdali API
