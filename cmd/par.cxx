@@ -13,7 +13,7 @@
 using namespace std;
 using namespace itk;
 
-static int ZD = 2, YD = 2, XD = 2;
+static int ZD = 2, YD = 1, XD = 0;
 
 struct Options
 {
@@ -108,9 +108,9 @@ void print_informations(ImageIOBase::Pointer io, Options opt)
     //nc = io->GetNumberOfComponents();
 
     cout << io->GetFileName();
-    if (opt.z) cout << " -z " << io->GetDimensions(2);
-    if (opt.y) cout << " -y " << io->GetDimensions(1);
-    if (opt.x) cout << " -x " << io->GetDimensions(0);
+    if (opt.z) cout << " -z " << io->GetDimensions(ZD);
+    if (opt.y) cout << " -y " << io->GetDimensions(YD);
+    if (opt.x) cout << " -x " << io->GetDimensions(XD);
     if (opt.z0) cout << " -z0 " << io->GetOrigin(ZD);
     if (opt.y0) cout << " -y0 " << io->GetOrigin(YD);
     if (opt.x0) cout << " -x0 " << io->GetOrigin(XD);
