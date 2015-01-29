@@ -3,8 +3,7 @@
 # Set up environnment variables for a development mode, during which things
 # are installed in heimdali/install.
 
-# This requires to have an conda enviromnent 'heimdali' with all dependencies
-# installed.
+# This requires to have an conda enviromnent activated with all dependencies installed.
 
 # Note: this make LD_LIBRARY_PATH points to core libraries shipped with conda, and
 # could break a lot of usual command not shipped wiht conda (/usr/bin/vim, ...).
@@ -15,8 +14,6 @@ then
     echo "Usage: source set_up_env_bash.sh"
     exit 1
 fi
-
-source activate heimdali
 
 function pyrealpath ()
 {
