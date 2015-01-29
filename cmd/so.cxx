@@ -11,7 +11,7 @@ using namespace std;
 int main(int argc, char** argv)
 { 
 
-TCLAP::CmdLine cmd("Image soustraction.", ' ', "0.0.0");
+TCLAP::CmdLine cmd("Substract two images", ' ', "0.0.0");
 
 // -o output.h5
 TCLAP::ValueArg<string> output("o","output", 
