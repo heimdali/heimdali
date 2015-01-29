@@ -1,20 +1,16 @@
-/*
 #include <tclap/CmdLine.h>
 
 #include <itkImage.h>
 #include <itkSubtractImageFilter.h>
 
-//#include "cmdreader.hxx"
-//#include "cmdwriter.hxx"
-#include "H5Cpp.h"
+#include "cmdreader.hxx"
+#include "cmdwriter.hxx"
 
 using namespace std;
-*/
 
 int main(int argc, char** argv)
 { 
 
-/*
 TCLAP::CmdLine cmd("Image soustraction.", ' ', "0.0.0");
 
 // -o output.h5
@@ -39,18 +35,10 @@ TCLAP::UnlabeledValueArg<string> input1("image1",
 
 cmd.parse(argc,argv);
 
-cout << "Je passe par là" << endl;
-
-H5::H5File file("nosuch.h5", H5F_ACC_RDONLY);
-*/
-
-
-/*
 // Image type.
 typedef float PixelType;
 const unsigned int Dimension = 3;
 typedef itk::VectorImage<PixelType, Dimension> ImageType;
-
 
 // Command line tool readers.
 typedef Heimdali::CmdReader<ImageType> ReaderType;
@@ -82,6 +70,5 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
     cmdwriter->Write( subtractFilter->GetOutput() );
     cmdwriter->Update();
 }
-*/
 
 }
