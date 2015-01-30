@@ -69,6 +69,9 @@ that is, the number of all the value contained in a whole row, that is the
 number of columns times the number of values in a pixel.
  */
 
+extern struct error error_;
+#define inr_erreur(ier) { error_.retadr = (int(*)())-1; ier = setjmp(error_.retenv); }
+
 namespace itk
 {
 
@@ -432,7 +435,7 @@ bool itk::INRImageIO::CanReadFile(const char *FileNameToRead)
   InrInit();
 
   int ier = 0; 
-  c_erreur(ier);
+  inr_erreur(ier);
   bool canread;
 
   if (ier == 0)
@@ -467,7 +470,7 @@ void itk::INRImageIO ::ReadImageInformation()
     InrInit();
 
     int ier = 0; 
-    c_erreur(ier);
+    inr_erreur(ier);
     if (ier == 0)
       {
       m_InrImage = c_image( (char*) m_FileName.c_str(), (char*) m_InrMode.c_str(), 
