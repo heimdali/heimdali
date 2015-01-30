@@ -1,12 +1,12 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${INRIMAGE_INCLUDE})
 
-add_library(itkINRImageIO SHARED
+add_library(${ITKINRIMAGEIO_LIBRARY} SHARED
   src/itkINRImageIO.cxx
   src/itkINRImageIOFactory.cxx
   )
 
-target_link_libraries(itkINRImageIO
-    ${ITK_LIBRARIES}
-    ${INRIMAGE_LIBRARY}
+target_link_libraries(${ITKINRIMAGEIO_LIBRARY}
+  ${ITK_LIBRARIES}
+  ${INRIMAGE_LIBRARY}
 )

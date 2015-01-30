@@ -41,5 +41,9 @@ find_path(INRIMAGE_INCLUDE inrimage/image.h)
 # INRimage library.
 find_library(INRIMAGE_LIBRARY NAMES inrimage)
 
+# INRImageIO library
+set(ITKINRIMAGEIO_LIBRARY itkINRImageIO)
+set(ITKINRIMAGEIO_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/itkINRimageIO/include)
+
 add_subdirectory(cmd)
 add_subdirectory(itkINRimageIO)

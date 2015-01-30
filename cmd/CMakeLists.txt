@@ -1,3 +1,4 @@
+include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
 
 set(CMD_LIST_0 par)
@@ -7,10 +8,11 @@ foreach(cmd ${CMD_LIST_0})
     ${ITK_LIBRARIES}
     ${H5UNIXPIPE_LIBRARIES}
     ${HDF5_LIBRARIES}
+    ${ITKINRIMAGEIO_LIBRARY}
     )
 endforeach(cmd)
 
-set(CMD_LIST_1 so)
+set(CMD_LIST_1 so inrtoh5 h5toinr)
 foreach(cmd ${CMD_LIST_1})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx cli.cxx regionreader.cxx)
   TARGET_LINK_LIBRARIES(${cmd}
@@ -18,6 +20,7 @@ foreach(cmd ${CMD_LIST_1})
     ${H5UNIXPIPE_LIBRARIES}
     ${HDF5_LIBRARIES}
     ${MINIMAL_TRACEBACK_LIBRARIES}
+    ${ITKINRIMAGEIO_LIBRARY}
     )
 endforeach(cmd)
 
