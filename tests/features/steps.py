@@ -7,7 +7,7 @@ def failed():
     return world.returncode != 0 or world.stderr != ''
 
 def cmd_error():
-    raise AssertionError, "returncode is %r, stderr is %r, stdout is %r" % (
+    raise AssertionError, "returncode is %r, stdout is %r, stderr is %r" % (
             world.returncode, world.stdout, world.stderr)
 
 @step('I am in the heimdali data directory')
