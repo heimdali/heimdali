@@ -35,4 +35,11 @@ set(HDF5_LIBRARIES
   ${HDF5_LIBRARY}
   )
 
+# INRimage include.
+find_path(INRIMAGE_INCLUDE inrimage/image.h)
+
+# INRimage library.
+find_library(INRIMAGE_LIBRARY NAMES inrimage)
+
 add_subdirectory(cmd)
+add_subdirectory(itkINRimageIO)
