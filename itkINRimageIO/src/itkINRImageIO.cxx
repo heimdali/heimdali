@@ -141,8 +141,6 @@ ImageIORegion INRImageIO ::GenerateStreamableReadRegionFromRequestedRegion(const
 
 void INRImageIO::Read(void *buffer)
 {
-  std::cout << "INRImageIO::Read" << endl;
-
   // Get largest possible region (image size).
   const unsigned int nDims = this->GetNumberOfDimensions();
   ImageIORegion largestRegion(nDims);
@@ -173,8 +171,6 @@ void INRImageIO::Read(void *buffer)
   int NY = regionToRead.GetSize(1);
   int NX = regionToRead.GetSize(0);
   int NV = this->GetNumberOfComponents(); 
-
-  std::cout << "INRImageIO::Read read from: " << IZ << ", " << IY << ", " << IX << ", number: " << NZ << ", " << NY << ", " << NX << endl;
 
   // Do we want to read just a part of the image?
   if ( largestRegion != m_IORegion )
@@ -419,8 +415,6 @@ void INRImageIO::SetInrVerif(const char* InrVerif)
 
 bool itk::INRImageIO::CanReadFile(const char *FileNameToRead)
 {
-    std::cout << "INRImageIO::CanReadFile" << endl;
-
   // First check the extension
   if ( (string) FileNameToRead == "" )
     {
@@ -466,7 +460,6 @@ bool itk::INRImageIO::CanStreamWrite()
 
 void itk::INRImageIO ::ReadImageInformation()
 {
-    std::cout << "INRImageIO::ReadImageInformation" << endl;
     InrInit();
 
     int ier = 0; 
