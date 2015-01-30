@@ -1,6 +1,7 @@
 #include <tclap/CmdLine.h>
 
 #include <itkImage.h>
+#include <itkINRImageIOFactory.h>
 #include <itkSubtractImageFilter.h>
 
 #include "cmdreader.hxx"
@@ -34,6 +35,9 @@ TCLAP::UnlabeledValueArg<string> input1("image1",
     "Second image.",true,"","IMAGE2",cmd);
 
 cmd.parse(argc,argv);
+
+// Put our INRimage reader in the list of readers ITK knows.
+itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
 // Image type.
 typedef float PixelType;

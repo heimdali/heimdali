@@ -4,6 +4,7 @@
 #include <tclap/CmdLine.h>
 
 #include <itkImage.h>
+#include <itkINRImageIOFactory.h>
 #include <itkImageFileReader.h>
 
 #include "error.hxx"
@@ -131,6 +132,9 @@ int main(int argc, char** argv)
 
     // Redirect stdout to stderr or to file.
     Heimdali::RedirectStdout redirection(opt.outputFilename);
+
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
     // Print informations about images.
     for (int ifile=0 ; ifile < opt.inputFilenames.size() ; ifile++) {
