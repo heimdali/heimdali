@@ -13,10 +13,12 @@ User guide
 ####################################
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    options
    par
+   h5toinr
+   inrtoh5
    arithmetic.rst
    local_arithmetic.rst
 
