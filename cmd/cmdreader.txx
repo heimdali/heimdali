@@ -23,7 +23,6 @@ template <typename ImageType>
 CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     size_t nlines_per_loop, string filename)
 {
-    /*
     int zd=2, yd=1, xd=0;
     this->m_is_complete = false;
     this->m_nlines_per_loop = nlines_per_loop;
@@ -47,13 +46,11 @@ CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     // Region to read.
     this->m_index[xd] = this->m_ix;
     this->m_size[xd] = this->m_nx;
-    */
 }
 
 template <typename ImageType>
 void CmdReaderFromFile<ImageType>::next_iteration()
 {
-    /*
     int zd=2, yd=1, xd=0;
 
     // Compute next region to region.
@@ -72,25 +69,24 @@ void CmdReaderFromFile<ImageType>::next_iteration()
     this->m_requestedRegion.SetIndex(this->m_index);
     this->m_requestedRegion.SetSize(this->m_size);
     this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
-    */
 }
 
 template <typename ImageType>
 CmdReaderFromFile<ImageType>::~CmdReaderFromFile()
 {
-    //delete m_region_reader;
+    delete m_region_reader;
 }
 
 template <typename ImageType>
 typename ImageType::Pointer CmdReaderFromFile<ImageType>::GetOutput()
 {
-    //return this->m_reader->GetOutput();
+    return this->m_reader->GetOutput();
 }
 
 template <typename ImageType>
 void CmdReaderFromFile<ImageType>::Update()
 {
-    //this->m_reader->Update();
+    this->m_reader->Update();
 }
 
 
@@ -103,21 +99,20 @@ template <typename ImageType>
 CmdReaderFromStdin<ImageType>::CmdReaderFromStdin(
     size_t nlines_per_loop)
 {
-    //this->m_nlines_per_loop = nlines_per_loop;
-    //this->m_HDF5io = itk::HDF5ImageIO::New();
-    //m_traceback = MTB_new_tb();
+    this->m_nlines_per_loop = nlines_per_loop;
+    this->m_HDF5io = itk::HDF5ImageIO::New();
+    m_traceback = MTB_new_tb();
 }
 
 template <typename ImageType>
 CmdReaderFromStdin<ImageType>::~CmdReaderFromStdin()
 {
-    //delete m_traceback;
+    delete m_traceback;
 }
 
 template <typename ImageType>
 void CmdReaderFromStdin<ImageType>::next_iteration()
 {
-    /*
     int zd=2, yd=1, xd=0;
 
     int end_of_stdin=0;
@@ -177,13 +172,12 @@ void CmdReaderFromStdin<ImageType>::next_iteration()
     this->m_changeRegion->SetOrigin(origin);
     this->m_changeRegion->SetInput( this->m_reader->GetOutput() );
     this->m_changeRegion->Update();
-    */
 }
 
 template <typename ImageType>
 typename ImageType::Pointer CmdReaderFromStdin<ImageType>::GetOutput()
 {
-    //return this->m_changeRegion->GetOutput();
+    return this->m_changeRegion->GetOutput();
 }
 
 }

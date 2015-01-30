@@ -28,9 +28,9 @@ namespace Heimdali {
 template <typename ImageType>
 class ITK_ABI_EXPORT CmdReader
 {
-    //public:
-        //typedef itk::ImageFileReader< ImageType >  ReaderType;
-        //typedef itk::ImageRegion<ImageType::ImageDimension> RegionType;
+    public:
+        typedef itk::ImageFileReader< ImageType >  ReaderType;
+        typedef itk::ImageRegion<ImageType::ImageDimension> RegionType;
     public:
         static CmdReader* make_cmd_reader(
             size_t nlines_per_loop, std::string filename);
@@ -38,13 +38,13 @@ class ITK_ABI_EXPORT CmdReader
         virtual typename ImageType::Pointer GetOutput() = 0;
         virtual void Update() = 0;
         bool is_complete(){return m_is_complete;};
-    //protected:
-        //size_t m_nlines_per_loop;
+    protected:
+        size_t m_nlines_per_loop;
         bool m_is_complete;
-        //typename ReaderType::Pointer m_reader;
-        //size_t m_iz, m_iy, m_ix;
-        //size_t m_nz, m_ny, m_nx;
-        //size_t m_sz, m_sy, m_sx, m_sc;
+        typename ReaderType::Pointer m_reader;
+        size_t m_iz, m_iy, m_ix;
+        size_t m_nz, m_ny, m_nx;
+        size_t m_sz, m_sy, m_sx, m_sc;
 };
 
 template <typename ImageType>
@@ -57,12 +57,12 @@ class ITK_ABI_EXPORT CmdReaderFromFile: public CmdReader<ImageType>
         void next_iteration();
         typename ImageType::Pointer GetOutput();
         void Update();
-    //private:
-        //std::string m_filename;
-        //RegionReader* m_region_reader;
-        //typename CmdReader<ImageType>::RegionType m_requestedRegion;
-        //typename ImageType::IndexType m_index;
-        //typename ImageType::SizeType m_size;
+    private:
+        std::string m_filename;
+        RegionReader* m_region_reader;
+        typename CmdReader<ImageType>::RegionType m_requestedRegion;
+        typename ImageType::IndexType m_index;
+        typename ImageType::SizeType m_size;
 };
 
 template <typename ImageType>
@@ -76,15 +76,15 @@ class ITK_ABI_EXPORT CmdReaderFromStdin: public CmdReader<ImageType>
         void next_iteration();
         typename ImageType::Pointer GetOutput();
         void Update(){};
-    //private:
-        //size_t m_tata;
-        //hid_t m_fileimage_id; 
-        //MTB_T* m_traceback;
-        //itk::HDF5ImageIO::Pointer m_HDF5io;
-        //H5::H5File* m_fileimage;
-        //typename ChangeRegionType::Pointer m_changeRegion;
-        // Metadata.
-        //itk::MetaDataDictionary dictionary;
+    private:
+        size_t m_tata;
+        hid_t m_fileimage_id; 
+        MTB_T* m_traceback;
+        itk::HDF5ImageIO::Pointer m_HDF5io;
+        H5::H5File* m_fileimage;
+        typename ChangeRegionType::Pointer m_changeRegion;
+        //Metadata.
+        itk::MetaDataDictionary dictionary;
 };
 
 };
