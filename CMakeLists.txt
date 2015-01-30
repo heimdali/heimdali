@@ -2,29 +2,48 @@ cmake_minimum_required(VERSION 2.8)
 cmake_policy(VERSION 2.8)
 project(heimdali)
 
-SET(CMAKE_BUILD_TYPE debug)
-enable_testing()
-
 # Search for ITK.
-FIND_PACKAGE(ITK)
-IF(ITK_FOUND)
-  INCLUDE(${ITK_USE_FILE})
-ELSE(ITK_FOUND)
-  MESSAGE(FATAL_ERROR "ITK not found. Please set ITK_DIR.")
-ENDIF(ITK_FOUND)
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
 
-# Search TCLAP
+# TCLAP include
 find_path(TCLAP_INCLUDES tclap/CmdLine.h)
 
-# Search for H5UNIXPIPE
-find_library(H5UNIXPIPE_LIBRARIES NAMES h5unixpipe h5unixpipe_cxx)
-if(H5UNIXPIPE_LIBRARIES)
-    MESSAGE("h5unxipipe found.")
-else(H5UNIXPIPE_LIBRARIES)
-    MESSAGE(FATAL_ERROR "h5unxipipe not found.")
-endif(H5UNIXPIPE_LIBRARIES)
+# h5unixpipe libraries
+find_library(H5UNIXPIPE_LIBRARY NAMES h5unixpipe)
+find_library(H5UNIXPIPE_CXX_LIBRARY NAMES h5unixpipe_cxx)
+set(H5UNIXPIPE_LIBRARIES
+  ${H5UNIXPIPE_LIBRARY}
+  ${H5UNIXPIPE_CXX_LIBRARY}
+  )
 
-# Search for HDF5
-find_library(HDF5_LIBRARIES NAMES hdf5 hdf5_hl)
+# h5unixpipe include
+find_path(H5UNIXPIPE_INCLUDE h5unixpipe.h)
+
+# minimal traceback
+find_library(MINIMAL_TRACEBACK_LIBRARIES NAMES minimal_traceback)
+
+# HDF5 libraries
+find_library(HDF5_HL_CPP_LIBRARY NAMES hdf5_hl_cpp)
+find_library(HDF5_HL_LIBRARY NAMES hdf5_hl)
+find_library(HDF5_CPP_LIBRARY NAMES hdf5_cpp)
+find_library(HDF5_LIBRARY NAMES hdf5)
+set(HDF5_LIBRARIES
+  ${HDF5_HL_CPP_LIBRARY}
+  ${HDF5_HL_LIBRARY}
+  ${HDF5_CPP_LIBRARY}
+  ${HDF5_LIBRARY}
+  )
+
+# INRimage include.
+find_path(INRIMAGE_INCLUDE inrimage/image.h)
+
+# INRimage library.
+find_library(INRIMAGE_LIBRARY NAMES inrimage)
+
+# INRImageIO library
+set(ITKINRIMAGEIO_LIBRARY itkINRImageIO)
+set(ITKINRIMAGEIO_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/itkINRimageIO/include)
 
 add_subdirectory(cmd)
+add_subdirectory(itkINRimageIO)

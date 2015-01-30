@@ -13,12 +13,15 @@ User guide
 ####################################
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    install
    options
    par
+   h5toinr
+   inrtoh5
    arithmetic.rst
+   local_arithmetic.rst
 
 
 Heimdali API

@@ -16,10 +16,12 @@ requirements:
     - tclap
     - itk
     - h5unixpipe
+    - libinrimage
   run:
     - tclap
     - itk
     - h5unixpipe
+    - libinrimage
 
 test:
   commands:

@@ -3,14 +3,14 @@ Build Heimdali in development mode
 
 Create a `conda` enviromnent named `heimdali` containing all dependencies:
 
-.. code-block::
+.. code-block:: bash
 
     conda config --add channels http://conda.binstar.org/dfroger
-    conda create -n heimdali h5unixipe itk tclap cmake pip
+    conda create -n heimdali h5unixpipe itk tclap cmake pip
    
 Install lettuce:
 
-.. code-block::
+.. code-block:: bash
 
     source activate heimdali
     hash -r
@@ -18,7 +18,7 @@ Install lettuce:
 
 Get Heimdali data files, and set `HEIMDALI_DATA_DIR`:
 
-.. code-block::
+.. code-block:: bash
 
     git clone https://github.com/dfroger/heimdali-data
     export HEIMDALI_DATA_DIR=/path/to/heimdali-data
@@ -39,7 +39,7 @@ Build heidmali:
 +------------------------+----------------------------------------------------+
 
 
-.. code-block::
+.. code-block:: bash
 
     mkdir build
     cd build
@@ -56,13 +56,13 @@ Set up environment to search executables and libraries installed by `CMake`
 in `heimdali/install` (read the few notes in the script
 `develop_heimdali_bash.sh`):
 
-.. code-block::
+.. code-block:: bash
 
     source script/develop_heimdali_bash.sh
 
 Execute the functional tests:
 
-.. code-block::
+.. code-block:: bash
 
     cd tests
     lettuce
