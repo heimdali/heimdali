@@ -1,3 +1,7 @@
+export LD_RUN_PATH=""
+export INCLUDE_PATH=""
+export LIBRARY_PATH=""
+
 mkdir build
 cd build
 
