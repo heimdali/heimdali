@@ -1,14 +1,20 @@
 from subprocess import Popen, PIPE
 from os.path import realpath, expandvars
+from difflib import ndiff
 
 from lettuce import *
 
-def failed():
-    return world.returncode != 0 or world.stderr != ''
+def check_command():
+    if world.returncode != 0 or world.stderr != '':
+        raise AssertionError, "returncode is %r, stdout is %r, stderr is %r" % (
+                world.returncode, world.stdout, world.stderr)
 
-def cmd_error():
-    raise AssertionError, "returncode is %r, stdout is %r, stderr is %r" % (
-            world.returncode, world.stdout, world.stderr)
+def check_stdout(actual, expected):
+    if actual != expected:
+        diff = ndiff(actual.splitlines(True), expected.splitlines(True))
+        diff = '\n' + ''.join(diff)
+        raise AssertionError, "stdout is not as expected " \
+            "(- actual, + expected): %s" % (expected, actual, diff,)
 
 @step('I am in the heimdali data directory')
 def in_the_data_directory(step):
@@ -26,15 +32,17 @@ def run_the_command(step,cmd):
 
 @step('I see the line in standard output: (.*)')
 def i_see_the_line(step,line):
-    if failed() or not line in world.stdout:
-        cmd_error()
+    check_command()
+    if not line in world.stdout:
+        raise AssertionError, \
+            "Expected line: %r in stdout, but stdout is: %r" % (
+                line,world.stdout)
 
 @step(u'Then I see the standard output:')
 def then_i_get_the_standard_output(step):
-    stdout = world.stdout.strip()
-    stderr = world.stderr.strip()
-    if failed() or step.multiline != stdout:
-        cmd_error()
+    expected_stdout = step.multiline 
+    check_command()
+    check_stdout(world.stdout, expected_stdout)
 
 def factorial(number):
     return 1
