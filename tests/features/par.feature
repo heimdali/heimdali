@@ -23,6 +23,5 @@ Feature: The 'par' command line tool.
         When I run the command: par imtest_z5_y4_x3_c2.h5 -x
         Then I see the standard output:
             """
-            imtest_z5_y4_x3_c2.h5 -x 3
-            ""
+            " -x 3"
             """

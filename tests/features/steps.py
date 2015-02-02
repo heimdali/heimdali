@@ -14,7 +14,7 @@ def check_stdout(actual, expected):
         diff = ndiff(actual.splitlines(True), expected.splitlines(True))
         diff = '\n' + ''.join(diff)
         raise AssertionError, "stdout is not as expected " \
-            "(- actual, + expected): %s" % (expected, actual, diff,)
+            "(- actual, + expected): %s" % (diff,)
 
 @step('I am in the heimdali data directory')
 def in_the_data_directory(step):

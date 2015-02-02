@@ -20,6 +20,8 @@ struct Options
 {
     vector<string> inputFilenames;
 
+    bool filename;
+
     bool z;
     bool y;
     bool x;
@@ -83,6 +85,7 @@ Options parse_command_line(vector<string> tclap_argv)
 void postprocess_options(Options& opt)
 {
     if (not (opt.z or opt.y or opt.x or opt.z0 or opt.y0 or opt.x0 or opt.o)) {
+        opt.filename = true;
         opt.z = true;
         opt.y = true;
         opt.x = true;
@@ -90,6 +93,8 @@ void postprocess_options(Options& opt)
         opt.y0 = true;
         opt.x0 = true;
         opt.o = true;
+    } else {
+        opt.filename = false;
     }
 }
 
@@ -108,7 +113,7 @@ void print_informations(ImageIOBase::Pointer io, Options opt)
 {
     //nc = io->GetNumberOfComponents();
 
-    cout << io->GetFileName();
+    if (opt.filename) cout << io->GetFileName();
     if (opt.z) cout << " -z " << io->GetDimensions(ZD);
     if (opt.y) cout << " -y " << io->GetDimensions(YD);
     if (opt.x) cout << " -x " << io->GetDimensions(XD);
@@ -116,7 +121,8 @@ void print_informations(ImageIOBase::Pointer io, Options opt)
     if (opt.y0) cout << " -y0 " << io->GetOrigin(YD);
     if (opt.x0) cout << " -x0 " << io->GetOrigin(XD);
     if (opt.o) cout << " -o " << io->GetComponentSize();
-    cout << endl;
+    if (opt.filename)
+      cout << endl;
 }
 
 
