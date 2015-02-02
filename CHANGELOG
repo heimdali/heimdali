@@ -2,6 +2,10 @@
   initial version with `par` for HDF5
 
 0.1.0:
+  use patched ITK with:
+    - changeRegion filter 
+    - HDF5 pasting support
+    - HDF5 file object control
   new classes: cmdreader, cmdwriter, regionreader
   new so command
   new itkINRImageIO plugin
