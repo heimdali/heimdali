@@ -137,7 +137,7 @@ int main(int argc, char** argv)
     postprocess_options(opt);
 
     // Redirect stdout to stderr or to file.
-    Heimdali::RedirectStdout redirection(opt.outputFilename);
+    Heimdali::RedirectStdout redirection(opt.outputFilename, false);
 
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 

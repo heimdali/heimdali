@@ -1,10 +1,12 @@
 #include "redirect_stdout.hxx"
+#include "error.hxx"
 
 using namespace std;
 
 namespace Heimdali {
 
-RedirectStdout::RedirectStdout(string filename)
+RedirectStdout::RedirectStdout(string filename, bool force):
+    m_force(force)
 {
     m_cout_rdbuf = cout.rdbuf();
 
@@ -31,7 +33,24 @@ RedirectStdout::RedirectStdout(string filename)
             outputFilename = filename.c_str();
             mode = ios::trunc;
         }
+
+        // Manage case of already exsting file.
+        ifstream ifile(outputFilename);
+        if (ifile.is_open() && ! m_force) {
+            ostringstream msg;
+            msg << "Refuse to erase existing file: '" << outputFilename << "'. "
+                << "You may want to use --force option.";
+            throw(IOError(msg.str()));
+        }
+
+        // Write to file.
         m_file.open(outputFilename, mode);
+        if (! m_file.is_open()) {
+            ostringstream msg;
+            msg << "Unable to open file: '" << outputFilename << "'. ";
+            throw(IOError(msg.str()));
+        }
+
         cout.rdbuf( m_file.rdbuf());
         m_dest = dest_file;
     }

@@ -11,12 +11,11 @@
 #include <itkINRImageIOFactory.h>
 
 #include "error.hxx"
-
-using namespace std;
+#include "redirect_stdout.hxx"
 
 int main(int argc, char** argv)
 {
-    cout << scientific << showpos << setprecision(7) << uppercase;
+    std::cout << scientific << showpos << setprecision(7) << uppercase;
 
     try {
 
@@ -30,7 +29,7 @@ int main(int argc, char** argv)
         ' ', "0.0");
 
     // -w output.txt
-    TCLAP::ValueArg<string> outputFilename("o","output",
+    TCLAP::ValueArg<string> outputFilenameArg("o","output",
         "Write image file name and results to file.",
         false,"","output.txt",cmd);
 
@@ -49,6 +48,7 @@ int main(int argc, char** argv)
     cmd.parse(argc,argv);
 
     vector<string> inputFilenames = inputFilenamesArg.getValue();
+
 
     //////////////////////////////////////////////////////////////////////////
     // Types and instances.
@@ -87,10 +87,18 @@ int main(int argc, char** argv)
     // To copy Pixel from vectorImage to scalarImage
     itk::Index<3> index;
 
+    // Redirect stdout to stderr or to file.
+    Heimdali::RedirectStdout redirection(outputFilenameArg.getValue(), forceSwitch.getValue());
+
     //////////////////////////////////////////////////////////////////////////
     // Loop on input filenames.
     //////////////////////////////////////////////////////////////////////////
 
+    // min, max, mean per component.
+    float min, mean, max;
+
+    // All componenent min, max, mean.
+    float min_all, mean_all, max_all;
 
     for (int ifile=0 ; ifile<inputFilenames.size() ; ifile++) {
 
@@ -151,81 +159,41 @@ int main(int argc, char** argv)
              statisticsImageFilter->SetInput(scalarImage);
              statisticsImageFilter->Update();
 
-             cout << inputFilenames[ifile] << " " << ic << endl;
-             cout << statisticsImageFilter->GetMinimum() << endl;
-             cout << statisticsImageFilter->GetMean() << endl;
-             cout << statisticsImageFilter->GetMaximum() << endl;
-             cout << endl;
+             min = statisticsImageFilter->GetMinimum();
+             mean = statisticsImageFilter->GetMean();
+             max = statisticsImageFilter->GetMaximum();
+
+             if (perComponentSwitch.getValue()) {
+                 std::cout << ic << " " << min << " " << mean << " " << max << endl;
+             } else {
+                 if (ic==0) {
+                     min_all = min;
+                     mean_all = mean;
+                     max_all = max;
+                 } else {
+                     min_all = std::min(min,min_all);
+                     mean_all += mean;
+                     max_all = std::max(max,max_all);
+                 }
+             }
         }
+
+        if (! perComponentSwitch.getValue()) {
+            cout << min << " " << mean << " " << max << endl;
+        }
+
 
         scalarImage->Initialize();
         vectorImage->Initialize();
     }
 
 
-    //////////////////////////////////////////////////////////////////////////
-    // Write results to a file.
-    //////////////////////////////////////////////////////////////////////////
-
-
-    if (outputFilename.isSet()) {
-        /*
-        string fname = outputFilename.getValue();
-
-        // Manage case of already exsting file.
-        ifstream ifile(fname.c_str());
-        if (ifile.is_open() and not forceSwitch.getValue()) {
-            ostringstream msg;
-            msg << "Refuse to erase existing file: '" << fname << "'. "
-                << "You may want to use --force option.";
-            throw(IOError(msg.str()));
-        }
-
-        // Write to file.
-        ofstream ofile(fname.c_str());
-        if (ofile.is_open()) {
-            ofile << scientific << showpos << setprecision(7) << uppercase;
-            ofile << fname << ": " << min << " " << avg << " " << max << endl;
-        } else {
-            ostringstream msg;
-            msg << "Unable to open file: '" << fname << "'. ";
-            throw(IOError(msg.str()));
-        }
-        */
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // Write results to standard output.
-    //////////////////////////////////////////////////////////////////////////
-
-
-    } else {
-        /*
-        cout << scientific << showpos << setprecision(7) << uppercase;
-        cout << min << " " << avg << " " << max << endl;
-        */
-    }
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // End of 'try' block.
-    //////////////////////////////////////////////////////////////////////////
-
-
     } 
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // Catch exceptions.
-    //////////////////////////////////////////////////////////////////////////
-    
 
     // Command line parser.
     catch (TCLAP::ArgException &e) { 
         cerr << "ical: ERROR: " << e.error() << " for arg " << e.argId() << endl;
     }
-
-
     // Input/output.
     catch (IOError &e) {
         cerr << "ical: ERROR: " << e.getMessage() << endl;
