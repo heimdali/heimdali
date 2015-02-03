@@ -1,7 +1,7 @@
 include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
 
-set(CMD_LIST_0 par)
+set(CMD_LIST_0 par ical)
 foreach(cmd ${CMD_LIST_0})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx cli.cxx redirect_stdout.cxx)
   TARGET_LINK_LIBRARIES(${cmd} 
