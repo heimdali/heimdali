@@ -12,3 +12,7 @@
   new h5toinr command
   new inrtoh5 command
   new libinrimage package
+
+0.2.0:
+  add ical command
+  fix #1:  par with flags shoud not print file name
