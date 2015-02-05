@@ -1,10 +1,12 @@
 include_directories(${HEIMDALI_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
+include_directories(${ITKINRIMAGEIO_INCLUDE})
 
 add_library(${HEIMDALI_LIBRARY} SHARED
   cli.cxx
   redirect_stdout.cxx
   regionreader.cxx
+  itkhelper.cxx
   )
 
 target_link_libraries(${HEIMDALI_LIBRARY}
