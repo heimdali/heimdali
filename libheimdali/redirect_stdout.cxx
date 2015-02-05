@@ -1,5 +1,5 @@
-#include "redirect_stdout.hxx"
-#include "error.hxx"
+#include "heimdali/redirect_stdout.hxx"
+#include "heimdali/error.hxx"
 
 using namespace std;
 

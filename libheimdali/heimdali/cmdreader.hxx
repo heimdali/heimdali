@@ -12,8 +12,8 @@
 extern "C" {
 #include "h5unixpipe.h"
 }
-#include "error.hxx"
-#include "regionreader.hxx"
+#include "heimdali/error.hxx"
+#include "heimdali/regionreader.hxx"
 #include "h5unixpipe_cxx.hxx"
 
 namespace Heimdali {

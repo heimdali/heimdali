@@ -4,9 +4,9 @@
 #include <itkStatisticsImageFilter.h>
 #include <itkINRImageIOFactory.h>
 
-#include "cmdreader.hxx"
-#include "error.hxx"
-#include "redirect_stdout.hxx"
+#include "heimdali/cmdreader.hxx"
+#include "heimdali/error.hxx"
+#include "heimdali/redirect_stdout.hxx"
 
 int main(int argc, char** argv)
 {

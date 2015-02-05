@@ -7,9 +7,9 @@
 #include <itkINRImageIOFactory.h>
 #include <itkImageFileReader.h>
 
-#include "error.hxx"
-#include "cli.hxx"
-#include "redirect_stdout.hxx"
+#include "heimdali/error.hxx"
+#include "heimdali/cli.hxx"
+#include "heimdali/redirect_stdout.hxx"
 
 using namespace std;
 using namespace itk;

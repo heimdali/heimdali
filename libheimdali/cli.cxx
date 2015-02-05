@@ -1,6 +1,6 @@
 /* Command Line Interface */
 
-#include "cli.hxx"
+#include "heimdali/cli.hxx"
 
 using namespace std;
 

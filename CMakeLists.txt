@@ -47,5 +47,10 @@ find_library(INRIMAGE_LIBRARY NAMES inrimage)
 set(ITKINRIMAGEIO_LIBRARY itkINRImageIO)
 set(ITKINRIMAGEIO_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/itkINRimageIO/include)
 
-add_subdirectory(cmd)
+# Heimdali library
+set(HEIMDALI_LIBRARY heimdali)
+set(HEIMDALI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libheimdali)
+
+add_subdirectory(libheimdali)
 add_subdirectory(itkINRimageIO)
+add_subdirectory(cmd)

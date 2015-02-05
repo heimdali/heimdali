@@ -1,10 +1,12 @@
+include_directories(${HEIMDALI_INCLUDE})
 include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
 
 set(CMD_LIST par ical so inrtoh5 h5toinr)
 foreach(cmd ${CMD_LIST})
-  ADD_EXECUTABLE(${cmd} ${cmd}.cxx cli.cxx redirect_stdout.cxx regionreader.cxx)
-  TARGET_LINK_LIBRARIES(${cmd} 
+  ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
+  TARGET_LINK_LIBRARIES(${cmd}
+    ${HEIMDALI_LIBRARY}
     ${ITKINRIMAGEIO_LIBRARY}
     ${ITK_LIBRARIES}
     ${H5UNIXPIPE_LIBRARIES}

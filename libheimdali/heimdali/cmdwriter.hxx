@@ -13,7 +13,7 @@
 extern "C" {
 #include "h5unixpipe.h"
 }
-#include "error.hxx"
+#include "heimdali/error.hxx"
 #include "h5unixpipe_cxx.hxx"
 
 namespace Heimdali {

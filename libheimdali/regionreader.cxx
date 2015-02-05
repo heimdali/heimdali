@@ -16,7 +16,7 @@
  *    fileiamgebuffer.
  */
 
-#include "regionreader.hxx"
+#include "heimdali/regionreader.hxx"
 
 /*! \brief Returns appropriately a RegionReaderByLines or a RegionReaderByPlanes */
 RegionReader* RegionReader::make_region_reader(size_t sz, size_t sy, size_t nlines_per_loop)

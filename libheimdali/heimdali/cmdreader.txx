@@ -1,4 +1,4 @@
-#include "cmdreader.hxx"
+#include "heimdali/cmdreader.hxx"
 
 using namespace std;
 

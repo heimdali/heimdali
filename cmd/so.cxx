@@ -4,8 +4,8 @@
 #include <itkSubtractImageFilter.h>
 #include <itkINRImageIOFactory.h>
 
-#include "cmdreader.hxx"
-#include "cmdwriter.hxx"
+#include "heimdali/cmdreader.hxx"
+#include "heimdali/cmdwriter.hxx"
 
 using namespace std;
 
