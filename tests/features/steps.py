@@ -6,8 +6,9 @@ from lettuce import *
 
 def check_command():
     if world.returncode != 0 or world.stderr != '':
-        raise AssertionError, "returncode is %r, stdout is %r, stderr is %r" % (
-                world.returncode, world.stdout, world.stderr)
+        raise AssertionError, \
+            "returncode is: %i, stdout is:\n%s\n, stderr is:\n%s\n" % (
+            world.returncode, world.stdout, world.stderr)
 
 def check_stdout(actual, expected):
     if actual != expected:

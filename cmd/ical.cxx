@@ -1,15 +1,10 @@
-#include <iostream>
-#include <fstream>
-
 #include <tclap/CmdLine.h>
 
-#include <itkImage.h>
-#include <itkArray.h>
 #include <itkImageFileReader.h>
 #include <itkStatisticsImageFilter.h>
-
 #include <itkINRImageIOFactory.h>
 
+#include "cmdreader.hxx"
 #include "error.hxx"
 #include "redirect_stdout.hxx"
 
@@ -66,11 +61,6 @@ int main(int argc, char** argv)
     VectorImageType::Pointer vectorImage;
     ScalarImageType::Pointer scalarImage = ScalarImageType::New();
 
-    // Readers
-    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
-    typedef itk::ImageFileReader< VectorImageType >  ReaderType;
-    ReaderType::Pointer reader = ReaderType::New();
-
     // Region
     typedef itk::ImageRegion<Dimension> RegionType;
     RegionType region;
@@ -100,30 +90,14 @@ int main(int argc, char** argv)
     // All componenent min, max, mean.
     float min_all, mean_all, max_all;
 
+    typedef Heimdali::CmdReader<VectorImageType> CmdReaderType;
+
     for (int ifile=0 ; ifile<inputFilenames.size() ; ifile++) {
 
-        // Read file into vectorImage
-        // for UpdateLargestPossibleRegion, see:
-        // http://itk-insight-users.2283740.n2.nabble.com/ 
-        //     Using-an-ITK-reader-multiple-times-tt3793576.html#a3795509
-        if (inputFilenames[ifile]  == "-")
-        {
-            //itk::HDF5ImageIO::Pointer HDF5io;
-            //HDF5io = itk::HDF5ImageIO::New();
-            //reader->SetImageIO(HDF5io);
-            //itk::INRImageIO::Pointer INRio;
-            //INRio = itk::INRImageIO::New();
-            //reader->SetImageIO(INRio);
-            //reader->SetFileName("/dev/stdin");
-            reader->SetFileName("nosuch.h5stdin");
-            //reader->SetFileName("/dev/stdin");
-        }
-        else
-        {
-            reader->SetFileName( inputFilenames[ifile] );
-        }
-        reader->UpdateLargestPossibleRegion();
-        vectorImage = reader->GetOutput();
+        CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, inputFilenames[ifile]);
+        cmdreader->next_iteration();
+        cmdreader->reader()->Update();
+        vectorImage = cmdreader->GetOutput();
 
         // Get vectorImage dimension
         region = vectorImage->GetLargestPossibleRegion();
@@ -131,7 +105,7 @@ int main(int argc, char** argv)
         nz = vectorImageSize[2];
         ny = vectorImageSize[1];
         nx = vectorImageSize[0];
-        nc = reader->GetOutput()->GetNumberOfComponentsPerPixel();
+        nc = vectorImage->GetNumberOfComponentsPerPixel();
 
         // Create scalarImage that will contains 1 component of the VectorImage
         scalarImageIndex.Fill(0);

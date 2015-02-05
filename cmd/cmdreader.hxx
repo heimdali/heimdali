@@ -34,6 +34,7 @@ class ITK_ABI_EXPORT CmdReader
     public:
         static CmdReader* make_cmd_reader(
             size_t nlines_per_loop, std::string filename);
+        typename ReaderType::Pointer reader();
         virtual void next_iteration() = 0;
         virtual typename ImageType::Pointer GetOutput() = 0;
         virtual void Update() = 0;
@@ -70,7 +71,9 @@ class ITK_ABI_EXPORT CmdReaderFromStdin: public CmdReader<ImageType>
 {
     public:
         typedef itk::ChangeRegionImageFilter<ImageType> ChangeRegionType;
-        CmdReaderFromStdin(){};
+        CmdReaderFromStdin():
+            m_using_pipe(false)
+        {};
         CmdReaderFromStdin(size_t nlines_per_loop);
         ~CmdReaderFromStdin();
         void next_iteration();
@@ -83,6 +86,7 @@ class ITK_ABI_EXPORT CmdReaderFromStdin: public CmdReader<ImageType>
         itk::HDF5ImageIO::Pointer m_HDF5io;
         H5::H5File* m_fileimage;
         typename ChangeRegionType::Pointer m_changeRegion;
+        bool m_using_pipe;
         //Metadata.
         itk::MetaDataDictionary dictionary;
 };

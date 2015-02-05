@@ -1,8 +1,8 @@
 #include <tclap/CmdLine.h>
 
 #include <itkImage.h>
-#include <itkINRImageIOFactory.h>
 #include <itkSubtractImageFilter.h>
+#include <itkINRImageIOFactory.h>
 
 #include "cmdreader.hxx"
 #include "cmdwriter.hxx"
