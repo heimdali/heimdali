@@ -16,3 +16,9 @@
 0.2.0:
   add ical command
   fix #1:  par with flags shoud not print file name
+
+0.3.0:
+  fix missing Heimdali namespace
+  mv helper functions/classes in libheimdali
+  new helper functions AssertImageSize, CreateImage, OpenAndReadImage,
+    OpenAndWriteImage

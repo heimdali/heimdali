@@ -169,7 +169,7 @@ int main(int argc, char** argv)
         cerr << "ical: ERROR: " << e.error() << " for arg " << e.argId() << endl;
     }
     // Input/output.
-    catch (IOError &e) {
+    catch (Heimdali::IOError &e) {
         cerr << "ical: ERROR: " << e.getMessage() << endl;
     }
 }

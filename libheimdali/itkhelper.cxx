@@ -1,5 +1,7 @@
 #include "heimdali/itkhelper.hxx"
 
+namespace Heimdali {
+
 // Check image size
 void AssertImageSize(ImageFloat::Pointer image, string label, 
   int nx, int ny, int nz, int nv)
@@ -81,17 +83,4 @@ void OpenAndWriteImage(string fileName, ImageFloat::Pointer image)
   writer->Update();
 }
 
-void double_dash_for_longopt(int argc, char **argv)
-{
-    int iarg; 
-    char* arg;
-    for (iarg=0 ; iarg<argc ; iarg++) {
-        arg = argv[iarg];
-        if ( strlen(arg)>2 && arg[0]=='-' && arg[1]!='-' ) {
-            char* newarg = (char*) malloc(strlen(arg)+2);
-            newarg[0] = '-';
-            strcpy(newarg+1,arg);
-            argv[iarg] = newarg;
-        }   
-    }   
-}   
+};

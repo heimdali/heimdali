@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace Heimdali {
+
 class ValueError {
     public:
         ValueError(const string& msg) : msg_(msg) {}
@@ -23,6 +25,8 @@ class IOError {
         string getMessage() const {return(msg_);}
     private:
         string msg_;
+};
+
 };
 
 #endif

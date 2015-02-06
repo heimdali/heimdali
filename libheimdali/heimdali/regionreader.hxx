@@ -9,16 +9,15 @@
 #include "H5Cpp.h"
 #include "H5LTpublic.h"
 
-// Needed by SWIG.
-typedef size_t osize_t;
+namespace Heimdali {
 
 class RegionReader
 {
     public:
         static RegionReader* make_region_reader(size_t sz, size_t sy, size_t nlines_per_loop);
         virtual void next_iteration() = 0;
-        virtual void values(osize_t &iz, osize_t &iy, 
-            osize_t &nz, osize_t &ny) = 0;
+        virtual void values(size_t &iz, size_t &iy, 
+            size_t &nz, size_t &ny) = 0;
         bool is_complete(){return m_is_complete;};
     protected:
         size_t m_sz,m_sy, m_iz,m_iy, m_nz,m_ny;
@@ -31,7 +30,7 @@ class RegionReaderByLines: public RegionReader
         RegionReaderByLines(){};
         RegionReaderByLines(size_t sz, size_t sy, size_t nymax);
         void next_iteration();
-        void values(osize_t &iz, osize_t &iy, osize_t &nz, osize_t &ny);
+        void values(size_t &iz, size_t &iy, size_t &nz, size_t &ny);
     private:
         size_t m_nymax;
 };
@@ -42,9 +41,11 @@ class RegionReaderByPlanes: public RegionReader
         RegionReaderByPlanes(){};
         RegionReaderByPlanes(size_t sz, size_t sy, size_t nymax);
         void next_iteration();
-        void values(osize_t &iz, osize_t &iy, osize_t &nz, osize_t &ny);
+        void values(size_t &iz, size_t &iy, size_t &nz, size_t &ny);
     private:
         size_t m_nzmax;
+};
+
 };
 
 #endif

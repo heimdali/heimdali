@@ -18,6 +18,8 @@
 
 #include "heimdali/regionreader.hxx"
 
+namespace Heimdali {
+
 /*! \brief Returns appropriately a RegionReaderByLines or a RegionReaderByPlanes */
 RegionReader* RegionReader::make_region_reader(size_t sz, size_t sy, size_t nlines_per_loop)
 {
@@ -73,7 +75,7 @@ void RegionReaderByLines::next_iteration()
     }
 }
 
-void RegionReaderByLines::values(osize_t &iz, osize_t &iy, osize_t &nz, osize_t &ny)
+void RegionReaderByLines::values(size_t &iz, size_t &iy, size_t &nz, size_t &ny)
 {
     iz = m_iz;
     iy = m_iy;
@@ -112,10 +114,12 @@ void RegionReaderByPlanes::next_iteration()
 
 }
 
-void RegionReaderByPlanes::values(osize_t &iz, osize_t &iy, osize_t &nz, osize_t &ny)
+void RegionReaderByPlanes::values(size_t &iz, size_t &iy, size_t &nz, size_t &ny)
 {
     iz = m_iz;
     iy = m_iy;
     nz = m_nz;
     ny = m_ny;
 }
+
+};

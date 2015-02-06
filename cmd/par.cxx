@@ -165,7 +165,7 @@ int main(int argc, char** argv)
 
 
     // Input/output.
-    catch (IOError &e) {
+    catch (Heimdali::IOError &e) {
         cerr << "par: ERROR: " << e.getMessage() << endl;
     }
 }
