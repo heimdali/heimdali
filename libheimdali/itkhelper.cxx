@@ -25,6 +25,8 @@ CreateRegion(int ix, int nx, int iy, int ny, int iz, int nz)
 ImageFloat::RegionType::IndexType
 CreateIndex(int ix, int iy, int iz)
 {
+  int XD=0, YD=1, ZD=2;
+
   Heimdali::ImageFloat::RegionType::IndexType index;
   index[XD] = ix;
   index[YD] = iy;
