@@ -172,5 +172,7 @@ int main(int argc, char** argv)
     catch (Heimdali::IOError &e) {
         cerr << "ical: ERROR: " << e.getMessage() << endl;
     }
+
+    return 0;
 }
 

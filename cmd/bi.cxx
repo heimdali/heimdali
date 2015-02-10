@@ -69,4 +69,5 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
     cmdwriter->Update();
 }
 
+return 0;
 }
