@@ -37,18 +37,18 @@ CmdWriterToFile<ImageType>::CmdWriterToFile(string filename)
 template <typename ImageType>
 void CmdWriterToFile<ImageType>::Write(typename ImageType::Pointer image)
 {
-    size_t zd=2, yd=1, xd=0;
+    size_t ZD=2, YD=1, XD=0;
     typename ImageType::SizeType size = image->GetBufferedRegion().GetSize();
     typename ImageType::IndexType index = image->GetBufferedRegion().GetIndex();
 
     // ioregion (same as buffered region)
     itk::ImageIORegion ioregion(this->m_Dimension);
-    ioregion.SetIndex(zd,index[zd]);
-    ioregion.SetIndex(yd,index[yd]);
-    ioregion.SetIndex(xd,index[xd]);
-    ioregion.SetSize(zd,size[zd]);
-    ioregion.SetSize(yd,size[yd]);
-    ioregion.SetSize(xd,size[xd]);
+    ioregion.SetIndex(ZD,index[ZD]);
+    ioregion.SetIndex(YD,index[YD]);
+    ioregion.SetIndex(XD,index[XD]);
+    ioregion.SetSize(ZD,size[ZD]);
+    ioregion.SetSize(YD,size[YD]);
+    ioregion.SetSize(XD,size[XD]);
 
     this->m_writer->SetInput(image);
     this->m_writer->SetIORegion(ioregion);
@@ -83,7 +83,7 @@ void CmdWriterToStdout<ImageType>::Write(typename ImageType::Pointer image)
     image->Update();
     typename ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
     typename ImageType::IndexType index = image->GetBufferedRegion().GetIndex();
-    size_t zd=2, yd=1, xd=0;
+    size_t ZD=2, YD=1, XD=0;
 
     // Set region of interest to buffered region.
     typedef itk::RegionOfInterestImageFilter< ImageType, ImageType > RegionOfInterestType;
@@ -94,10 +94,10 @@ void CmdWriterToStdout<ImageType>::Write(typename ImageType::Pointer image)
 
     // Add metadata.
     itk::Array<size_t> sz_sy_iz_iy(4);
-    sz_sy_iz_iy.SetElement(0, size[zd]);
-    sz_sy_iz_iy.SetElement(1, size[yd]);
-    sz_sy_iz_iy.SetElement(2, index[zd]);
-    sz_sy_iz_iy.SetElement(3, index[yd]);
+    sz_sy_iz_iy.SetElement(0, size[ZD]);
+    sz_sy_iz_iy.SetElement(1, size[YD]);
+    sz_sy_iz_iy.SetElement(2, index[ZD]);
+    sz_sy_iz_iy.SetElement(3, index[YD]);
     itk::EncapsulateMetaData< itk::Array<size_t> >(dictionary,"sz_sy_iz_iy",sz_sy_iz_iy);
     regionOfInterest->GetOutput()->SetMetaDataDictionary(dictionary);
 
