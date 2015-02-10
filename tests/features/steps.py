@@ -45,5 +45,14 @@ def then_i_get_the_standard_output(step):
     check_command()
     check_stdout(world.stdout, expected_stdout)
 
+@step("The HDF5 files (.*) and (.*) are equal")
+def hdf5_files_are_equal(step, fileA, fileB):
+    cmd = "h5diff --exclude-path /HDFVersion --exclude-path /ITKVersion " \
+          "%s %s" % (fileA, fileB)
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    world.stdout, world.stderr = p.communicate()
+    world.returncode = p.returncode
+    check_command()
+
 def factorial(number):
     return 1
