@@ -2,6 +2,36 @@
 
 namespace Heimdali {
 
+
+ImageFloat::RegionType
+CreateRegion(int ix, int nx, int iy, int ny, int iz, int nz)
+{
+   int XD=0, YD=1, ZD=2;
+
+   Heimdali::ImageFloat::RegionType::IndexType start;
+   Heimdali::ImageFloat::RegionType::SizeType size;
+   Heimdali::ImageFloat::RegionType region;
+   start[ZD] = iz;
+   start[YD] = iy;
+   start[XD] = ix;
+   size[ZD] = nz;
+   size[YD] = ny;
+   size[XD] = nx;
+   region.SetSize(size);
+   region.SetIndex(start);
+   return region;
+}
+
+ImageFloat::RegionType::IndexType
+CreateIndex(int ix, int iy, int iz)
+{
+  Heimdali::ImageFloat::RegionType::IndexType index;
+  index[XD] = ix;
+  index[YD] = iy;
+  index[ZD] = iz;
+  return index;
+}
+
 // Check image size
 void AssertImageSize(ImageFloat::Pointer image, string label, 
   int nx, int ny, int nz, int nv)
