@@ -2,7 +2,7 @@ include_directories(${HEIMDALI_INCLUDE})
 include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
 
-set(CMD_LIST inrtoh5 h5toinr par ical so bi)
+set(CMD_LIST inrtoh5 h5toinr par ical so bi sc)
 foreach(cmd ${CMD_LIST})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
   TARGET_LINK_LIBRARIES(${cmd}

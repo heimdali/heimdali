@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 TCLAP::CmdLine cmd("Add a constant to an image.", ' ', "0.0.0");
 
 // -n
-TCLAP::ValueArg<int> number("n","number", "Value of the constant",true,0,"N", cmd);
+TCLAP::ValueArg<float> number("n","number", "Value of the constant",true,0,"N", cmd);
 
 // -streaming N
 TCLAP::ValueArg<int> streaming("s","streaming", "Number of lines to stream",

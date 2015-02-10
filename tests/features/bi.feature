@@ -7,4 +7,4 @@ Feature: The 'bi' command line tool.
 
     Scenario: Add 1 to each pixel
         When I run the command: bi -n 1 -i $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 -o out.h5
-        Then The HDF5 files out.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_bi1.h5 are equal
+        Then the HDF5 files out.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_bi1.h5 are equal
