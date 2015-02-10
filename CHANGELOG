@@ -22,3 +22,8 @@
   mv helper functions/classes in libheimdali
   new helper functions AssertImageSize, CreateImage, OpenAndReadImage,
     OpenAndWriteImage
+
+0.4.0
+  add bi and sc commands
+  add ITK helper functions CreateRegion and CreateIndex
+  add ITK helper macros GetP and SetP
