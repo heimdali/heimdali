@@ -47,7 +47,7 @@ def then_i_get_the_standard_output(step):
 
 @step("the HDF5 files (.*) and (.*) are equal")
 def hdf5_files_are_equal(step, fileA, fileB):
-    cmd = "h5diff --exclude-path /HDFVersion --exclude-path /ITKVersion " \
+    cmd = "h5diff -v --compare --exclude-path /HDFVersion --exclude-path /ITKVersion " \
           "%s %s" % (fileA, fileB)
     p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
     world.stdout, world.stderr = p.communicate()
