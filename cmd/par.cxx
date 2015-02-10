@@ -168,4 +168,6 @@ int main(int argc, char** argv)
     catch (Heimdali::IOError &e) {
         cerr << "par: ERROR: " << e.getMessage() << endl;
     }
+
+    return 0;
 }

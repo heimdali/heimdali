@@ -45,9 +45,7 @@ WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
 
 // Set constant.
 ImageType::PixelType pixel;
-int sc = cmdreader->get_sc();
-pixel.SetSize(sc);
-pixel.Fill( number.getValue() );
+bool pixel_is_ready = false;
 
 // Add constant.
 typedef itk::AddImageFilter<ImageType> AddImageType;
@@ -58,6 +56,17 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
     // Read input.
     cmdreader->next_iteration();
     if (cmdreader->is_complete()) break;
+
+    if (!pixel_is_ready) {
+        pixel.SetSize( cmdreader->get_sc() );
+        pixel.Fill( number.getValue() );
+        pixel_is_ready = true;
+    }
+
+    ImageType::IndexType index;
+    index[0] = 2;
+    index[1] = 2;
+    index[2] = 2;
 
     // Add constant.
     addImage->SetInput(cmdreader->GetOutput());
