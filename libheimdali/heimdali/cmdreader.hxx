@@ -39,6 +39,10 @@ class ITK_ABI_EXPORT CmdReader
         virtual typename ImageType::Pointer GetOutput() = 0;
         virtual void Update() = 0;
         bool is_complete(){return m_is_complete;};
+        size_t get_sz() const {return m_sz;};
+        size_t get_sy() const {return m_sy;};
+        size_t get_sx() const {return m_sx;};
+        size_t get_sc() const {return m_sc;};
     protected:
         size_t m_nlines_per_loop;
         bool m_is_complete;

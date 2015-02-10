@@ -31,7 +31,7 @@ template <typename ImageType>
 CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     size_t nlines_per_loop, string filename)
 {
-    int zd=2, yd=1, xd=0;
+    int ZD=2, YD=1, XD=0;
     this->m_is_complete = false;
     this->m_nlines_per_loop = nlines_per_loop;
     this->m_filename = filename;
@@ -40,9 +40,9 @@ CmdReaderFromFile<ImageType>::CmdReaderFromFile(
 
     // Read image size only.
     this->m_reader->UpdateOutputInformation();
-    this->m_sz = this->m_reader->GetImageIO()->GetDimensions(zd);
-    this->m_sy = this->m_reader->GetImageIO()->GetDimensions(yd);
-    this->m_sx = this->m_reader->GetImageIO()->GetDimensions(xd);
+    this->m_sz = this->m_reader->GetImageIO()->GetDimensions(ZD);
+    this->m_sy = this->m_reader->GetImageIO()->GetDimensions(YD);
+    this->m_sx = this->m_reader->GetImageIO()->GetDimensions(XD);
     this->m_sc = this->m_reader->GetImageIO()->GetNumberOfComponents();
     this->m_region_reader = RegionReader::make_region_reader(
         this->m_sz,this->m_sy,nlines_per_loop);
@@ -52,15 +52,15 @@ CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     this->m_nx = this->m_sx;
 
     // Region to read.
-    this->m_index[xd] = this->m_ix;
-    this->m_size[xd] = this->m_nx;
+    this->m_index[XD] = this->m_ix;
+    this->m_size[XD] = this->m_nx;
 }
 
 template <typename ImageType>
 void
 CmdReaderFromFile<ImageType>::next_iteration()
 {
-    int zd=2, yd=1, xd=0;
+    int ZD=2, YD=1, XD=0;
 
     // Compute next region to region.
     this->m_region_reader->next_iteration();
@@ -71,10 +71,10 @@ CmdReaderFromFile<ImageType>::next_iteration()
     this->m_region_reader->values(this->m_iz,this->m_iy,this->m_nz,this->m_ny);
 
     // Set requested region.
-    this->m_index[zd] = this->m_iz;
-    this->m_index[yd] = this->m_iy;
-    this->m_size[zd] = this->m_nz;
-    this->m_size[yd] = this->m_ny;
+    this->m_index[ZD] = this->m_iz;
+    this->m_index[YD] = this->m_iy;
+    this->m_size[ZD] = this->m_nz;
+    this->m_size[YD] = this->m_ny;
     this->m_requestedRegion.SetIndex(this->m_index);
     this->m_requestedRegion.SetSize(this->m_size);
     this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
@@ -125,7 +125,7 @@ template <typename ImageType>
 void
 CmdReaderFromStdin<ImageType>::next_iteration()
 {
-    int zd=2, yd=1, xd=0;
+    int ZD=2, YD=1, XD=0;
 
     int end_of_stdin=0;
     this->m_fileimage_id = H5UPfileimage_from_stdin(&end_of_stdin, m_traceback);
@@ -141,6 +141,11 @@ CmdReaderFromStdin<ImageType>::next_iteration()
     this->m_reader->SetImageIO(this->m_HDF5io);
     this->m_reader->Update();
 
+    this->m_sx = m_HDF5io->GetDimensions(ZD);
+    this->m_sy = m_HDF5io->GetDimensions(YD);
+    this->m_sz = m_HDF5io->GetDimensions(XD);
+    this->m_sc = m_HDF5io->GetNumberOfComponents();
+
     // Get metadata.
     itk::Array<size_t> sz_sy_iz_iy(4);
     dictionary = this->m_reader->GetMetaDataDictionary();
@@ -155,21 +160,21 @@ CmdReaderFromStdin<ImageType>::next_iteration()
 
       // Buffered region.
       typename ImageType::IndexType bindex;
-      bindex[zd] = iz;
-      bindex[yd] = iy;
-      bindex[xd] =  0;
+      bindex[ZD] = iz;
+      bindex[YD] = iy;
+      bindex[XD] =  0;
       typename ImageType::SizeType bsize = this->m_reader->GetOutput()->GetBufferedRegion().GetSize();
       typename ImageType::RegionType bregion(bindex,bsize);
 
       // Largest possible region.
       typename ImageType::IndexType lindex;
-      lindex[zd] = 0;
-      lindex[yd] = 0;
-      lindex[xd] = 0;
+      lindex[ZD] = 0;
+      lindex[YD] = 0;
+      lindex[XD] = 0;
       typename ImageType::SizeType lsize;
-      lsize[zd] = sz;
-      lsize[yd] = sy;
-      lsize[xd] = bsize[xd];
+      lsize[ZD] = sz;
+      lsize[YD] = sy;
+      lsize[XD] = bsize[XD];
       typename ImageType::RegionType lregion(lindex,lsize);
 
       // Origin.

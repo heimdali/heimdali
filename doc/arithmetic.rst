@@ -41,7 +41,7 @@ output.
 
 All operation are performed on pixels element by element.
 
-Description
+See also
 ------------------------------------
 
 See also :ref:`local_arithmetic`.
