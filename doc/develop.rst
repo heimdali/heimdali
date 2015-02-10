@@ -1,18 +1,18 @@
 Build Heimdali in development mode
 ====================================
 
-Create a `conda` enviromnent named `heimdali` containing all dependencies:
+Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
 
 .. code-block:: bash
 
     conda config --add channels http://conda.binstar.org/dfroger
-    conda create -n heimdali h5unixpipe itk tclap cmake pip
+    conda create -n heimdali-dev h5unixpipe itk tclap cmake pip
    
 Install lettuce:
 
 .. code-block:: bash
 
-    source activate heimdali
+    source activate heimdali-dev
     hash -r
     pip install lettuce
 
@@ -33,8 +33,6 @@ Build heidmali:
 +------------------------+----------------------------------------------------+
 | `CMAKE_PREFIX_PATH`    | Where `CMake` will search for dependent libraries  |
 +------------------------+----------------------------------------------------+
-| `CMAKE_INSTALL_PREFIX` | Where `CMake` will install `Heimdali`              |
-+------------------------+----------------------------------------------------+
 | `..`                   | Path to Heimdali main CMakeLists.txt               |
 +------------------------+----------------------------------------------------+
 
@@ -43,22 +41,17 @@ Build heidmali:
 
     mkdir build
     cd build
-    source activate heimdali
+    source activate heimdali-dev
     CONDA_ENV_PATH=$(conda info -e | grep '*' | tr -s ' ' | cut -d" " -f3)
-    cmake \
-        -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
-        -DCMAKE_INSTALL_PREFIX=$PWD/../install \
-        ..
+    cmake -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH ..
     make
-    make install
 
-Set up environment to search executables and libraries installed by `CMake`
-in `heimdali/install` (read the few notes in the script
-`develop_heimdali_bash.sh`):
+Add path to the built executables:
 
 .. code-block:: bash
 
-    source script/develop_heimdali_bash.sh
+    cd build
+    export PATH=$PWD/cmd:$PATH
 
 Execute the functional tests:
 
