@@ -27,6 +27,7 @@ User guide
    extg
    raz
    melg
+   fzoom
 
 
 Heimdali API
