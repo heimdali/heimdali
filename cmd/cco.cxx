@@ -1,7 +1,15 @@
+#include <sstream>
+
+#include <tclap/CmdLine.h>
+
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkCastImageFilter.h"
+
+#include "heimdali/error.hxx"
+
+using namespace std;
 
 // http://www.itk.org/Wiki/ITK/Examples/IO/ReadUnknownImageType
  
@@ -26,103 +34,84 @@ int main(int argc, char *argv[])
         "Output image file name.",true,"output.h5","FILE-OUT");
     cmd.add(outputFilenameArg);
 
-    TCLAP::SwitchArg realSwitch("","r", "Convert to flotting point.", parser);
-    TCLAP::SwitchArg intergralSwitch("","f", "Convert to integral.", parser);
+    //TCLAP::SwitchArg realSwitch("","r", "Convert to flotting point.", cmd);
+    //TCLAP::SwitchArg intergralSwitch("","f", "Convert to integral.", cmd);
 
     cmd.parse(argc,argv);
-    } 
+
+    string inputFilename = inputFilenameArg.getValue();
+    string outputFilename = outputFilenameArg.getValue();
+
+    const unsigned int Dimension = 3;
+    typedef itk::VectorImage<float, Dimension> FloatImageType;
+    typedef itk::VectorImage<int, Dimension> IntImageType;
+
+    typedef itk::ImageIOBase::IOComponentType ScalarPixelType;
+ 
+    itk::ImageIOBase::Pointer imageIO =
+          itk::ImageIOFactory::CreateImageIO(
+              inputFilename.c_str(), itk::ImageIOFactory::ReadMode);
+    
+    imageIO->SetFileName(inputFilename);
+    imageIO->ReadImageInformation();
+    const ScalarPixelType pixelType = imageIO->GetComponentType();
+    string pixelTypeString = imageIO->GetComponentTypeAsString(pixelType);
+
+    if (pixelTypeString == "float") {
+        // reader
+        typedef itk::ImageFileReader<FloatImageType> ReaderType;
+        ReaderType::Pointer reader = ReaderType::New();
+        reader->SetFileName(inputFilename);
+
+        // writer
+        typedef itk::ImageFileWriter<IntImageType> WriterType;
+        WriterType::Pointer writer = WriterType::New();
+        writer->SetFileName(outputFilename);
+
+        // cast fileter
+        typedef itk::CastImageFilter<FloatImageType, IntImageType > Float2IntCastFilterType;
+        Float2IntCastFilterType::Pointer castFilter = Float2IntCastFilterType::New();
+
+        // pipeline
+        castFilter->SetInput(reader->GetOutput());
+        writer->SetInput(castFilter->GetOutput());
+        writer->Update();
+    } else if (pixelTypeString == "int") {
+        // reader
+        typedef itk::ImageFileReader<IntImageType> ReaderType;
+        ReaderType::Pointer reader = ReaderType::New();
+        reader->SetFileName(inputFilename);
+
+        // writer
+        typedef itk::ImageFileWriter<FloatImageType> WriterType;
+        WriterType::Pointer writer = WriterType::New();
+        writer->SetFileName(outputFilename);
+
+        // cast fileter
+        typedef itk::CastImageFilter<IntImageType, FloatImageType > Int2FloatCastFilterType;
+        Int2FloatCastFilterType::Pointer castFilter = Int2FloatCastFilterType::New();
+
+        // pipeline
+        castFilter->SetInput(reader->GetOutput());
+        writer->SetInput(castFilter->GetOutput());
+        writer->Update();
+    } else {
+          ostringstream msg;
+          msg << "Unsupported pixel type: " << pixelTypeString << endl;
+          throw(Heimdali::IOError(msg.str()));
+    }
+
+    }
 
     // Command line parser.
     catch (TCLAP::ArgException &e) { 
         cerr << "cco: ERROR: " << e.error() << " for arg " << e.argId() << endl;
     }
 
-
-typedef itk::ImageIOBase::IOComponentType ScalarPixelType;
- 
-  itk::ImageIOBase::Pointer imageIO =
-        itk::ImageIOFactory::CreateImageIO(
-            inputFilename.c_str(), itk::ImageIOFactory::ReadMode);
- 
-  imageIO->SetFileName(inputFilename);
-  imageIO->ReadImageInformation();
-  const ScalarPixelType pixelType = imageIO->GetComponentType();
-  std::cout << "Pixel Type is " << imageIO->GetComponentTypeAsString(pixelType) // 'double'
-            << std::endl;
-  const size_t numDimensions =  imageIO->GetNumberOfDimensions();
-  std::cout << "numDimensions: " << numDimensions << std::endl; // '2'
- 
-  std::cout << "component size: " << imageIO->GetComponentSize() << std::endl; // '8'
-  std::cout << "pixel type (string): " << imageIO->GetPixelTypeAsString(imageIO->GetPixelType()) << std::endl; // 'vector'
-  std::cout << "pixel type: " << imageIO->GetPixelType() << std::endl; // '5'
-
-/*
-  switch (pixelType)
-  {
-    case itk::ImageIOBase::COVARIANTVECTOR:
-      typedef itk::Image<unsigned char, 2> ImageType;
-      ImageType::Pointer image = ImageType::New();
-      ReadFile<ImageType>(inputFilename, image);
-      break;
- 
-      typedef itk::Image<unsigned char, 2> ImageType;
-      ImageType::Pointer image = ImageType::New();
-      ReadFile<ImageType>(inputFilename, image);
-      break;
- 
-    default:
-      std::cerr << "Pixel Type ("
-                << imageIO->GetComponentTypeAsString(pixelType)
-                << ") not supported. Exiting." << std::endl;
-      return -1;
-  }
-  */
-
-template<typename TImageType>
-void ReadFile(std::string filename, typename TImageType::Pointer image)
-{
-  typedef itk::ImageFileReader<TImageType> ReaderType;
-  typename ReaderType::Pointer reader = ReaderType::New();
- 
-  reader->SetFileName(filename);
-  reader->Update();
- 
-  image->Graft(reader->GetOutput());
-}
-
-    
-    /*
-    const unsigned int Dimension = 3;
-
-    typedef itk::VectorImage<float, Dimension>  FloatImageType;
-
-    // float to uchar
-    typedef itk::VectorImage<unsigned char, Dimension>  UnsignedCharImageType;
-    typedef itk::CastImageFilter< FloatImageType, UnsignedCharImageType > Float2UIntCastFilterType;
-
-    // uchar to float
-    typedef itk::VectorImage<unsigned char, Dimension>  UnsignedCharImageType;
-    typedef itk::CastImageFilter< FloatImageType, UnsignedCharImageType > Float2UIntCastFilterType;
-
-    // reader
-    typedef itk::ImageFileReader<FloatImageType> ReaderType;
-    ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFileName(inputFilename);
-
-    // writer
-    typedef itk::ImageFileWriter<UnsignedCharImageType> WriterType;
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(outputFilename);
-
-    if (choice==0) {
-        Float2UIntCastFilterType::Pointer castFilter = Float2UIntCastFilterType::New();
-        castFilter->SetInput(reader->GetOutput());
-        writer->SetInput(castFilter->GetOutput());
-    } else {
+    // Input/output.
+    catch (Heimdali::IOError &e) {
+        cerr << "ical: ERROR: " << e.getMessage() << endl;
     }
-
-    writer->Update();
-    */
 
   return 0;
 }

@@ -17,11 +17,15 @@ User guide
 
    install
    options
-   par
    h5toinr
    inrtoh5
+   par
+   tpr
    arithmetic.rst
    local_arithmetic.rst
+   cco
+   extg
+   raz
 
 
 Heimdali API
