@@ -26,6 +26,7 @@ User guide
    cco
    extg
    raz
+   melg
 
 
 Heimdali API
