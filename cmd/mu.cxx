@@ -4,6 +4,7 @@
 #include <itkMultiplyImageFilter.h>
 #include <itkVectorImageToImageAdaptor.h>
 #include <itkComposeImageFilter.h>
+#include <itkImageDuplicator.h>
 #include <itkINRImageIOFactory.h>
 
 #include "heimdali/cmdreader.hxx"
@@ -68,12 +69,21 @@ ToImageType::Pointer toImage1 = ToImageType::New();
 ToImageType::Pointer toImage2 = ToImageType::New();
 
 // Multiply filter.
-typedef itk::MultiplyImageFilter <ToImageType,ToImageType> MultiplyImageFilterType;
+typedef itk::MultiplyImageFilter <ToImageType,ToImageType,ScalarImageType> MultiplyImageFilterType;
 MultiplyImageFilterType::Pointer multiplier = MultiplyImageFilterType::New ();
+
+// Duplicator.
+typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
+DuplicatorType::Pointer duplicator = DuplicatorType::New();
 
 // Image to VectorImage
 typedef itk::ComposeImageFilter<ScalarImageType> ToVectorImageType;
 ToVectorImageType::Pointer toVectorImage = ToVectorImageType::New();
+
+ScalarImageType::IndexType index;
+index[0] = 1;
+index[1] = 0;
+index[2] = 0;
 
 size_t iregionmax = 1E+06;
 for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
@@ -96,14 +106,21 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
         // VectorImage to Image
         toImage1->SetExtractComponentIndex(ic);
         toImage2->SetExtractComponentIndex(ic);
+        toImage1->Modified();
+        toImage2->Modified();
 
         // Multiply images.
         multiplier->SetInput1(toImage1);
         multiplier->SetInput2(toImage2);
         multiplier->Update();
+        multiplier->Modified();
 
         // Image to VectorImage
-        toVectorImage->SetInput(ic, multiplier->GetOutput());
+        duplicator->SetInputImage(multiplier->GetOutput());
+        duplicator->Update();
+
+        toVectorImage->SetInput(ic, duplicator->GetOutput());
+        toVectorImage->Modified();
         toVectorImage->Update();
     }
 
