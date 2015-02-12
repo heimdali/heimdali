@@ -1,7 +1,7 @@
 #include <tclap/CmdLine.h>
 
 #include <itkImage.h>
-#include <itkDivideImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 #include <itkVectorImageToImageAdaptor.h>
 #include <itkComposeImageFilter.h>
 #include <itkINRImageIOFactory.h>
@@ -10,8 +10,6 @@
 #include "heimdali/cmdwriter.hxx"
 #include "heimdali/itkhelper.hxx"
 
-// Note: DivideImageFilter do not work with VectorImage
-
 using namespace std;
 
 int main(int argc, char** argv)
@@ -19,7 +17,7 @@ int main(int argc, char** argv)
 
 try {
 
-TCLAP::CmdLine cmd("Divide two images", ' ', "0.0.0");
+TCLAP::CmdLine cmd("Multiply two images", ' ', "0.0.0");
 
 // -o output.h5
 TCLAP::ValueArg<string> output("o","output", 
@@ -42,10 +40,6 @@ TCLAP::UnlabeledValueArg<string> input1("image1",
     "Second image.",true,"","IMAGE2",cmd);
 
 cmd.parse(argc,argv);
-
-ostringstream msg;
-msg << "di is bugged and may operates integer division with floats" << endl;
-throw(Heimdali::NotImplementedError(msg.str()));
 
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
@@ -73,10 +67,9 @@ typedef itk::VectorImageToImageAdaptor
 ToImageType::Pointer toImage1 = ToImageType::New();
 ToImageType::Pointer toImage2 = ToImageType::New();
 
-// Divide filter.
-typedef itk::DivideImageFilter <ToImageType,ToImageType,ScalarImageType> 
-    DividerType;
-DividerType::Pointer divider = DividerType::New();
+// Multiply filter.
+typedef itk::MultiplyImageFilter <ToImageType,ToImageType> MultiplyImageFilterType;
+MultiplyImageFilterType::Pointer multiplier = MultiplyImageFilterType::New ();
 
 // Image to VectorImage
 typedef itk::ComposeImageFilter<ScalarImageType> ToVectorImageType;
@@ -104,13 +97,13 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
         toImage1->SetExtractComponentIndex(ic);
         toImage2->SetExtractComponentIndex(ic);
 
-        // Divide images.
-        divider->SetInput1(toImage1);
-        divider->SetInput2(toImage2);
-        divider->Update();
+        // Multiply images.
+        multiplier->SetInput1(toImage1);
+        multiplier->SetInput2(toImage2);
+        multiplier->Update();
 
         // Image to VectorImage
-        toVectorImage->SetInput(ic, divider->GetOutput());
+        toVectorImage->SetInput(ic, multiplier->GetOutput());
         toVectorImage->Update();
     }
 
