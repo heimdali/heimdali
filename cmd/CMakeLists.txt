@@ -5,7 +5,7 @@ include_directories(${H5UNIXPIPE_INCLUDE})
 set(CMD_LIST inrtoh5 h5toinr 
              par tpr ical
              so ad di mu bi min max
-             sc sd lo ra car
+             sc sd lo ra car exp
              extg raz cco melg fzoom)
 foreach(cmd ${CMD_LIST})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
