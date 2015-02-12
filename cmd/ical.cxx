@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     StatisticsImageFilterType::Pointer statisticsImageFilter = StatisticsImageFilterType::New();
 
     // To copy Pixel from vectorImage to scalarImage
-    itk::Index<3> index;
+    itk::Index<Dimension> index;
 
     // Redirect stdout to stderr or to file.
     Heimdali::RedirectStdout redirection(outputFilenameArg.getValue(), forceSwitch.getValue());

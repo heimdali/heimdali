@@ -57,7 +57,7 @@ WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
 
 // Add filter.
 typedef itk::AddImageFilter <ImageType,ImageType> AddImageFilterType;
-AddImageFilterType::Pointer subtractFilter = AddImageFilterType::New ();
+AddImageFilterType::Pointer adder = AddImageFilterType::New ();
 
 size_t iregionmax = 1E+06;
 for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
@@ -67,11 +67,11 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
     if (reader1->is_complete()) break;
 
     // Add images.
-    subtractFilter->SetInput1( reader1->GetOutput() );
-    subtractFilter->SetInput2( reader2->GetOutput() );
+    adder->SetInput1( reader1->GetOutput() );
+    adder->SetInput2( reader2->GetOutput() );
 
     // Write output.
-    cmdwriter->Write( subtractFilter->GetOutput() );
+    cmdwriter->Write( adder->GetOutput() );
     cmdwriter->Update();
 }
 

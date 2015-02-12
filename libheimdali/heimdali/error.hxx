@@ -27,6 +27,16 @@ class IOError {
         string msg_;
 };
 
+class NotImplementedError {
+    public:
+        NotImplementedError(const string& msg) : msg_(msg) {}
+        ~NotImplementedError() {}
+
+        string getMessage() const {return(msg_);}
+    private:
+        string msg_;
+};
+
 };
 
 #endif

@@ -12,7 +12,7 @@ using namespace std;
 int main(int argc, char** argv)
 { 
 
-TCLAP::CmdLine cmd("Substract two images", ' ', "0.0.0");
+TCLAP::CmdLine cmd("Subtract two images", ' ', "0.0.0");
 
 // -o output.h5
 TCLAP::ValueArg<string> output("o","output", 
@@ -55,9 +55,9 @@ ReaderType* reader2 = ReaderType::make_cmd_reader(streaming.getValue(),
 typedef Heimdali::CmdWriter<ImageType> WriterType;
 WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
 
-// Substract filter.
+// Subtract filter.
 typedef itk::SubtractImageFilter <ImageType,ImageType> SubtractImageFilterType;
-SubtractImageFilterType::Pointer subtractFilter = SubtractImageFilterType::New ();
+SubtractImageFilterType::Pointer subtracter = SubtractImageFilterType::New ();
 
 size_t iregionmax = 1E+06;
 for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
@@ -66,12 +66,12 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
     reader2->next_iteration();
     if (reader1->is_complete()) break;
 
-    // Substract images.
-    subtractFilter->SetInput1( reader1->GetOutput() );
-    subtractFilter->SetInput2( reader2->GetOutput() );
+    // Subtract images.
+    subtracter->SetInput1( reader1->GetOutput() );
+    subtracter->SetInput2( reader2->GetOutput() );
 
     // Write output.
-    cmdwriter->Write( subtractFilter->GetOutput() );
+    cmdwriter->Write( subtracter->GetOutput() );
     cmdwriter->Update();
 }
 
