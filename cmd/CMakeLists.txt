@@ -2,7 +2,10 @@ include_directories(${HEIMDALI_INCLUDE})
 include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
 
-set(CMD_LIST inrtoh5 h5toinr par tpr ical so ad di mu bi min sc extg raz cco melg fzoom)
+set(CMD_LIST inrtoh5 h5toinr 
+             par tpr ical
+             so ad di mu bi min max
+             sc extg raz cco melg fzoom)
 foreach(cmd ${CMD_LIST})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
   TARGET_LINK_LIBRARIES(${cmd}
