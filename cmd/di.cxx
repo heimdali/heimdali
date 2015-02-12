@@ -4,6 +4,7 @@
 #include <itkDivideImageFilter.h>
 #include <itkVectorImageToImageAdaptor.h>
 #include <itkComposeImageFilter.h>
+#include <itkImageDuplicator.h>
 #include <itkINRImageIOFactory.h>
 
 #include "heimdali/cmdreader.hxx"
@@ -43,10 +44,6 @@ TCLAP::UnlabeledValueArg<string> input1("image1",
 
 cmd.parse(argc,argv);
 
-ostringstream msg;
-msg << "di is bugged and may operates integer division with floats" << endl;
-throw(Heimdali::NotImplementedError(msg.str()));
-
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
@@ -66,6 +63,10 @@ ReaderType* cmdreader2 = ReaderType::make_cmd_reader(streaming.getValue(),
 // Command line tool writer.
 typedef Heimdali::CmdWriter<VectorImageType> WriterType;
 WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
+
+// Duplicator.
+typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
+DuplicatorType::Pointer duplicator = DuplicatorType::New();
 
 // VectorImage to Image
 typedef itk::VectorImageToImageAdaptor
@@ -103,14 +104,22 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
         // VectorImage to Image
         toImage1->SetExtractComponentIndex(ic);
         toImage2->SetExtractComponentIndex(ic);
+        toImage1->Modified();
+        toImage2->Modified();
 
         // Divide images.
         divider->SetInput1(toImage1);
         divider->SetInput2(toImage2);
         divider->Update();
+        divider->Modified();
 
         // Image to VectorImage
-        toVectorImage->SetInput(ic, divider->GetOutput());
+        duplicator->SetInputImage(divider->GetOutput());
+        duplicator->Update();
+
+        // Image to VectorImage
+        toVectorImage->SetInput(ic, duplicator->GetOutput());
+        toVectorImage->Modified();
         toVectorImage->Update();
     }
 
