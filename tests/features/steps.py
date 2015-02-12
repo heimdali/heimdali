@@ -57,5 +57,18 @@ def hdf5_files_are_equal(step, fileA, fileB):
     world.returncode = p.returncode
     check_command()
 
+@step("the HDF5 files (.*) and (.*) are almost equal with the relative parameter (.*)")
+def hdf5_files_are_equal(step, fileA, fileB, relative):
+    cmd = "h5diff -v --compare " \
+          "--relative=%s " % (relative, ) + \
+          "--exclude-path /HDFVersion " \
+          "--exclude-path /ITKVersion " \
+          "--exclude-path /ITKImage/0/MetaData/sz_sy_iz_iy " \
+          "%s %s" % (fileA, fileB)
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    world.stdout, world.stderr = p.communicate()
+    world.returncode = p.returncode
+    check_command()
+
 def factorial(number):
     return 1
