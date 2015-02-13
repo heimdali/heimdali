@@ -6,7 +6,7 @@ Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
 .. code-block:: bash
 
     conda config --add channels http://conda.binstar.org/dfroger
-    conda create -n heimdali-dev h5unixpipe itk tclap cmake pip
+    conda create -n heimdali-dev h5unixpipe itk-heimdali inrimage tclap cmake pip
    
 Install lettuce:
 
