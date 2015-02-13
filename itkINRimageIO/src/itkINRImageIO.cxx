@@ -90,6 +90,12 @@ INRImageIO::INRImageIO():
 
     m_InrArgv[0] = new char[ strlen("INRImageIO") + 1];
     strcpy(m_InrArgv[0], "INRImageIO");
+
+    this->AddSupportedWriteExtension(".inr");
+    this->AddSupportedWriteExtension(".vel");
+
+    this->AddSupportedReadExtension(".inr");
+    this->AddSupportedReadExtension(".vel");
 }
 
 INRImageIO::~INRImageIO()
@@ -101,17 +107,32 @@ void INRImageIO ::PrintSelf(std::ostream & os, Indent indent) const {
   Superclass::PrintSelf(os, indent);
 }
 
-bool INRImageIO ::CanWriteFile(const char *FileNameToWrite) {
+bool INRImageIO ::CanWriteFile(const char *name) {
   InrInit();
-  // First check the extension
-  if (  (string) FileNameToWrite == "" )
+
+   std::string filename = name; 
+  
+  if (  filename == "" )
     {
-    itkDebugMacro(<< "No filename specified.");
     return false;
     }
 
-  this->AddSupportedWriteExtension(".inr");
-  this->AddSupportedWriteExtension(".vel");
+  std::string::size_type mhaPos = filename.rfind(".inr");
+  if ( ( mhaPos != std::string::npos ) 
+       && ( mhaPos == filename.length() - 4 ) )
+    {
+    return true; 
+    }
+
+  std::string::size_type mhdPos = filename.rfind(".vel");
+  if ( ( mhdPos != std::string::npos ) 
+       && ( mhdPos == filename.length() - 4 ) )
+    {
+    return true;
+    }
+
+  return false;
+ 
 }
 
 /*
@@ -422,8 +443,6 @@ bool itk::INRImageIO::CanReadFile(const char *FileNameToRead)
     return false;
     }
 
-  this->AddSupportedWriteExtension(".inr");
-  this->AddSupportedWriteExtension(".vel");
 
   // Now check the file header
   InrInit();
