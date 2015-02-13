@@ -13,6 +13,7 @@
 #include <itkHDF5ImageIO.h>
 
 #include "heimdali/error.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ int main(int argc, char** argv)
     //////////////////////////////////////////////////////////////////////////
 
         
-    TCLAP::CmdLine cmd("Print the pixel values of a image subregion",' ', "0.0");
+    TCLAP::CmdLine cmd("Print the pixel values of a image subregion",' ', HEIMDALI_VERSION);
 
     // -iz -iy -ix
     TCLAP::ValueArg<int> ixValue("k","icolumn", "First column",false,0,"IZ",cmd);

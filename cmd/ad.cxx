@@ -6,13 +6,14 @@
 
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/cmdwriter.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 
 int main(int argc, char** argv)
 { 
 
-TCLAP::CmdLine cmd("Add two images", ' ', "0.0.0");
+TCLAP::CmdLine cmd("Add two images", ' ', HEIMDALI_VERSION);
 
 // -o output.h5
 TCLAP::ValueArg<string> output("o","output", 

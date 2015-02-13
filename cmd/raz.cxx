@@ -10,6 +10,7 @@
 #include <itkSubtractImageFilter.h>
 
 #include "heimdali/error.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ int main(int argc, char** argv)
 {
     try {
 
-    TCLAP::CmdLine cmd("Fill an image with zero values.", ' ', "0.0.0");
+    TCLAP::CmdLine cmd("Fill an image with zero values.", ' ', HEIMDALI_VERSION);
 
     // image.h5
     TCLAP::UnlabeledValueArg<string> imageArg("image", 

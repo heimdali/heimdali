@@ -5,12 +5,13 @@
 
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/cmdwriter.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 
 int main(int argc, char** argv)
 { 
-TCLAP::CmdLine cmd("Add a constant to an image.", ' ', "0.0.0");
+TCLAP::CmdLine cmd("Add a constant to an image.", ' ', HEIMDALI_VERSION);
 
 // -n
 TCLAP::ValueArg<float> number("n","number", "Value of the constant",true,0,"N", cmd);

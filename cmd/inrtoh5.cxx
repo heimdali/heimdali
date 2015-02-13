@@ -9,6 +9,8 @@
 #include <itkImageFileReader.h>
 #include "itkImageFileWriter.h"
 
+#include "heimdali/version.hxx"
+
 // author: <david.froger@inria.fr>
 // usage: Please see 'help' function bellow.
 
@@ -30,7 +32,7 @@ int main( int argc, char ** argv )
     ///////////////////////////////////////////////////////////////////////////
 
 
-    TCLAP::CmdLine cmd("Convert INRimage image to HDF5 image.", ' ', "0.0");
+    TCLAP::CmdLine cmd("Convert INRimage image to HDF5 image.", ' ', HEIMDALI_VERSION);
 
     // input.inr
     TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 

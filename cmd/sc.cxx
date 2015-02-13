@@ -5,6 +5,7 @@
 
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/cmdwriter.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 
@@ -16,7 +17,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
 
-TCLAP::CmdLine cmd("Multiply each pixel by NUMBER.", ' ', "0.0.0");
+TCLAP::CmdLine cmd("Multiply each pixel by NUMBER.", ' ', HEIMDALI_VERSION);
 
 // -n
 TCLAP::ValueArg<float> number("n","number", "Value of the number",true,

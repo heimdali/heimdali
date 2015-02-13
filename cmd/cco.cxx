@@ -8,6 +8,7 @@
 #include "itkCastImageFilter.h"
 
 #include "heimdali/error.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 
@@ -22,7 +23,7 @@ int main(int argc, char *argv[])
     // Parse comamnd line options and arguments.
     //////////////////////////////////////////////////////////////////////////
     //
-    TCLAP::CmdLine cmd("Change pixel type of image",' ', "0.0");
+    TCLAP::CmdLine cmd("Change pixel type of image",' ', HEIMDALI_VERSION);
 
     // input.h5
     TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 

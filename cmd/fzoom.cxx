@@ -10,6 +10,7 @@
 #include "heimdali/cmdwriter.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/error.hxx"
+#include "heimdali/version.hxx"
 
 
 // VectorExpandImageFilter work on Image of vector pixel, not on VectorImage
@@ -22,7 +23,7 @@ int main(int argc, char** argv)
 
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
 
-    TCLAP::CmdLine cmd("Image enlargement or reduction",' ', "0.0");
+    TCLAP::CmdLine cmd("Image enlargement or reduction",' ', HEIMDALI_VERSION);
 
     // -x -y
     //TCLAP::ValueArg<int> xValue("x","rows", "New number of rows",false,0,"X",cmd);

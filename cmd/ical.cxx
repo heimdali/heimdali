@@ -7,6 +7,7 @@
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/error.hxx"
 #include "heimdali/redirect_stdout.hxx"
+#include "heimdali/version.hxx"
 
 int main(int argc, char** argv)
 {
@@ -21,7 +22,7 @@ int main(int argc, char** argv)
 
         
     TCLAP::CmdLine cmd("Compute min, max and mean of images",
-        ' ', "0.0");
+        ' ', HEIMDALI_VERSION);
 
     // -w output.txt
     TCLAP::ValueArg<string> outputFilenameArg("o","output",

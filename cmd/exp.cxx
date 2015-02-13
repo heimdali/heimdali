@@ -10,6 +10,7 @@
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/cmdwriter.hxx"
 #include "heimdali/itkhelper.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ int main(int argc, char** argv)
 
 try {
 
-TCLAP::CmdLine cmd("Compute exponential of each pixel", ' ', "0.0.0");
+TCLAP::CmdLine cmd("Compute exponential of each pixel", ' ', HEIMDALI_VERSION);
 
 // -o output.h5
 TCLAP::ValueArg<string> output("o","image_out", 

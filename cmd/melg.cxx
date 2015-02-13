@@ -9,6 +9,7 @@
 #include "heimdali/itkhelper.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/error.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 
@@ -45,7 +46,7 @@ int main(int argc, char** argv)
 
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
         
-    TCLAP::CmdLine cmd("Mix two images, testing on pixel values.",' ', "0.0");
+    TCLAP::CmdLine cmd("Mix two images, testing on pixel values.",' ', HEIMDALI_VERSION);
 
     // -ixi -iyi -izi -ivi
     TCLAP::ValueArg<int> iziValue("","izi", "First plane",false,0,"IZI",cmd);

@@ -10,6 +10,7 @@
 #include "heimdali/error.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/redirect_stdout.hxx"
+#include "heimdali/version.hxx"
 
 using namespace std;
 using namespace itk;
@@ -41,7 +42,7 @@ Options parse_command_line(vector<string> tclap_argv)
     bool not_required = false;
     bool required = true;
         
-    TCLAP::CmdLine parser("List image formats", ' ', "0.0.0");
+    TCLAP::CmdLine parser("List image formats", ' ', HEIMDALI_VERSION);
 
     // -z -y -x
     TCLAP::SwitchArg zSwitch("z","planes", "Print number of planes", parser);
