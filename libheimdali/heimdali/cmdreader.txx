@@ -112,6 +112,7 @@ CmdReaderFromStdin<ImageType>::CmdReaderFromStdin(
 {
     this->m_nlines_per_loop = nlines_per_loop;
     this->m_HDF5io = itk::HDF5ImageIO::New();
+    this->m_is_complete = false;
     m_traceback = MTB_new_tb();
 }
 
