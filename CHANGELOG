@@ -31,3 +31,7 @@
 0.5.0:
   add commands: extg, tpr, raz, cco, melg, fzoom, ad, di, mu, min, max, sd,
   lo, ra, car, exp
+
+0.5.1:
+  fix #2: On OSX, can't write .inr image
+  fix #3: Piped commands don't work on OS X

@@ -1,11 +1,11 @@
 package:
   name: heimdali
-  version: 0.5.0
+  version: 0.5.1
 
 source:
   path: ..
-  #fn: heimdali-0.5.0.tar.gz
-  #url: https://github.com/dfroger/heimdali/archive/0.5.0.tar.gz
+  #fn: heimdali-0.5.1.tar.gz
+  #url: https://github.com/dfroger/heimdali/archive/0.5.1.tar.gz
 
 build:
   number: 0
