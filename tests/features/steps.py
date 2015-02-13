@@ -30,6 +30,7 @@ def run_the_command(step,cmd):
     p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=world.cwd)
     world.stdout, world.stderr = p.communicate()
     world.returncode = p.returncode
+    check_command()
 
 @step('I see the line in standard output: (.*)')
 def i_see_the_line(step,line):
