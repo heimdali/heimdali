@@ -23,7 +23,11 @@
   new helper functions AssertImageSize, CreateImage, OpenAndReadImage,
     OpenAndWriteImage
 
-0.4.0
+0.4.0:
   add bi and sc commands
   add ITK helper functions CreateRegion and CreateIndex
   add ITK helper macros GetP and SetP
+
+0.5.0:
+  add commands: extg, tpr, raz, cco, melg, fzoom, ad, di, mu, min, max, sd,
+  lo, ra, car, exp
