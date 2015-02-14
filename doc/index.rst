@@ -7,9 +7,11 @@ Heimdali's overview
 ====================================
 
 Heimdali is a set of commmand line tools to perform Image processing tools,
-based on ITK and HDF5
+based on ITK and HDF5.
 
-User guide
+It also features some helper functions to work with ITK.
+
+Command line tools
 ####################################
 
 .. toctree::
@@ -28,6 +30,14 @@ User guide
    raz
    melg
    fzoom
+
+Using ITK
+####################################
+
+.. toctree::
+   :maxdepth: 1
+
+   from_inrimage
 
 
 Heimdali API
