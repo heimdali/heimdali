@@ -59,3 +59,28 @@ Execute the functional tests:
 
     cd tests
     lettuce
+
+Writting documentation
+====================================
+
+Install Sphinx_:
+
+.. code-block:: bash
+
+    conda install sphinx
+
+Build the documentation:
+
+.. code-block:: bash
+    
+    cd doc
+    make html
+
+View the documentation:
+
+.. code-block:: bash
+
+    cd doc
+    firefox _build/html/index.html
+
+.. _Sphinx: http://sphinx-doc.org/
