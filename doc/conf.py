@@ -13,6 +13,7 @@
 # serve to show the default.
 
 import sys
+import subprocess
 import os
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -329,6 +330,11 @@ epub_exclude_files = ['search.html']
 
 # If false, no index is generated.
 #epub_use_index = True
+
+read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+
+if read_the_docs_build:
+    subprocess.call('cd ../doxyxml; make', shell=True)
 
 breathe_projects = {"libheimdali": "../doxyxml/xml"}
 breathe_default_project = "libheimdali"
