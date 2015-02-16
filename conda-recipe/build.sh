@@ -5,9 +5,9 @@ export LIBRARY_PATH=""
 mkdir build
 cd build
 
-if [ "$TRAVIS" == "true" ]
+if [ ! -z "$HEIMDALI_CPU_COUNT" ]
 then
-    MAKE_JOBS=2
+    MAKE_JOBS=$HEIMDALI_CPU_COUNT
 else
     MAKE_JOBS=$CPU_COUNT
 fi
