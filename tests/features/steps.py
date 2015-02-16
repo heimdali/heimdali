@@ -1,5 +1,5 @@
-from subprocess import Popen, PIPE
-from os.path import realpath, expandvars
+from subprocess import Popen, PIPE, check_call
+from os.path import realpath, expandvars, join, isfile
 from difflib import ndiff
 
 from lettuce import *
@@ -28,6 +28,15 @@ def in_the_directory(step,cwd):
 @step('I run the command: (.*)')
 def run_the_command(step,cmd):
     p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=world.cwd)
+    world.stdout, world.stderr = p.communicate()
+    world.returncode = p.returncode
+    check_command()
+
+@step('I run the (.*) example')
+def run_the_command(step,example):
+    args = './' + example
+    p = Popen(args, shell=True, stdout=PIPE, stderr=PIPE,
+              cwd=world.example_build_dir)
     world.stdout, world.stderr = p.communicate()
     world.returncode = p.returncode
     check_command()
@@ -71,5 +80,7 @@ def hdf5_files_are_equal(step, fileA, fileB, relative):
     world.returncode = p.returncode
     check_command()
 
-def factorial(number):
-    return 1
+@step("I build the (.*) example")
+def build_example(step, target):
+    world.assert_examples_are_configured()
+    check_call(['make', target], cwd=world.example_build_dir)
