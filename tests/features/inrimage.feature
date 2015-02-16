@@ -8,6 +8,6 @@ Feature: the InrImage backward compatible class
         sz: 5
         sy: 4
         sx: 3
-        sc: 2
+        sv: 2
         ""
         """
