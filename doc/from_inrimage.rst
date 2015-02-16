@@ -10,6 +10,15 @@ Proving command line interface
 ------------------------------------------------------
 
 ------------------------------------------------------
+Creating image
+------------------------------------------------------
+
+.. doxygenfunction:: Heimdali::CreateImage
+
+The :cpp:func:`CreateImage <Heimdali::CreateImage>` function create an image in
+the temporary program memory, but does not do any persistant operation on the disk.
+
+------------------------------------------------------
 Read and writting image
 ------------------------------------------------------
 
