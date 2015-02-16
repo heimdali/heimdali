@@ -21,11 +21,8 @@ before_install:
   - hash -r
   - conda info -a
 
-install:
-  - export HEIMDALI_CPU_COUNT=2
-  - conda build --no-test conda-recipe
-
 script:
+  - conda build --no-test conda-recipe
   - conda install --use-local heimdali
   - git clone https://github.com/dfroger/heimdali-data
   - cd tests
