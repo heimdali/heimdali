@@ -93,7 +93,7 @@ def configure_example():
     if not isdir(world.example_build_dir):
         mkdir(world.example_build_dir)
     conda_env_path = get_active_conda_env_path()
-    args = 'cmake -DCMAK_PREFIX_PATH=%s ..' % (conda_env_path,)
+    args = 'cmake -DCMAKE_PREFIX_PATH=%s ..' % (conda_env_path,)
     check_call(args.split(), cwd=world.example_build_dir)
 
 @before.each_scenario
