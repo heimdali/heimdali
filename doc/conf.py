@@ -30,6 +30,7 @@ import os
 # ones.
 extensions = [
     'sphinx.ext.mathjax',
+    'breathe',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -328,3 +329,11 @@ epub_exclude_files = ['search.html']
 
 # If false, no index is generated.
 #epub_use_index = True
+
+breathe_projects = {"libheimdali": "../doxyxml/xml"}
+breathe_default_project = "libheimdali"
+
+breathe_domain_by_extension = {
+        'hxx': 'cpp',
+        'cxx': 'cpp',
+    }
