@@ -18,7 +18,7 @@ class ITK_ABI_EXPORT InrImage
 public:
     // typedef.
     typedef itk::VectorImage<PixelType, 3> ImageType;
-    typedef itk::ImageFileReader< InrImage<PixelType>::ImageType > ReaderType;
+    typedef itk::ImageFileReader<InrImage<PixelType>::ImageType> ReaderType;
     // Constructors.
     InrImage();
     InrImage(std::string filename);
@@ -26,18 +26,25 @@ public:
     void setRealz(int realz);
     int getRealz(void) const;
     int getDim(int dim) const;
+    PixelType* getData(void);
+    PixelType operator()(int ix, int iy, int iz=0, int iv=0) const;
     // Write methods.
     void openForWrite(void);
     // Read methods.
     void openForRead(void);
     void read( void);
-    void read( int start_plane);
-    void read( int start_plane, int size_plane);
+    void read( int iz);
+    void read( int iz, int nz);
 private:
     std::string m_filename;
+    PixelType* m_data;
     int m_realz; //! Number of buffered plane.
     typename ReaderType::Pointer m_reader;
-    int m_sz, m_sy, m_sx, m_sv;
+    int m_sz, m_sy, m_sx, m_sv, m_syxv, m_sxv;;
+    typename InrImage<PixelType>::ImageType::RegionType m_requestedRegion;
+    typename InrImage<PixelType>::ImageType::IndexType m_index;
+    typename InrImage<PixelType>::ImageType::SizeType m_size;
+    typename InrImage<PixelType>::ImageType::Pointer m_image;
 
 };
 

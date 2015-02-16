@@ -11,6 +11,7 @@ namespace Heimdali {
 template <typename PixelType>
 InrImage<PixelType>::InrImage():
     m_filename(""),
+    m_data(NULL),
     m_realz(1)
 {
 }
@@ -18,6 +19,7 @@ InrImage<PixelType>::InrImage():
 template <typename PixelType>
 InrImage<PixelType>::InrImage(std::string filename):
     m_filename(filename),
+    m_data(NULL),
     m_realz(1)
 {
 }
@@ -53,6 +55,20 @@ InrImage<PixelType>::getDim(int dim) const
   }
 }
 
+template <typename PixelType>
+PixelType*
+InrImage<PixelType>::getData(void)
+{
+    return m_data;
+}
+
+template <typename PixelType>
+PixelType
+InrImage<PixelType>::operator()(int ix, int iy, int iz, int iv) const
+{
+    return m_data[iz*m_syxv + iy*m_sxv + ix*m_sv + iv];
+}
+
 //======================================================================
 // Write methods.
 //======================================================================
@@ -83,23 +99,44 @@ InrImage<PixelType>::openForRead(void)
     this->m_sy = this->m_reader->GetImageIO()->GetDimensions(YD);
     this->m_sx = this->m_reader->GetImageIO()->GetDimensions(XD);
     this->m_sv = this->m_reader->GetImageIO()->GetNumberOfComponents();
+
+    this->m_index[YD] = 0;
+    this->m_index[XD] = 0;
+
+    this->m_size[YD] = m_sy;
+    this->m_size[XD] = m_sx;
+
+    this->m_syxv = this->m_sy * this->m_sx * this->m_sv;
+    this->m_sxv = this->m_sx * this->m_sv;
 }
 
+//! Read all planes. 
 template <typename PixelType>
 void
-read(void)
+InrImage<PixelType>::read(void)
 {
 }
 
+//! Read one plane
 template <typename PixelType>
 void
-read(int start_plane)
+InrImage<PixelType>::read(int iz)
 {
+    this->m_index[ZD] = iz;
+    this->m_size[ZD] = 1;
+    this->m_requestedRegion.SetIndex(this->m_index);
+    this->m_requestedRegion.SetSize(this->m_size);
+    this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
+    this->m_reader->Update();
+    this->m_image = this->m_reader->GetOutput();
+    this->m_data = this->m_image->GetBufferPointer();
+    this->m_realz = 1;
 }
 
+//! Read N planes.
 template <typename PixelType>
 void
-read(int start_plane, int size_plane)
+InrImage<PixelType>::read(int iz, int nz)
 {
 }
 

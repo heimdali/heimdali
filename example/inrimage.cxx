@@ -19,10 +19,28 @@ int main(int argc, char** argv)
     image.setRealz(1);
     image.openForRead(); 
 
-    cout << "sz: " << image.getDim(Heimdali::INR_ALONGZ) << endl;
-    cout << "sy: " << image.getDim(Heimdali::INR_ALONGY) << endl;
-    cout << "sx: " << image.getDim(Heimdali::INR_ALONGX) << endl;
-    cout << "sv: " << image.getDim(Heimdali::INR_ALONGV) << endl;
+    int sz = image.getDim(Heimdali::INR_ALONGZ);
+    int sy = image.getDim(Heimdali::INR_ALONGY);
+    int sx = image.getDim(Heimdali::INR_ALONGX);
+    int sv = image.getDim(Heimdali::INR_ALONGV);
+
+    cout << "sz: " << sz << endl;
+    cout << "sy: " << sy << endl;
+    cout << "sx: " << sx << endl;
+    cout << "sv: " << sv << endl;
+
+    int iz = 2;
+    image.read(iz);
+
+    for (int iy = 0 ; iy < sy ; ++iy) {
+        for (int ix = 0 ; ix < sx ; ++ix) {
+            cout << "image[" << iz << "," << iy << "," << ix << "] = ";
+            for (int iv = 0 ; iv < sv ; ++iv) {
+                cout << image(ix,iy,iz=0,iv=iv) << " ";
+            }
+            cout << endl;
+        }
+    }
 
     return 0;
 }
