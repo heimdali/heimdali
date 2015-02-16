@@ -32,10 +32,9 @@ def run_the_command(step,cmd):
     world.returncode = p.returncode
     check_command()
 
-@step('I run the (.*) example')
-def run_the_command(step,example):
-    args = './' + example
-    p = Popen(args, shell=True, stdout=PIPE, stderr=PIPE,
+@step('I run the example: (.*)')
+def run_the_command(step,cmd):
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE,
               cwd=world.example_build_dir)
     world.stdout, world.stderr = p.communicate()
     world.returncode = p.returncode
