@@ -63,11 +63,16 @@ Execute the functional tests:
 Writting documentation
 ====================================
 
-Install Sphinx_:
+
+Install Sphinx_ and Doxygen_, and the breathe_ extension:
 
 .. code-block:: bash
 
-    conda install sphinx
+    conda create -n heimdali-doc sphinx pip
+    source activate heimdali-doc
+    hash -r
+    sudo apt-get install doxygen
+    pip install breathe
 
 Build the documentation:
 
@@ -84,3 +89,5 @@ View the documentation:
     firefox _build/html/index.html
 
 .. _Sphinx: http://sphinx-doc.org/
+.. _Doxygen: www.doxygen.org/
+.. _breathe: https://breathe.readthedocs.org
