@@ -16,7 +16,10 @@ using namespace std;
 namespace Heimdali {
 
 typedef float PixelFloat;
+
+//! All images are 3-dimensional.
 const unsigned int ImageDimension = 3;
+
 typedef itk::VectorImage<PixelFloat, ImageDimension> ImageFloat;
 
 ImageFloat::RegionType
