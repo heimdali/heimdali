@@ -50,6 +50,27 @@ Creating image
 function to create an image in the temporary program memory. It does not do any
 persistant operation on the disk.
 
+For example:
+
+.. code-block:: bash
+
+    Heimdali::ImageFloat::Pointer image = Heimdali::CreateImage(5,5,5,2);
+
+create a image of 3-dimensional image with 5 planes, 5 rows and 5 columns,
+where is value is a vector of 2 floats. 
+
+The following code:
+
+.. code-block:: bash
+
+    Heimdali::ImageFloat::Pointer image = Heimdali::CreateImage(5,5);
+
+create a image of 3-dimensional image with 1 planes, 5 rows and 5 columns,
+where is value is a vector of 1 float.
+
+See the file :example:`createInputImage.cxx` for a running example.
+
+
 ------------------------------------------------------
 Read and writting image
 ------------------------------------------------------

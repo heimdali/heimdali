@@ -345,7 +345,9 @@ breathe_domain_by_extension = {
         'cxx': 'cpp',
     }
 
+github = 'https://github.com/dfroger/heimdali/blob/master/'
+
 extlinks = {
-    'libheimdali':
-        ('https://github.com/dfroger/heimdali/blob/master/libheimdali/%s', ''),
+    'libheimdali': (github+'/libheimdali/%s', ''),
+    'example': (github+'/example/%s', ''),
 }
