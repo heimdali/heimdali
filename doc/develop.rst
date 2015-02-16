@@ -64,15 +64,13 @@ Writting documentation
 ====================================
 
 
-Install Sphinx_ and Doxygen_, and the breathe_ extension:
+Install Sphinx_ and Doxygen_:
 
 .. code-block:: bash
 
-    conda create -n heimdali-doc sphinx pip
-    source activate heimdali-doc
-    hash -r
     sudo apt-get install doxygen
-    pip install breathe
+    conda create -n heimdali-doc sphinx
+    source activate heimdali-doc
 
 Build the documentation:
 
@@ -87,6 +85,9 @@ View the documentation:
 
     cd doc
     firefox _build/html/index.html
+
+Note that breathe_, a Sphinx extension, is already provided in
+`heimdali/doc/ext/breathe`.
 
 .. _Sphinx: http://sphinx-doc.org/
 .. _Doxygen: www.doxygen.org/
