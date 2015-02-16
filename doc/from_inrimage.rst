@@ -5,7 +5,7 @@ Converting INRimage simulation code to ITK
 Image definition
 ------------------------------------------------------
 
-`itkhelper.hxx` file defines the type of an image.
+The file :libheimdali:`heimdali/itkhelper.hxx` defines the type of an image.
 
 .. doxygentypedef:: Heimdali::PixelFloat
 

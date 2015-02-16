@@ -32,6 +32,7 @@ sys.path.insert(0, os.path.abspath('ext/'))
 extensions = [
     'sphinx.ext.mathjax',
     'breathe',
+    'sphinx.ext.extlinks',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -343,3 +344,8 @@ breathe_domain_by_extension = {
         'hxx': 'cpp',
         'cxx': 'cpp',
     }
+
+extlinks = {
+    'libheimdali':
+        ('https://github.com/dfroger/heimdali/blob/master/libheimdali/%s', ''),
+}
