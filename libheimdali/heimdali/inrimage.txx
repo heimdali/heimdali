@@ -122,6 +122,15 @@ template <typename PixelType>
 void
 InrImage<PixelType>::read(void)
 {
+    this->m_index[ZD] = 0;
+    this->m_size[ZD] = m_sz;
+    this->m_requestedRegion.SetIndex(this->m_index);
+    this->m_requestedRegion.SetSize(this->m_size);
+    this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
+    this->m_reader->Update();
+    this->m_image = this->m_reader->GetOutput();
+    this->m_data = this->m_image->GetBufferPointer();
+    this->m_realz = m_sz;
 }
 
 //! Read one plane
@@ -145,6 +154,15 @@ template <typename PixelType>
 void
 InrImage<PixelType>::read(int offsetz, int nz)
 {
+    this->m_index[ZD] = offsetz;
+    this->m_size[ZD] = nz;
+    this->m_requestedRegion.SetIndex(this->m_index);
+    this->m_requestedRegion.SetSize(this->m_size);
+    this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
+    this->m_reader->Update();
+    this->m_image = this->m_reader->GetOutput();
+    this->m_data = this->m_image->GetBufferPointer();
+    this->m_realz = nz;
 }
 
 }

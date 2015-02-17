@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include "heimdali/inrimage.hxx"
 #include "heimdali/itkhelper.hxx"
@@ -99,6 +100,27 @@ int main(int argc, char** argv)
     image.read(offsetz);
     if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
     if (! check_buffered_region("plane 0",image,ix,sx,iy,sy,offsetz,nz) ) return 1;
+
+    // Read planes 1, 2 and 3.
+    offsetz = 1;
+    nz = 3;
+    image.read(offsetz, nz);
+    ostringstream label;
+    for (iz = 0 ; iz < nz ; ++iz) {
+        label << "plane " << iz << " of (1,2,3)";
+        if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
+        if (! check_buffered_region(label.str(),image,ix,sx,iy,sy,offsetz,nz) ) return 1;
+    }
+
+    // Read all planes.
+    offsetz = 0;
+    nz = 5;
+    image.read();
+    for (iz = 0 ; iz < nz ; ++iz) {
+        label << "plane " << iz << " of all";
+        if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
+        if (! check_buffered_region(label.str(),image,ix,sx,iy,sy,offsetz,nz) ) return 1;
+    }
 
     cout << "All test passed successfully." << endl;
     return 0;
