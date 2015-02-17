@@ -29,14 +29,15 @@ int main(int argc, char** argv)
     cout << "sx: " << sx << endl;
     cout << "sv: " << sv << endl;
 
-    int iz = 2;
-    image.read(iz);
+    int offsetz = 2;
+    image.read(offsetz);
 
+    int iz = 0;
     for (int iy = 0 ; iy < sy ; ++iy) {
         for (int ix = 0 ; ix < sx ; ++ix) {
-            cout << "image[" << iz << "," << iy << "," << ix << "] = ";
+            cout << "image[" << offsetz+iz << "," << iy << "," << ix << "] = ";
             for (int iv = 0 ; iv < sv ; ++iv) {
-                cout << image(ix,iy,iz=0,iv=iv) << " ";
+                cout << image(ix,iy,iz=iz,iv=iv) << " ";
             }
             cout << endl;
         }

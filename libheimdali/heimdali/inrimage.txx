@@ -120,9 +120,9 @@ InrImage<PixelType>::read(void)
 //! Read one plane
 template <typename PixelType>
 void
-InrImage<PixelType>::read(int iz)
+InrImage<PixelType>::read(int offsetz)
 {
-    this->m_index[ZD] = iz;
+    this->m_index[ZD] = offsetz;
     this->m_size[ZD] = 1;
     this->m_requestedRegion.SetIndex(this->m_index);
     this->m_requestedRegion.SetSize(this->m_size);
@@ -136,7 +136,7 @@ InrImage<PixelType>::read(int iz)
 //! Read N planes.
 template <typename PixelType>
 void
-InrImage<PixelType>::read(int iz, int nz)
+InrImage<PixelType>::read(int offsetz, int nz)
 {
 }
 

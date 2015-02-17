@@ -5,19 +5,15 @@ export LIBRARY_PATH=""
 mkdir build
 cd build
 
-if [ ! -z "$HEIMDALI_CPU_COUNT" ]
+if [ -e "$RECIPE_DIR/travis.txt" ]
 then
-    MAKE_JOBS=$HEIMDALI_CPU_COUNT
-else
-    MAKE_JOBS=$CPU_COUNT
+    CPU_COUNT=2
 fi
-
-echo $MAKE_JOBS
 
 # CMake detect ITK_DIR as $PREFIX/lib/cmake/ITK-4.7
 cmake \
   -DCMAKE_INSTALL_PREFIX=$PREFIX \
   -DCMAKE_PREFIX_PATH=$PREFIX \
   ..
-make -j$MAKE_JOBS
+make -j$CPU_COUNT
 make install

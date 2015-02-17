@@ -21,8 +21,11 @@ before_install:
   - hash -r
   - conda info -a
 
-script:
+install:
+  - touch conda-recipe/travis.txt
   - conda build --no-test conda-recipe
+
+script:
   - conda install --use-local heimdali
   - git clone https://github.com/dfroger/heimdali-data
   - cd tests

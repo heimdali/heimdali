@@ -33,8 +33,8 @@ public:
     // Read methods.
     void openForRead(void);
     void read( void);
-    void read( int iz);
-    void read( int iz, int nz);
+    void read( int offsetz);
+    void read( int offsetz, int nz);
 private:
     std::string m_filename;
     PixelType* m_data;
