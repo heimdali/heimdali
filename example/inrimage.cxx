@@ -36,32 +36,53 @@ check_plane(ImageType& image, int offsetz, int iz, int sy, int sx, int sv)
 
 int main(int argc, char** argv)
 {
+    // Parse command line.
     if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " IMAGE-IN" << endl;
+        cerr << "Usage: " << argv[0] << " imtest_z5_y4_x3_c2.h5" << endl;
         return 1;
     }
     string filename = argv[1];
 
+    // Set up image for read.
     ImageType image = ImageType(filename);
     image.setRealz(1);
     image.openForRead(); 
 
+    // Read image dimensions
     int sz = image.getDim(Heimdali::INR_ALONGZ);
     int sy = image.getDim(Heimdali::INR_ALONGY);
     int sx = image.getDim(Heimdali::INR_ALONGX);
     int sv = image.getDim(Heimdali::INR_ALONGV);
+    if (sz != 5) {
+        cerr << "Expected 5 planes, but got " << sz << endl;
+        return 1;
+    }
+    if (sy != 4) {
+        cerr << "Expected 4 rows, but got " << sy << endl;
+        return 1;
+    }
+    if (sx != 3) {
+        cerr << "Expected 3 columns, but got " << sx << endl;
+        return 1;
+    }
+    if (sv != 2) {
+        cerr << "Expected 2 components, but got " << sv << endl;
+        return 1;
+    }
 
-    cout << "sz: " << sz << endl;
-    cout << "sy: " << sy << endl;
-    cout << "sx: " << sx << endl;
-    cout << "sv: " << sv << endl;
-
+    // Read plane 2.
     int offsetz = 2;
     int iz = 0;
     image.read(offsetz);
-
     if (! check_plane(image,offsetz,iz,sy,sx,sv))
         return 1;
 
+    // Read plane 0.
+    offsetz = 0;
+    image.read(offsetz);
+    if (! check_plane(image,offsetz,iz,sy,sx,sv))
+        return 1;
+
+    cout << "All test passed successfully." << endl;
     return 0;
 }
