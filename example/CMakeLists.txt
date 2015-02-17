@@ -56,7 +56,7 @@ include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
 
 ADD_EXECUTABLE(createInputImage createInputImage.cxx)
-ADD_EXECUTABLE(inrimage inrimage.cxx)
+ADD_EXECUTABLE(inrimage_read inrimage_read.cxx)
 
 TARGET_LINK_LIBRARIES(createInputImage 
   ${HEIMDALI_LIBRARY}
@@ -68,7 +68,7 @@ TARGET_LINK_LIBRARIES(createInputImage
   ${MINIMAL_TRACEBACK_LIBRARIES}
   )
 
-TARGET_LINK_LIBRARIES(inrimage 
+TARGET_LINK_LIBRARIES(inrimage_read 
   ${HEIMDALI_LIBRARY}
   ${ITKINRIMAGEIO_LIBRARY}
   ${INRIMAGE_LIBRARY}

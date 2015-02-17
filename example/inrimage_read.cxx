@@ -4,18 +4,27 @@
 #include "heimdali/inrimage.hxx"
 #include "heimdali/itkhelper.hxx"
 
+/* This example read the file imtest_z5_y4_x3_c2.h5 using the class InrImage,
+ * which API is designed to be compatiable with Inr++.
+ *
+ * This example test that InrImage is able to correctly read 1 or more plane
+ * in imtest_z5_y4_x3_c2.h5, without reading the full image.
+  */
+
 using namespace std;
 
 typedef float PixelType;
 typedef Heimdali::InrImage<PixelType> InrImageType;
 typedef itk::VectorImage<PixelType,3> ImageType;
 
+//! Pixels of imtest_z5_y4_x3_c2.h5 have been set with these values.
 PixelType
 imtest_value(int iz, int iy, int ix, int iv)
 {
     return iz*1000 + iy*100 + ix*10 + iv;
 }
 
+//! Check values of plane passed as argument are as expected.
 bool
 check_plane(InrImageType& image, int offsetz, int iz, int sy, int sx, int sv)
 {
@@ -37,6 +46,7 @@ check_plane(InrImageType& image, int offsetz, int iz, int sy, int sx, int sv)
     return true;
 }
 
+//! Check size of the image buffer allocated by ITK is as expected.
 bool
 check_buffered_region(string label, InrImageType& image,
                       int ix, int sx, int iy, int sy, int offsetz, int nz)
