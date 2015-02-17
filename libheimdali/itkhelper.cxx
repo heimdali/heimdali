@@ -36,7 +36,7 @@ CreateIndex(int ix, int iy, int iz)
 
 // Check image size
 void AssertImageSize(ImageFloat::Pointer image, string label, 
-  int nx, int ny, int nz, int nv)
+                     int nx, int ny, int nz, int nv)
 {
   ImageFloat::RegionType region;
   region = image->GetLargestPossibleRegion();

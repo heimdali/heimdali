@@ -28,6 +28,7 @@ public:
     int getDim(int dim) const;
     PixelType* getData(void);
     PixelType operator()(int ix, int iy, int iz=0, int iv=0) const;
+    typename InrImage<PixelType>::ImageType::Pointer getImage() const;
     // Write methods.
     void openForWrite(void);
     // Read methods.

@@ -69,6 +69,13 @@ InrImage<PixelType>::operator()(int ix, int iy, int iz, int iv) const
     return m_data[iz*m_syxv + iy*m_sxv + ix*m_sv + iv];
 }
 
+template <typename PixelType>
+typename InrImage<PixelType>::ImageType::Pointer
+InrImage<PixelType>::getImage() const
+{
+    return m_image;
+}
+
 //======================================================================
 // Write methods.
 //======================================================================

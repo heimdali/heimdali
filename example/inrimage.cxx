@@ -1,11 +1,13 @@
 #include <iostream>
 
 #include "heimdali/inrimage.hxx"
+#include "heimdali/itkhelper.hxx"
 
 using namespace std;
 
 typedef float PixelType;
-typedef Heimdali::InrImage<PixelType> ImageType;
+typedef Heimdali::InrImage<PixelType> InrImageType;
+typedef itk::VectorImage<PixelType,3> ImageType;
 
 PixelType
 imtest_value(int iz, int iy, int ix, int iv)
@@ -14,7 +16,7 @@ imtest_value(int iz, int iy, int ix, int iv)
 }
 
 bool
-check_plane(ImageType& image, int offsetz, int iz, int sy, int sx, int sv)
+check_plane(InrImageType& image, int offsetz, int iz, int sy, int sx, int sv)
 {
     PixelType value;
     PixelType expected_value;
@@ -34,6 +36,20 @@ check_plane(ImageType& image, int offsetz, int iz, int sy, int sx, int sv)
     return true;
 }
 
+bool
+check_buffered_region(string label, InrImageType& image,
+                      int ix, int sx, int iy, int sy, int offsetz, int nz)
+{
+    ImageType::RegionType expected_region = Heimdali::CreateRegion(ix,sx,iy,sy,offsetz,nz);
+    if (image.getImage()->GetBufferedRegion() != expected_region) {
+        cerr << label << ": "
+             << "buffered region is " << image.getImage()->GetBufferedRegion()
+             << ", but expected: " << expected_region << endl;
+        return false;
+    }
+    return true;
+}
+
 int main(int argc, char** argv)
 {
     // Parse command line.
@@ -44,7 +60,7 @@ int main(int argc, char** argv)
     string filename = argv[1];
 
     // Set up image for read.
-    ImageType image = ImageType(filename);
+    InrImageType image = InrImageType(filename);
     image.setRealz(1);
     image.openForRead(); 
 
@@ -72,16 +88,17 @@ int main(int argc, char** argv)
 
     // Read plane 2.
     int offsetz = 2;
-    int iz = 0;
+    int iz=0, iy=0, ix=0;
+    int nz=1;
     image.read(offsetz);
-    if (! check_plane(image,offsetz,iz,sy,sx,sv))
-        return 1;
+    if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
+    if (! check_buffered_region("plane 2",image,ix,sx,iy,sy,offsetz,nz) ) return 1;
 
     // Read plane 0.
     offsetz = 0;
     image.read(offsetz);
-    if (! check_plane(image,offsetz,iz,sy,sx,sv))
-        return 1;
+    if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
+    if (! check_buffered_region("plane 0",image,ix,sx,iy,sy,offsetz,nz) ) return 1;
 
     cout << "All test passed successfully." << endl;
     return 0;
