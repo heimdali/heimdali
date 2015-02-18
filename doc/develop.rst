@@ -1,6 +1,14 @@
 Build Heimdali in development mode
 ====================================
 
+Development mode is usefull for developer. It consist in iterating in the cycle:
+
+  - modify source code
+  - build
+  - run the test
+
+without having to run the `make install` step.
+
 Install dependencies
 --------------------
 
@@ -41,6 +49,12 @@ Build heidmali, asking CMake to search dependances in the Conda environment:
 | `..`                   | Path to Heimdali main CMakeLists.txt               |
 +------------------------+----------------------------------------------------+
 
+On Mac OS X your will need to install `/Developer/SDKs/MacOSX10.5`, and use it:
+
+.. code-block:: bash
+
+    export MACOSX_DEPLOYMENT_TARGET=10.5
+
 .. code-block:: bash
 
     cd heimdali
@@ -59,14 +73,15 @@ specified all paths to CMake.
 
     cd heimdali
     HEIMDALI_ROOT=$PWD
+    [ `uname` == 'Darwin' ] && EXT=dylib || EXT=so
     cd example
     mkdir build; cd build
     cmake \
         -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
         -DHEIMDALI_INCLUDE=$HEIMDALI_ROOT/libheimdali \
         -DITKINRIMAGEIO_INCLUDE=$HEIMDALI_ROOT/itkINRimageIO/include \
-        -DHEIMDALI_LIBRARY=$HEIMDALI_ROOT/build/libheimdali/libheimdali.so \
-        -DITKINRIMAGEIO_LIBRARY=$HEIMDALI_ROOT/build/itkINRimageIO/libitkINRImageIO.so
+        -DHEIMDALI_LIBRARY=$HEIMDALI_ROOT/build/libheimdali/libheimdali.$EXT \
+        -DITKINRIMAGEIO_LIBRARY=$HEIMDALI_ROOT/build/itkINRimageIO/libitkINRImageIO.$EXT \
         ..
 
 Run functional tests
