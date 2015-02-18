@@ -5,6 +5,7 @@
 #include "heimdali/error.hxx"
 
 #include "itkChangeRegionImageFilter.h"
+#include "itkRegionOfInterestImageFilter.h"
 
 static int ZD=2, YD=1, XD=0;
 
@@ -188,14 +189,44 @@ template <typename PixelType>
 void
 InrImage<PixelType>::write(int offsetz)
 {
+    this->write(offsetz, this->m_realz);
+}
+
+//! Write planes in memory between 0 and nz to file at offsetz
+template <typename PixelType>
+void
+InrImage<PixelType>::write(int offsetz, int nz)
+{
+    if (nz > this->m_realz) {
+        std::ostringstream msg;
+        msg << "Trying to write " << nz << " planes, but there are only "
+            << this->m_realz << " planes in memory";
+        throw(ValueError(msg.str()));
+    }
+
     typename InrImage<PixelType>::ImageType::IndexType index;
     typename InrImage<PixelType>::ImageType::SizeType size;
+
+    // Region of interest.
+    index[ZD] = 0;
+    index[YD] = 0;
+    index[XD] = 0;
+    size[ZD] = nz;
+    size[YD] = this->m_sy;
+    size[XD] = this->m_sx;
+    typename InrImage<PixelType>::ImageType::RegionType iregion(index,size);
+
+    // Set region of interest to buffered region.
+    typedef itk::RegionOfInterestImageFilter<InrImage<PixelType>::ImageType ,InrImage<PixelType>::ImageType > RegionOfInterestType;
+    typename RegionOfInterestType::Pointer regionOfInterest = RegionOfInterestType::New();
+    regionOfInterest->SetRegionOfInterest(iregion);
+    regionOfInterest->SetInput(this->m_image);
 
     // Buffered and IO regions.
     index[ZD] = offsetz;
     index[YD] = 0;
     index[XD] = 0;
-    size[ZD] = this->m_realz;
+    size[ZD] = nz;
     size[YD] = this->m_sy;
     size[XD] = this->m_sx;
     typename InrImage<PixelType>::ImageType::RegionType bregion(index,size);
@@ -229,27 +260,13 @@ InrImage<PixelType>::write(int offsetz)
     changeRegion->SetLargestPossibleRegion(lregion);
     changeRegion->SetBufferedRegion(bregion);
     changeRegion->SetOrigin(origin);
-    changeRegion->SetInput(this->m_image);
+    changeRegion->SetInput( regionOfInterest->GetOutput() );
     changeRegion->Update();
 
     // Update writer.
     this->m_writer->SetInput(changeRegion->GetOutput());
     this->m_writer->SetIORegion(ioregion);
     this->m_writer->Update();
-}
-
-//! Write planes in memory between 0 and nz to file at offsetz
-template <typename PixelType>
-void
-InrImage<PixelType>::write(int offsetz, int nz)
-{
-    if (nz > this->m_realz) {
-        std::ostringstream msg;
-        msg << "Trying to write " << nz << " planes, but there are only "
-            << this->m_realz << " planes in memory";
-        throw(ValueError(msg.str()));
-    }
-
 }
 
 //======================================================================

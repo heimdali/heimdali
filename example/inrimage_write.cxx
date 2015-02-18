@@ -42,6 +42,8 @@ check_buffered_region(string label, InrImageType& image,
     return true;
 }
 
+//! Write image to file, iterating on planes and holding in memory only one
+//  plane.
 bool
 write_one_plane_a_time(int sz, int sy, int sx, int sv, string filename)
 {
@@ -65,6 +67,7 @@ write_one_plane_a_time(int sz, int sy, int sx, int sv, string filename)
     return true;
 }
 
+//! Allocate and fill the full image, and write it in file.
 bool
 write_full_image(int sz, int sy, int sx, int sv, string filename)
 {
@@ -83,6 +86,41 @@ write_full_image(int sz, int sy, int sx, int sv, string filename)
 
     image.write();
     if (! check_buffered_region("full_image", image, 0, sx, 0, sy, 0, sz)) return false;
+    return true;
+}
+
+bool
+write_three_then_two_planes(int sz, int sy, int sx, int sv, string filename)
+{
+    int nz3 = 3;
+    int nz2 = 2;
+    InrImageType image = InrImageType(sx,sy,sz,sv);
+    image.setFilename(filename);
+    image.setRealz(nz3);
+    image.openForWrite();
+
+    // Write 3 planes.
+    int offsetz = 0;
+    for (int iz = 0 ; iz < nz3 ; ++iz) {
+    for (int iy = 0 ; iy < sy ; ++iy) {
+    for (int ix = 0 ; ix < sx ; ++ix) {
+    for (int iv = 0 ; iv < sv ; ++iv) {
+        image(ix,iy,iz,iv) = imtest_value(offsetz+iz,iy,ix,iv);
+    }}}}
+    image.write(offsetz);
+    if (! check_buffered_region("two_planes", image, 0, sx, 0, sy, 0, nz3)) return false;
+
+    // Write 2 last planes.
+    offsetz = nz3;
+    for (int iz = 0 ; iz < nz2 ; ++iz) {
+    for (int iy = 0 ; iy < sy ; ++iy) {
+    for (int ix = 0 ; ix < sx ; ++ix) {
+    for (int iv = 0 ; iv < sv ; ++iv) {
+        image(ix,iy,iz,iv) = imtest_value(offsetz+iz,iy,ix,iv);
+    }}}}
+    image.write(offsetz,nz2);
+    if (! check_buffered_region("three_planes", image, 0, sx, 0, sy, 0, 3)) return false;
+
     return true;
 }
 
@@ -105,6 +143,9 @@ int main(int argc, char** argv)
 
     filename = "inrimage_write_1." + ext;
     if (! write_full_image(sz,sy,sx,sv,filename)) return 1;
+
+    filename = "inrimage_write_2." + ext;
+    if (! write_three_then_two_planes(sz,sy,sx,sv,filename)) return 1;
 
     return 0;
 }

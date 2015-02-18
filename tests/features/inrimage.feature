@@ -9,3 +9,4 @@ Feature: the InrImage backward compatible class
         When I run the example: ./inrimage_write h5
         Then the HDF5 files ../example/build/inrimage_write_0.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 are equal
         Then the HDF5 files ../example/build/inrimage_write_1.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 are equal
+        Then the HDF5 files ../example/build/inrimage_write_2.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 are equal
