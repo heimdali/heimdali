@@ -34,7 +34,7 @@ Build heidmali, asking CMake to search dependances in the Conda environment:
 +------------------------+----------------------------------------------------+
 | variable               |    meaning                                         |
 +========================+====================================================+
-| `CONDA_ENV_PATH`       | For example, `~/miniconda/envs/heimdali`           |
+| `CONDA_ENV_PATH`       | For example, `~/miniconda/envs/heimdali-dev`       |
 +------------------------+----------------------------------------------------+
 | `CMAKE_PREFIX_PATH`    | Where `CMake` will search for dependent libraries  |
 +------------------------+----------------------------------------------------+
@@ -52,8 +52,8 @@ Configure examples
 --------------------
 
 As before, the Conda environment is used. Moreover, because Heimdali has been
-built in `heidamli/build` and is not installed (development mode), we need to
-specified all the pathes to CMake.
+built in `heimdali/build` and is not installed (development mode), we need to
+specified all paths to CMake.
 
 .. code-block:: bash
 
