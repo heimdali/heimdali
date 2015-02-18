@@ -1,3 +1,5 @@
+#include <string>
+
 #include "heimdali/inrimage.hxx"
 #include "heimdali/itkhelper.hxx"
 
@@ -40,18 +42,9 @@ check_buffered_region(string label, InrImageType& image,
     return true;
 }
 
-int main(int argc, char** argv)
+bool
+write_one_plane_a_time(int sz, int sy, int sx, int sv, string filename)
 {
-    // Parse command line.
-    if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " IMAGE-OUT" << endl;
-        return 1;
-    }
-    string filename = argv[1];
-
-
-    // Set up image for write.
-    int sz=5, sy=4, sx=3, sv=2;
     int nz = 1;
     InrImageType image = InrImageType(sx,sy,sz,sv);
     image.setFilename(filename);
@@ -67,8 +60,27 @@ int main(int argc, char** argv)
             image(ix,iy,iz,iv) = imtest_value(offsetz+iz,iy,ix,iv);
         }}}
         image.write(offsetz);
-        check_buffered_region("image", image, 0, sx, 0, sy, 0, nz);
+        if (! check_buffered_region("one_plane_a_time", image, 0, sx, 0, sy, 0, nz)) return false;
     }
+    return true;
+}
+
+int main(int argc, char** argv)
+{
+    // Parse command line.
+    if (argc != 2) {
+        cerr << "Usage: " << argv[0] << " IMAGE-OUT-EXTENSION" << endl;
+        cerr << "    example: " << argv[0] << " h5" << endl;
+        cerr << "    will prodcude files: inrimage_write_0.h5, inrimage_write_1.h5, inrimage_write_2.h5" << endl;
+        return 1;
+    }
+    string ext = argv[1];
+
+    // Set up image for write.
+    int sz=5, sy=4, sx=3, sv=2;
+
+    string filename = "inrimage_write_0." + ext;
+    if (! write_one_plane_a_time(sz,sy,sx,sv,filename)) return 1;
 
     return 0;
 }
