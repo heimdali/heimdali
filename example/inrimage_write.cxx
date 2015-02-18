@@ -53,7 +53,7 @@ write_one_plane_a_time(int sz, int sy, int sx, int sv, string filename)
 
     // Write to disk plane by plane.
     int iz=0;
-    for (int offsetz=0 ; offsetz<sz ; ++offsetz) {
+    for (int offsetz = 0 ; offsetz < sz ; ++offsetz) {
         for (int iy = 0 ; iy < sy ; ++iy) {
         for (int ix = 0 ; ix < sx ; ++ix) {
         for (int iv = 0 ; iv < sv ; ++iv) {
@@ -62,6 +62,27 @@ write_one_plane_a_time(int sz, int sy, int sx, int sv, string filename)
         image.write(offsetz);
         if (! check_buffered_region("one_plane_a_time", image, 0, sx, 0, sy, 0, nz)) return false;
     }
+    return true;
+}
+
+bool
+write_full_image(int sz, int sy, int sx, int sv, string filename)
+{
+    InrImageType image = InrImageType(sx,sy,sz,sv);
+    image.setFilename(filename);
+    image.setRealz(sz);
+    image.openForWrite();
+
+    // Write to disk plane by plane.
+    for (int iz = 0 ; iz < sz ; ++iz) {
+    for (int iy = 0 ; iy < sy ; ++iy) {
+    for (int ix = 0 ; ix < sx ; ++ix) {
+    for (int iv = 0 ; iv < sv ; ++iv) {
+        image(ix,iy,iz,iv) = imtest_value(iz,iy,ix,iv);
+    }}}}
+
+    image.write();
+    if (! check_buffered_region("full_image", image, 0, sx, 0, sy, 0, sz)) return false;
     return true;
 }
 
@@ -81,6 +102,9 @@ int main(int argc, char** argv)
 
     string filename = "inrimage_write_0." + ext;
     if (! write_one_plane_a_time(sz,sy,sx,sv,filename)) return 1;
+
+    filename = "inrimage_write_1." + ext;
+    if (! write_full_image(sz,sy,sx,sv,filename)) return 1;
 
     return 0;
 }

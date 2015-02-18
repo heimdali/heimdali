@@ -179,6 +179,8 @@ template <typename PixelType>
 void
 InrImage<PixelType>::write(void)
 {
+    this->m_writer->SetInput(this->m_image);
+    this->m_writer->Update();
 }
 
 //! Write all plane in memory to file at offsetz.
