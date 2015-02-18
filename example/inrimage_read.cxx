@@ -40,7 +40,7 @@ check_plane(InrImageType& image, int offsetz, int iz, int sy, int sx, int sv)
     for (int iy = 0 ; iy < sy ; ++iy) {
     for (int ix = 0 ; ix < sx ; ++ix) {
     for (int iv = 0 ; iv < sv ; ++iv) {
-        value = image(ix,iy,iz=iz,iv=iv);
+        value = image(ix,iy,iz,iv);
         expected_value = imtest_value(offsetz+iz,iy,ix,iv);
         if (value != expected_value) {
             cerr << "ERROR: image[" << iz << "," << iy << "," 
