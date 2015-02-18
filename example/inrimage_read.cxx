@@ -7,6 +7,13 @@
 /* This example read the file imtest_z5_y4_x3_c2.h5 using the class InrImage,
  * which API is designed to be compatiable with Inr++.
  *
+ * The file imtest_z5_y4_x3_c2.h5 has size:
+ *     nz = 5
+ *     ny = 5
+ *     nx = 3
+ *     nv = 2
+ *  and pixel values are : iz*1000 + iy*100 + ix*10 + iv
+ *
  * This example test that InrImage is able to correctly read 1 or more plane
  * in imtest_z5_y4_x3_c2.h5, without reading the full image.
   */

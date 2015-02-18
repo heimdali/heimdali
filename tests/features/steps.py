@@ -33,7 +33,7 @@ def run_the_command(step,cmd):
     check_command()
 
 @step('I run the example: (.*)')
-def run_the_command(step,cmd):
+def run_the_example(step,cmd):
     p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE,
               cwd=world.example_build_dir)
     world.stdout, world.stderr = p.communicate()
