@@ -1,6 +1,9 @@
 Build Heimdali in development mode
 ====================================
 
+Install dependencies
+--------------------
+
 Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
 
 .. code-block:: bash
@@ -12,6 +15,7 @@ For the rest of the section, we need to activate the conda environment, and
 set the CONDA_ENV_PATH environment variable:
 
 .. code-block:: bash
+
     source activate heimdali-dev
     hash -r
     CONDA_ENV_PATH=$(conda info -e | grep '*' | tr -s ' ' | cut -d" " -f3)
@@ -22,12 +26,8 @@ Install lettuce:
 
     pip install lettuce
 
-Get Heimdali data files, and set `HEIMDALI_DATA_DIR`:
-
-.. code-block:: bash
-
-    git clone https://github.com/dfroger/heimdali-data
-    export HEIMDALI_DATA_DIR=/path/to/heimdali-data
+Build Heimdali
+--------------------
 
 Build heidmali, asking CMake to search dependances in the Conda environment:
 
@@ -42,16 +42,23 @@ Build heidmali, asking CMake to search dependances in the Conda environment:
 +------------------------+----------------------------------------------------+
 
 .. code-block:: bash
+
+    cd heimdali
     mkdir build; cd build
     cmake -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH ..
     make
 
-Build examples. As before, the Conda environment is used. Moreover, because Heimdali
-has been built in `heidamli/build` and is not installed (development mode), we
-need to specified all the pathes to CMake.
+Configure examples
+--------------------
+
+As before, the Conda environment is used. Moreover, because Heimdali has been
+built in `heidamli/build` and is not installed (development mode), we need to
+specified all the pathes to CMake.
 
 .. code-block:: bash
 
+    cd heimdali
+    HEIMDALI_ROOT=$PWD
     cd example
     mkdir build; cd build
     cmake \
@@ -62,14 +69,24 @@ need to specified all the pathes to CMake.
         -DITKINRIMAGEIO_LIBRARY=$HEIMDALI_ROOT/build/itkINRimageIO/libitkINRImageIO.so
         ..
 
+Run functional tests
+--------------------
+
+Get Heimdali data files, and set `HEIMDALI_DATA_DIR`:
+
+.. code-block:: bash
+
+    git clone https://github.com/dfroger/heimdali-data
+    export HEIMDALI_DATA_DIR=/path/to/heimdali-data
+
 Add path to the built executables:
 
 .. code-block:: bash
 
-    cd build
-    export PATH=$PWD/cmd:$PATH
+    cd heimdali
+    export PATH=$PWD/build/cmd:$PATH
 
-Execute the functional tests:
+Run the functional tests:
 
 .. code-block:: bash
 
