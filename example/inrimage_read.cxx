@@ -1,21 +1,23 @@
 #include <iostream>
 #include <sstream>
 
+#include <itkINRImageIOFactory.h>
+
 #include "heimdali/inrimage.hxx"
 #include "heimdali/itkhelper.hxx"
 
-/* This example read the file imtest_z5_y4_x3_c2.h5 using the class InrImage,
- * which API is designed to be compatiable with Inr++.
+/* This example reads the file imtest_z5_y4_x3_c2.[h5|inr] using the
+ * class InrImage, which API is designed to be compatiable with Inr++.
  *
- * The file imtest_z5_y4_x3_c2.h5 has size:
+ * Image in file imtest_z5_y4_x3_c2.[h5|inr] has size:
  *     nz = 5
  *     ny = 5
  *     nx = 3
  *     nv = 2
- *  and pixel values are : iz*1000 + iy*100 + ix*10 + iv
+ * and pixel values are : iz*1000 + iy*100 + ix*10 + iv
  *
- * This example test that InrImage is able to correctly read 1 or more plane
- * in imtest_z5_y4_x3_c2.h5, without reading the full image.
+ * This example tests that InrImage is able to correctly read 1 or more plane
+ * in imtest_z5_y4_x3_c2.[h5|inr], without reading the full image.
   */
 
 using namespace std;
@@ -76,6 +78,9 @@ int main(int argc, char** argv)
         return 1;
     }
     string filename = argv[1];
+
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
     // Set up image for read.
     InrImageType image = InrImageType(filename);
