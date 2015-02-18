@@ -35,3 +35,14 @@
 0.5.1:
   fix #2: On OSX, can't write .inr image
   fix #3: Piped commands don't work on OS X
+
+0.6.0:
+  Started InrImage class, compatible with Inr++
+    - add example for the 3 read methods
+    - add example for the 1 of the 3 write methods
+  Now depend on itk-heimdali ==4.7.0.1, which HDF5 module 
+    support both streaming and pasting.
+  DOC: update developer documentation
+  DOC: add doxygen support using breathe
+  DOC: started itkhelper documentation
+  FT: fix number of cores used on travis
