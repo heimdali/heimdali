@@ -5,6 +5,7 @@
 #include "itkRegionOfInterestImageFilter.h"
 #include "itkHDF5ImageIO.h"
 #include "itkChangeRegionImageFilter.h"
+#include <itkHDF5ImageIO.h>
 
 #include "heimdali/itkhelper.hxx"
 #include "heimdali/cli.hxx"
@@ -141,8 +142,11 @@ int main(int argc, char** argv)
     changeRegion->SetInput( reader->GetOutput() );
 
     // writer.
+    itk::HDF5ImageIO::Pointer HDF5io = itk::HDF5ImageIO::New();
+    HDF5io->PastingToExistingFile();
     typedef itk::ImageFileWriter<Heimdali::ImageFloat>  WriterType;
     WriterType::Pointer writer = WriterType::New();
+    writer->SetImageIO(HDF5io);
     writer->SetFileName(outputFilenameArg.getValue());
 
     // ioregion

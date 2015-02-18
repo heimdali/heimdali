@@ -15,12 +15,12 @@ requirements:
   build:
     - cmake
     - tclap
-    - itk-heimdali
+    - itk-heimdali ==4.7.0.1
     - h5unixpipe
     - libinrimage
   run:
     - tclap
-    - itk-heimdali
+    - itk-heimdali ==4.7.0.1
     - h5unixpipe
     - libinrimage
 
