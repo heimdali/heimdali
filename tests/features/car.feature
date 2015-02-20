@@ -1,4 +1,4 @@
-Feature: The 'car' command line tool.
+Feature: car
 
     Scenario: Invoke car
         When I run the command: car --help

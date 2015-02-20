@@ -1,4 +1,4 @@
-Feature: The 'lo' command line tool.
+Feature: lo
 
     Scenario: Invoke lo
         When I run the command: lo --help

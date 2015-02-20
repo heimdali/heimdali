@@ -1,4 +1,4 @@
-Feature: The 'so' command line tool.
+Feature: so
 
     Scenario: Invoke so
         When I run the command: so --help

@@ -1,4 +1,4 @@
-Feature: The 'tpr' command line tool.
+Feature: tpr
 
     Scenario: Invoke tpr
         When I run the command: tpr --help

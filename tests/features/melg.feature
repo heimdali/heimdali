@@ -1,4 +1,4 @@
-Feature: The 'melg' command line tool.
+Feature: melg
 
     Scenario: Invoke melg
         When I run the command: melg --help

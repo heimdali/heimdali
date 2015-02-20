@@ -1,4 +1,4 @@
-Feature: The 'di' command line tool.
+Feature: di
 
     Scenario: Invoke di
         When I run the command: di --help

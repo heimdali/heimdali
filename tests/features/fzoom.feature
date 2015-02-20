@@ -1,4 +1,4 @@
-Feature: The 'fzoom' command line tool.
+Feature: fzoom
 
     Scenario: Invoke fzoom
         When I run the command: fzoom --help

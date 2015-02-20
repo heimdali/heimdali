@@ -1,4 +1,4 @@
-Feature: The 'ra' command line tool.
+Feature: ra
 
     Scenario: Invoke ra
         When I run the command: ra --help

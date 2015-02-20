@@ -1,4 +1,4 @@
-Feature: The 'ical' command line tool.
+Feature: ical
 
     Scenario: Invoke ical
         When I run the command: ical --help

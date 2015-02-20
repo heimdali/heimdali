@@ -1,4 +1,4 @@
-Feature: The 'raz' command line tool.
+Feature: raz
 
     Scenario: Invoke raz
         When I run the command: raz --help

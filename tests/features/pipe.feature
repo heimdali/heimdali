@@ -1,4 +1,4 @@
-Feature: Chain commands with unix pipes.
+Feature: pipe
 
     Scenario: ical reads from stdin
         When I run the command: cat $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 | ical -

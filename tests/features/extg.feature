@@ -1,4 +1,4 @@
-Feature: The 'extg' command line tool.
+Feature: extg
 
     Scenario: Invoke extg
         When I run the command: extg --help

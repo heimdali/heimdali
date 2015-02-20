@@ -1,4 +1,4 @@
-Feature: The 'mu' command line tool.
+Feature: mu
 
     Scenario: Invoke mu
         When I run the command: mu --help

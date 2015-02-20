@@ -1,4 +1,4 @@
-Feature: Convert images between HDF5 and INRimage format
+Feature: inrtoh5
 
     Scenario: Invoke h5toinr
         When I run the command: h5toinr --help

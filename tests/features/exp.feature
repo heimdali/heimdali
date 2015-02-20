@@ -1,4 +1,4 @@
-Feature: The 'exp' command line tool.
+Feature: exp
 
     Scenario: Invoke exp
         When I run the command: exp --help

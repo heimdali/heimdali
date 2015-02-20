@@ -1,9 +1,8 @@
-Feature: The 'bi' command line tool.
+Feature: bi
 
     Scenario: Invoke bi
         When I run the command: bi --help
         Then I see the line in standard output: Add a constant to an image
-
 
     Scenario: Add 1 to each pixel
         When I run the command: bi -n 1 -i $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 -o bi_out.h5

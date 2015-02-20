@@ -1,4 +1,4 @@
-Feature: The 'ad' command line tool.
+Feature: ad
 
     Scenario: Invoke ad
         When I run the command: ad --help

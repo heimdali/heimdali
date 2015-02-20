@@ -1,6 +1,7 @@
 from subprocess import Popen, PIPE, check_call
 from os.path import realpath, expandvars, join, isfile
 from difflib import ndiff
+import os
 
 from lettuce import *
 
@@ -19,23 +20,27 @@ def check_stdout(actual, expected):
 
 @step('I am in the heimdali data directory')
 def in_the_data_directory(step):
-    world.cwd = world.data_dir
+    os.chdir(world.data_dir)
 
-@step('I am in directory (.*)')
-def in_the_directory(step,cwd):
-    world.cwd = realpath( expandvars(cwd) )
+def invoke_from(cmd_string, path):
+    """Prefix executable in cmd_string with path"""
+    cmd_list = cmd_string.split()
+    executable = cmd_list[0]
+    executable = join(path, executable)
+    cmd_list[0] = executable
+    return ' '.join(cmd_list)
 
 @step('I run the command: (.*)')
 def run_the_command(step,cmd):
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, cwd=world.cwd)
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
     world.stdout, world.stderr = p.communicate()
     world.returncode = p.returncode
     check_command()
 
 @step('I run the example: (.*)')
 def run_the_example(step,cmd):
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE,
-              cwd=world.example_build_dir)
+    cmd = invoke_from(cmd, world.example_build_dir)
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
     world.stdout, world.stderr = p.communicate()
     world.returncode = p.returncode
     check_command()

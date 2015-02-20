@@ -1,4 +1,4 @@
-Feature: The 'sc' command line tool.
+Feature: sc
 
     Scenario: Invoke sc
         When I run the command: sc --help

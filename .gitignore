@@ -12,3 +12,5 @@ _build/
 install/
 
 doxyxml/xml/
+
+tests/workdir

@@ -1,4 +1,4 @@
-Feature: The 'max' command line tool.
+Feature: max
 
     Scenario: Invoke max
         When I run the command: max --help

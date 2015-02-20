@@ -1,4 +1,4 @@
-Feature: The 'par' command line tool.
+Feature: par
 
     Scenario: Invoke par
         When I run the command: par --help

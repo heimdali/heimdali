@@ -1,4 +1,4 @@
-Feature: Change pixel type of image
+Feature: cco
 
     Scenario: Invoke cco
         When I run the command: cco --help

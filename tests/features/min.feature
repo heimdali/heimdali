@@ -1,4 +1,4 @@
-Feature: The 'min' command line tool.
+Feature: min
 
     Scenario: Invoke min
         When I run the command: min --help

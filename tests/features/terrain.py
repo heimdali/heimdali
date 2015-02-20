@@ -4,9 +4,11 @@ from os.path import dirname, realpath, join, expanduser, isdir, isfile, normpath
 from os import getenv, mkdir
 from subprocess import check_output, check_call
 import json
+import shutil
+import os
 
 def get_active_conda_env_path():
-    """get path to a conda environment"""
+    """Path to the active conda environment"""
 
     args = 'conda info --json'.split()
 
@@ -22,7 +24,7 @@ def get_active_conda_env_path():
     return realpath(normpath(active_env_path))
 
 def get_data_dir():
-    """ Heimdali-data githrepository """
+    """Path to heimdali-data git repository"""
     data_dir = getenv('HEIMDALI_DATA_DIR')
     must_contain = 'imtest_z5_y4_x3_c2.h5'
 
@@ -50,7 +52,7 @@ def get_data_dir():
     return data_dir
 
 def get_invocation_dir():
-    """ Directory from which lettuce is invoked, ie heimdali/tests """
+    """Directory from where lettuce is invoked, ie heimdali/tests"""
     this_script_dir = dirname(realpath(__file__))
     fullpath = lambda path: realpath(join(this_script_dir,path))
     # Directory heimdali/tests from where lettuce is invoked.
@@ -58,19 +60,18 @@ def get_invocation_dir():
     return invocation_dir
 
 def get_heimdali_root():
-    """ heimdali git repository root directory """
+    """Path to heimdali Git repository root directory"""
     invocation_dir = get_invocation_dir()
     return realpath(join(invocation_dir, '..'))
 
 def get_example_dir():
-    """ heimdali/example directory """
+    """heimdali/example directory"""
     heimdali_root = get_heimdali_root()
     return realpath(join(heimdali_root, 'example'))
 
 @before.all
 def setup_directories():
     world.data_dir = get_data_dir()
-    world.cwd = get_invocation_dir()
     world.example_dir = get_example_dir()
     world.example_build_dir = join(world.example_dir, 'build')
 
@@ -96,6 +97,22 @@ def configure_example():
     args = 'cmake -DCMAKE_PREFIX_PATH=%s ..' % (conda_env_path,)
     check_call(args.split(), cwd=world.example_build_dir)
 
+@before.all
+def setup_root_workdir():
+    """Clean and/or create root workdir for all tests"""
+    invocation_dir = get_invocation_dir()
+    root_workdir = join(invocation_dir, 'workdir')
+    if isdir(root_workdir):
+        shutil.rmtree(root_workdir)
+    mkdir(root_workdir)
+    world.root_workdir = root_workdir
+
 @before.each_scenario
-def setup_cwd_to_invocation_dir(scenario):
-    world.cwd = get_invocation_dir()
+def move_to_workdir(scenario):
+    os.chdir(world.workdir)
+
+@before.each_feature
+def setup_feature_workdir(feature):
+    """Create workdir for this feature"""
+    world.workdir = join(world.root_workdir, feature.name)
+    mkdir(world.workdir)

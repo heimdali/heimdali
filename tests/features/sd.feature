@@ -1,4 +1,4 @@
-Feature: The 'sd' command line tool.
+Feature: sd
 
     Scenario: Invoke sd
         When I run the command: sd --help
