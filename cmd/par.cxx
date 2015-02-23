@@ -144,7 +144,7 @@ int main(int argc, char** argv)
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
     // Print informations about images.
-    for (int ifile=0 ; ifile < opt.inputFilenames.size() ; ifile++) {
+    for (unsigned int ifile=0 ; ifile < opt.inputFilenames.size() ; ifile++) {
         ImageIOBase::Pointer imageio = read_informations(opt.inputFilenames[ifile]);
         read_informations(opt.inputFilenames[ifile]);
         print_informations(imageio,opt);

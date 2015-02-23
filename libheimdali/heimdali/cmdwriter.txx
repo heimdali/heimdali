@@ -1,3 +1,4 @@
+#include "heimdali/itkhelper.hxx"
 #include "heimdali/cmdwriter.hxx"
 
 using namespace std;
@@ -37,7 +38,6 @@ CmdWriterToFile<ImageType>::CmdWriterToFile(string filename)
 template <typename ImageType>
 void CmdWriterToFile<ImageType>::Write(typename ImageType::Pointer image)
 {
-    size_t ZD=2, YD=1, XD=0;
     typename ImageType::SizeType size = image->GetBufferedRegion().GetSize();
     typename ImageType::IndexType index = image->GetBufferedRegion().GetIndex();
 
@@ -83,7 +83,6 @@ void CmdWriterToStdout<ImageType>::Write(typename ImageType::Pointer image)
     image->Update();
     typename ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
     typename ImageType::IndexType index = image->GetBufferedRegion().GetIndex();
-    size_t ZD=2, YD=1, XD=0;
 
     // Set region of interest to buffered region.
     typedef itk::RegionOfInterestImageFilter< ImageType, ImageType > RegionOfInterestType;
@@ -93,12 +92,12 @@ void CmdWriterToStdout<ImageType>::Write(typename ImageType::Pointer image)
     regionOfInterest->Update();
 
     // Add metadata.
-    itk::Array<size_t> sz_sy_iz_iy(4);
+    itk::Array<unsigned int> sz_sy_iz_iy(4);
     sz_sy_iz_iy.SetElement(0, size[ZD]);
     sz_sy_iz_iy.SetElement(1, size[YD]);
     sz_sy_iz_iy.SetElement(2, index[ZD]);
     sz_sy_iz_iy.SetElement(3, index[YD]);
-    itk::EncapsulateMetaData< itk::Array<size_t> >(dictionary,"sz_sy_iz_iy",sz_sy_iz_iy);
+    itk::EncapsulateMetaData< itk::Array<unsigned int> >(dictionary,"sz_sy_iz_iy",sz_sy_iz_iy);
     regionOfInterest->GetOutput()->SetMetaDataDictionary(dictionary);
 
     // Write to standard output.

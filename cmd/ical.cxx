@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 
     // Images
     const unsigned int Dimension = 3;
-    int nz,ny,nx,nc;
+    unsigned int nz,ny,nx,nc;
     typedef itk::Image<PixelType, Dimension> ScalarImageType;
     typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
     VectorImageType::Pointer vectorImage;
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 
     typedef Heimdali::CmdReader<VectorImageType> CmdReaderType;
 
-    for (int ifile=0 ; ifile<inputFilenames.size() ; ifile++) {
+    for (unsigned int ifile=0 ; ifile<inputFilenames.size() ; ifile++) {
 
         CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, inputFilenames[ifile]);
         cmdreader->next_iteration();
@@ -122,11 +122,11 @@ int main(int argc, char** argv)
         // TODO: implement itk::StatisticsImageFilter for VectorImage, so we can
         // compute stats effecently, without reorganizing memory into nc Images.
 
-        for (int ic=0, istat=0 ; ic<nc ; ic++)
+        for (unsigned int ic=0 ; ic<nc ; ic++)
         {
-             for (int iz=0 ; iz<nz ; iz++) { index[2] = iz;
-             for (int iy=0 ; iy<ny ; iy++) { index[1] = iy;
-             for (int ix=0 ; ix<nx ; ix++) { index[0] = ix;
+             for (unsigned int iz=0 ; iz<nz ; iz++) { index[2] = iz;
+             for (unsigned int iy=0 ; iy<ny ; iy++) { index[1] = iy;
+             for (unsigned int ix=0 ; ix<nx ; ix++) { index[0] = ix;
                  scalarImage->SetPixel(index, vectorImage->GetPixel(index)[ic] );
              }}}
              scalarImage->Modified(); // SetPixel doesn't update the modified time.

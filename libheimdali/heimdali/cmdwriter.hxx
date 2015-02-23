@@ -29,13 +29,13 @@ class ITK_ABI_EXPORT CmdWriter
         virtual void Write(typename ImageType::Pointer image) = 0;
         virtual void Update() = 0;
     protected:
-        size_t m_Dimension;
-        size_t m_nlines_per_loop;
+        unsigned int m_Dimension;
+        unsigned int m_nlines_per_loop;
         bool m_is_complete;
         typename WriterType::Pointer m_writer;
-        size_t m_iz, m_iy, m_ix;
-        size_t m_nz, m_ny, m_nx;
-        size_t m_sz, m_sy, m_sx, m_sc;
+        unsigned int m_iz, m_iy, m_ix;
+        unsigned int m_nz, m_ny, m_nx;
+        unsigned int m_sz, m_sy, m_sx, m_sc;
 };
 
 template <typename ImageType>
@@ -65,7 +65,6 @@ class ITK_ABI_EXPORT CmdWriterToStdout: public CmdWriter<ImageType>
         void Write(typename ImageType::Pointer image);
         void Update(){};
     private:
-        size_t m_tata;
         hid_t m_fileimage_id; 
         MTB_T* m_traceback;
         H5::H5File* m_fileimage;

@@ -4,9 +4,11 @@ namespace Heimdali {
 
 
 ImageFloat::RegionType
-CreateRegion(int ix, int nx, int iy, int ny, int iz, int nz)
+CreateRegion(unsigned int ix, unsigned int nx,
+             unsigned int iy, unsigned int ny,
+             unsigned int iz, unsigned int nz)
 {
-   int XD=0, YD=1, ZD=2;
+   unsigned int XD=0, YD=1, ZD=2;
 
    Heimdali::ImageFloat::RegionType::IndexType start;
    Heimdali::ImageFloat::RegionType::SizeType size;
@@ -23,9 +25,9 @@ CreateRegion(int ix, int nx, int iy, int ny, int iz, int nz)
 }
 
 ImageFloat::RegionType::IndexType
-CreateIndex(int ix, int iy, int iz)
+CreateIndex(unsigned int ix, unsigned int iy, unsigned int iz)
 {
-  int XD=0, YD=1, ZD=2;
+  unsigned int XD=0, YD=1, ZD=2;
 
   Heimdali::ImageFloat::RegionType::IndexType index;
   index[XD] = ix;
@@ -36,7 +38,8 @@ CreateIndex(int ix, int iy, int iz)
 
 // Check image size
 void AssertImageSize(ImageFloat::Pointer image, string label, 
-                     int nx, int ny, int nz, int nv)
+                     unsigned int nx, unsigned int ny,
+                     unsigned int nz, unsigned int nv)
 {
   ImageFloat::RegionType region;
   region = image->GetLargestPossibleRegion();
@@ -69,7 +72,8 @@ void AssertImageSize(ImageFloat::Pointer image, string label,
 }
 
 //Create image.
-ImageFloat::Pointer CreateImage(int nx, int ny, int nz, int nv)
+ImageFloat::Pointer CreateImage(unsigned int nx, unsigned int ny,
+                                unsigned int nz, unsigned int nv)
 {
   ImageFloat::Pointer image = ImageFloat::New();
   ImageFloat::IndexType index;

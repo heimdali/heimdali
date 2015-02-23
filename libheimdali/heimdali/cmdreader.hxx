@@ -33,23 +33,23 @@ class ITK_ABI_EXPORT CmdReader
         typedef itk::ImageRegion<ImageType::ImageDimension> RegionType;
     public:
         static CmdReader* make_cmd_reader(
-            size_t nlines_per_loop, std::string filename);
+            unsigned int nlines_per_loop, std::string filename);
         typename ReaderType::Pointer reader();
         virtual void next_iteration() = 0;
         virtual typename ImageType::Pointer GetOutput() = 0;
         virtual void Update() = 0;
         bool is_complete(){return m_is_complete;};
-        size_t get_sz() const {return m_sz;};
-        size_t get_sy() const {return m_sy;};
-        size_t get_sx() const {return m_sx;};
-        size_t get_sc() const {return m_sc;};
+        unsigned int get_sz() const {return m_sz;};
+        unsigned int get_sy() const {return m_sy;};
+        unsigned int get_sx() const {return m_sx;};
+        unsigned int get_sc() const {return m_sc;};
     protected:
-        size_t m_nlines_per_loop;
+        unsigned int m_nlines_per_loop;
         bool m_is_complete;
         typename ReaderType::Pointer m_reader;
-        size_t m_iz, m_iy, m_ix;
-        size_t m_nz, m_ny, m_nx;
-        size_t m_sz, m_sy, m_sx, m_sc;
+        unsigned int m_iz, m_iy, m_ix;
+        unsigned int m_nz, m_ny, m_nx;
+        unsigned int m_sz, m_sy, m_sx, m_sc;
 };
 
 template <typename ImageType>
@@ -57,7 +57,7 @@ class ITK_ABI_EXPORT CmdReaderFromFile: public CmdReader<ImageType>
 {
     public:
         CmdReaderFromFile(){};
-        CmdReaderFromFile(size_t nlines_per_loop, std::string filename);
+        CmdReaderFromFile(unsigned int nlines_per_loop, std::string filename);
         ~CmdReaderFromFile();
         void next_iteration();
         typename ImageType::Pointer GetOutput();
@@ -78,13 +78,12 @@ class ITK_ABI_EXPORT CmdReaderFromStdin: public CmdReader<ImageType>
         CmdReaderFromStdin():
             m_using_pipe(false)
         {};
-        CmdReaderFromStdin(size_t nlines_per_loop);
+        CmdReaderFromStdin(unsigned int nlines_per_loop);
         ~CmdReaderFromStdin();
         void next_iteration();
         typename ImageType::Pointer GetOutput();
         void Update(){};
     private:
-        size_t m_tata;
         hid_t m_fileimage_id; 
         MTB_T* m_traceback;
         itk::HDF5ImageIO::Pointer m_HDF5io;

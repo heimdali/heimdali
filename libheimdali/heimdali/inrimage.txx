@@ -48,7 +48,9 @@ InrImage<PixelType>::InrImage(std::string filename):
  * template parameter.
  */
 template <typename PixelType>
-InrImage<PixelType>::InrImage(int sx, int sy, int sz, int sv, int ignoredArg):
+InrImage<PixelType>::InrImage(unsigned int sx, unsigned int sy,
+                              unsigned int sz, unsigned int sv,
+                              unsigned int ignoredArg):
     m_data(NULL),
     m_realz(1),
     m_sx(sx),
@@ -78,21 +80,21 @@ InrImage<PixelType>::setFilename(std::string filename)
 
 template <typename PixelType>
 void
-InrImage<PixelType>::setRealz(int realz)
+InrImage<PixelType>::setRealz(unsigned int realz)
 {
     this->m_realz = realz;
 }
 
 template <typename PixelType>
-int
+unsigned int
 InrImage<PixelType>::getRealz(void) const
 {
     return m_realz;
 }
 
 template <typename PixelType>
-int
-InrImage<PixelType>::getDim(int dim) const
+unsigned int
+InrImage<PixelType>::getDim(unsigned int dim) const
 {
   switch(dim){
       case Heimdali::INR_ALONGX: return this->m_sx;
@@ -112,14 +114,16 @@ InrImage<PixelType>::getData(void)
 
 template <typename PixelType>
 PixelType
-InrImage<PixelType>::operator()(int ix, int iy, int iz, int iv) const
+InrImage<PixelType>::operator()(unsigned int ix, unsigned int iy,
+                                unsigned int iz, unsigned int iv) const
 {
     return m_data[iz*m_syxv + iy*m_sxv + ix*m_sv + iv];
 }
 
 template <typename PixelType>
 PixelType&
-InrImage<PixelType>::operator()(int ix, int iy, int iz, int iv) 
+InrImage<PixelType>::operator()(unsigned int ix, unsigned int iy,
+                                unsigned int iz, unsigned int iv) 
 {
     return m_data[iz*m_syxv + iy*m_sxv + ix*m_sv + iv];
 }
@@ -187,7 +191,7 @@ InrImage<PixelType>::write(void)
 //! Write all plane in memory to file at offsetz.
 template <typename PixelType>
 void
-InrImage<PixelType>::write(int offsetz)
+InrImage<PixelType>::write(unsigned int offsetz)
 {
     this->write(offsetz, this->m_realz);
 }
@@ -195,7 +199,7 @@ InrImage<PixelType>::write(int offsetz)
 //! Write planes in memory between 0 and nz to file at offsetz
 template <typename PixelType>
 void
-InrImage<PixelType>::write(int offsetz, int nz)
+InrImage<PixelType>::write(unsigned int offsetz, unsigned int nz)
 {
     if (nz > this->m_realz) {
         std::ostringstream msg;
@@ -317,7 +321,7 @@ InrImage<PixelType>::read(void)
 //! Read one plane
 template <typename PixelType>
 void
-InrImage<PixelType>::read(int offsetz)
+InrImage<PixelType>::read(unsigned int offsetz)
 {
     this->m_index[ZD] = offsetz;
     this->m_size[ZD] = 1;
@@ -333,7 +337,7 @@ InrImage<PixelType>::read(int offsetz)
 //! Read N planes.
 template <typename PixelType>
 void
-InrImage<PixelType>::read(int offsetz, int nz)
+InrImage<PixelType>::read(unsigned int offsetz, unsigned int nz)
 {
     this->m_index[ZD] = offsetz;
     this->m_size[ZD] = nz;

@@ -22,7 +22,7 @@ typedef itk::VectorImage<PixelType,3> ImageType;
 
 //! Pixels of imtest_z5_y4_x3_c2.h5 have been set with these values.
 PixelType
-imtest_value(int iz, int iy, int ix, int iv)
+imtest_value(unsigned int iz, unsigned int iy, unsigned int ix, unsigned int iv)
 {
     return iz*1000 + iy*100 + ix*10 + iv;
 }
@@ -30,7 +30,9 @@ imtest_value(int iz, int iy, int ix, int iv)
 //! Check size of the image buffer allocated by ITK is as expected.
 bool
 check_buffered_region(string label, InrImageType& image,
-                      int ix, int sx, int iy, int sy, int offsetz, int nz)
+                      unsigned int ix, unsigned int sx,
+                      unsigned int iy, unsigned int sy,
+                      unsigned int offsetz, unsigned int nz)
 {
     ImageType::RegionType expected_region = Heimdali::CreateRegion(ix,sx,iy,sy,offsetz,nz);
     if (image.getImage()->GetBufferedRegion() != expected_region) {
@@ -45,20 +47,21 @@ check_buffered_region(string label, InrImageType& image,
 //! Write image to file, iterating on planes and holding in memory only one
 //  plane.
 bool
-write_one_plane_a_time(int sz, int sy, int sx, int sv, string filename)
+write_one_plane_a_time(unsigned int sz, unsigned int sy, unsigned int sx,
+                       unsigned int sv, string filename)
 {
-    int nz = 1;
+    unsigned int nz = 1;
     InrImageType image = InrImageType(sx,sy,sz,sv);
     image.setFilename(filename);
     image.setRealz(nz);
     image.openForWrite();
 
     // Write to disk plane by plane.
-    int iz=0;
-    for (int offsetz = 0 ; offsetz < sz ; ++offsetz) {
-        for (int iy = 0 ; iy < sy ; ++iy) {
-        for (int ix = 0 ; ix < sx ; ++ix) {
-        for (int iv = 0 ; iv < sv ; ++iv) {
+    unsigned int iz=0;
+    for (unsigned int offsetz = 0 ; offsetz < sz ; ++offsetz) {
+        for (unsigned int iy = 0 ; iy < sy ; ++iy) {
+        for (unsigned int ix = 0 ; ix < sx ; ++ix) {
+        for (unsigned int iv = 0 ; iv < sv ; ++iv) {
             image(ix,iy,iz,iv) = imtest_value(offsetz+iz,iy,ix,iv);
         }}}
         image.write(offsetz);
@@ -69,7 +72,8 @@ write_one_plane_a_time(int sz, int sy, int sx, int sv, string filename)
 
 //! Allocate and fill the full image, and write it in file.
 bool
-write_full_image(int sz, int sy, int sx, int sv, string filename)
+write_full_image(unsigned int sz, unsigned int sy, unsigned int sx,
+                 unsigned int sv, string filename)
 {
     InrImageType image = InrImageType(sx,sy,sz,sv);
     image.setFilename(filename);
@@ -77,10 +81,10 @@ write_full_image(int sz, int sy, int sx, int sv, string filename)
     image.openForWrite();
 
     // Write to disk plane by plane.
-    for (int iz = 0 ; iz < sz ; ++iz) {
-    for (int iy = 0 ; iy < sy ; ++iy) {
-    for (int ix = 0 ; ix < sx ; ++ix) {
-    for (int iv = 0 ; iv < sv ; ++iv) {
+    for (unsigned int iz = 0 ; iz < sz ; ++iz) {
+    for (unsigned int iy = 0 ; iy < sy ; ++iy) {
+    for (unsigned int ix = 0 ; ix < sx ; ++ix) {
+    for (unsigned int iv = 0 ; iv < sv ; ++iv) {
         image(ix,iy,iz,iv) = imtest_value(iz,iy,ix,iv);
     }}}}
 
@@ -90,21 +94,22 @@ write_full_image(int sz, int sy, int sx, int sv, string filename)
 }
 
 bool
-write_three_then_two_planes(int sz, int sy, int sx, int sv, string filename)
+write_three_then_two_planes(unsigned int sz, unsigned int sy,
+                            unsigned int sx, unsigned int sv, string filename)
 {
-    int nz3 = 3;
-    int nz2 = 2;
+    unsigned int nz3 = 3;
+    unsigned int nz2 = 2;
     InrImageType image = InrImageType(sx,sy,sz,sv);
     image.setFilename(filename);
     image.setRealz(nz3);
     image.openForWrite();
 
     // Write 3 planes.
-    int offsetz = 0;
-    for (int iz = 0 ; iz < nz3 ; ++iz) {
-    for (int iy = 0 ; iy < sy ; ++iy) {
-    for (int ix = 0 ; ix < sx ; ++ix) {
-    for (int iv = 0 ; iv < sv ; ++iv) {
+    unsigned int offsetz = 0;
+    for (unsigned int iz = 0 ; iz < nz3 ; ++iz) {
+    for (unsigned int iy = 0 ; iy < sy ; ++iy) {
+    for (unsigned int ix = 0 ; ix < sx ; ++ix) {
+    for (unsigned int iv = 0 ; iv < sv ; ++iv) {
         image(ix,iy,iz,iv) = imtest_value(offsetz+iz,iy,ix,iv);
     }}}}
     image.write(offsetz);
@@ -112,10 +117,10 @@ write_three_then_two_planes(int sz, int sy, int sx, int sv, string filename)
 
     // Write 2 last planes.
     offsetz = nz3;
-    for (int iz = 0 ; iz < nz2 ; ++iz) {
-    for (int iy = 0 ; iy < sy ; ++iy) {
-    for (int ix = 0 ; ix < sx ; ++ix) {
-    for (int iv = 0 ; iv < sv ; ++iv) {
+    for (unsigned int iz = 0 ; iz < nz2 ; ++iz) {
+    for (unsigned int iy = 0 ; iy < sy ; ++iy) {
+    for (unsigned int ix = 0 ; ix < sx ; ++ix) {
+    for (unsigned int iv = 0 ; iv < sv ; ++iv) {
         image(ix,iy,iz,iv) = imtest_value(offsetz+iz,iy,ix,iv);
     }}}}
     image.write(offsetz,nz2);
@@ -136,7 +141,7 @@ int main(int argc, char** argv)
     string ext = argv[1];
 
     // Set up image for write.
-    int sz=5, sy=4, sx=3, sv=2;
+    unsigned int sz=5, sy=4, sx=3, sv=2;
 
     string filename = "inrimage_write_0." + ext;
     if (! write_one_plane_a_time(sz,sy,sx,sv,filename)) return 1;

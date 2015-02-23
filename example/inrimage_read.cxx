@@ -28,20 +28,22 @@ typedef itk::VectorImage<PixelType,3> ImageType;
 
 //! Pixels of imtest_z5_y4_x3_c2.h5 have been set with these values.
 PixelType
-imtest_value(int iz, int iy, int ix, int iv)
+imtest_value(unsigned int iz, unsigned int iy,
+            unsigned int ix, unsigned int iv)
 {
     return iz*1000 + iy*100 + ix*10 + iv;
 }
 
 //! Check values of plane passed as argument are as expected.
 bool
-check_plane(InrImageType& image, int offsetz, int iz, int sy, int sx, int sv)
+check_plane(InrImageType& image, unsigned int offsetz, unsigned int iz,
+            unsigned int sy, unsigned int sx, unsigned int sv)
 {
     PixelType value;
     PixelType expected_value;
-    for (int iy = 0 ; iy < sy ; ++iy) {
-    for (int ix = 0 ; ix < sx ; ++ix) {
-    for (int iv = 0 ; iv < sv ; ++iv) {
+    for (unsigned int iy = 0 ; iy < sy ; ++iy) {
+    for (unsigned int ix = 0 ; ix < sx ; ++ix) {
+    for (unsigned int iv = 0 ; iv < sv ; ++iv) {
         value = image(ix,iy,iz,iv);
         expected_value = imtest_value(offsetz+iz,iy,ix,iv);
         if (value != expected_value) {
@@ -58,7 +60,9 @@ check_plane(InrImageType& image, int offsetz, int iz, int sy, int sx, int sv)
 //! Check size of the image buffer allocated by ITK is as expected.
 bool
 check_buffered_region(string label, InrImageType& image,
-                      int ix, int sx, int iy, int sy, int offsetz, int nz)
+                      unsigned int ix, unsigned int sx,
+                      unsigned int iy, unsigned int sy,
+                      unsigned int offsetz, unsigned int nz)
 {
     ImageType::RegionType expected_region = Heimdali::CreateRegion(ix,sx,iy,sy,offsetz,nz);
     if (image.getImage()->GetBufferedRegion() != expected_region) {
@@ -88,10 +92,10 @@ int main(int argc, char** argv)
     image.openForRead(); 
 
     // Read image dimensions
-    int sz = image.getDim(Heimdali::INR_ALONGZ);
-    int sy = image.getDim(Heimdali::INR_ALONGY);
-    int sx = image.getDim(Heimdali::INR_ALONGX);
-    int sv = image.getDim(Heimdali::INR_ALONGV);
+    unsigned int sz = image.getDim(Heimdali::INR_ALONGZ);
+    unsigned int sy = image.getDim(Heimdali::INR_ALONGY);
+    unsigned int sx = image.getDim(Heimdali::INR_ALONGX);
+    unsigned int sv = image.getDim(Heimdali::INR_ALONGV);
     if (sz != 5) {
         cerr << "Expected 5 planes, but got " << sz << endl;
         return 1;
@@ -110,9 +114,9 @@ int main(int argc, char** argv)
     }
 
     // Read plane 2.
-    int offsetz = 2;
-    int iz=0, iy=0, ix=0;
-    int nz=1;
+    unsigned int offsetz = 2;
+    unsigned int iz=0, iy=0, ix=0;
+    unsigned int nz=1;
     image.read(offsetz);
     if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
     if (! check_buffered_region("plane 2",image,ix,sx,iy,sy,offsetz,nz) ) return 1;

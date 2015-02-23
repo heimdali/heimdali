@@ -59,8 +59,8 @@ typedef Heimdali::CmdWriter<ImageType> WriterType;
 WriterType* cmdwriter = WriterType::make_cmd_writer(
     output.getValue());
 
-size_t iregionmax = 1E+06;
-for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
+unsigned int iregionmax = 1E+06;
+for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     // Read input.
     cmdreader->next_iteration();
     if (cmdreader->is_complete()) break;

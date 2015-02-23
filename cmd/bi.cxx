@@ -52,8 +52,8 @@ bool pixel_is_ready = false;
 typedef itk::AddImageFilter<ImageType> AddImageType;
 AddImageType::Pointer addImage = AddImageType::New();
 
-size_t iregionmax = 1E+06;
-for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
+unsigned int iregionmax = 1E+06;
+for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     // Read input.
     cmdreader->next_iteration();
     if (cmdreader->is_complete()) break;

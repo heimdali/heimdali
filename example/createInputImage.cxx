@@ -4,10 +4,10 @@
 int main()
 {
     // Create image.
-    int nx = 5;
-    int ny = 5;
-    int nz = 5;
-    int nv = 2;
+    unsigned int nx = 5;
+    unsigned int ny = 5;
+    unsigned int nz = 5;
+    unsigned int nv = 2;
     Heimdali::ImageFloat::Pointer image = Heimdali::CreateImage(nx,ny,nz,nv);
 
     // Pixel vector.
@@ -21,8 +21,8 @@ int main()
     Heimdali::ImageFloat::IndexType index;
     for(imageIt.GoToBegin(); !imageIt.IsAtEnd(); ++imageIt) {
       index = imageIt.GetIndex();
-      size_t ix = index[0];
-      size_t iy = index[1];
+      unsigned int ix = index[0];
+      unsigned int iy = index[1];
       float x = float (ix) / float(nx); // x is in [0,1]
       float y = float (iy) / float(ny); // x is in [0,1]
       value[0] = cos(x)*cos(y);

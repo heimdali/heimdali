@@ -64,8 +64,8 @@ SqrtrType::Pointer sqrtfilter = SqrtrType::New();
 typedef itk::ComposeImageFilter<ScalarImageType> ToVectorImageType;
 ToVectorImageType::Pointer toVectorImage = ToVectorImageType::New();
 
-size_t iregionmax = 1E+06;
-for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
+unsigned int iregionmax = 1E+06;
+for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     // Read input.
     cmdreader->next_iteration();
     if (cmdreader->is_complete()) break;
@@ -76,7 +76,7 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
 
     toImage->SetImage(vectorImage);
 
-    for (int ic = 0 ; ic < cmdreader->get_sc() ; ++ic)
+    for (unsigned int ic = 0 ; ic < cmdreader->get_sc() ; ++ic)
     {
         // VectorImage to Image
         toImage->SetExtractComponentIndex(ic);

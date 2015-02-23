@@ -345,7 +345,7 @@ void INRImageIO::SetInrArgcArgv(const int InrArgc, ...)
     const char* arg;
 
     // Number of character in arg, in above example: 10.
-    size_t lenarg; 
+    unsigned int lenarg; 
 
     // Start iteration over command line arguments, passed to the function
     // using '...'.
@@ -383,7 +383,7 @@ void INRImageIO::SetInrArgcArgv(const int InrArgc, const char** InrArgv)
     const char* arg;
 
     // Number of character in arg, in above example: 10.
-    size_t lenarg; 
+    unsigned int lenarg; 
 
     // Iteration over InrArgv.
     for(int iarg = 0 ; iarg < InrArgc ; iarg++)

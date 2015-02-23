@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 
     // Images
     const unsigned int Dimension = 3;
-    int SZ,SY,SX,SC, NZ,NY,NX,NC, IZ,IY,IX,IC;
+    unsigned int SZ,SY,SX, NZ,NY,NX, IZ,IY,IX;
     typedef itk::VectorImage<PixelType, Dimension> ImageType;
     ImageType::Pointer image;
 
@@ -87,19 +87,16 @@ int main(int argc, char** argv)
     SZ = reader->GetImageIO()->GetDimensions(2);
     SY = reader->GetImageIO()->GetDimensions(1);
     SX = reader->GetImageIO()->GetDimensions(0);
-    SC = reader->GetImageIO()->GetNumberOfComponents();
 
     // First index to read.
     IZ = izValue.getValue();
     IY = iyValue.getValue();
     IX = ixValue.getValue();
-    IC = 0;
 
     // Number of plane/column/row read.
     NZ = zValue.getValue()==0 ? SZ+1-ImageIndex[2] : zValue.getValue();
     NY = yValue.getValue()==0 ? SY+1-ImageIndex[1] : yValue.getValue();
     NX = xValue.getValue()==0 ? SX+1-ImageIndex[0] : xValue.getValue();
-    NC = SC;
 
     // Create region to read
     ImageIndex[2] = IZ;
@@ -120,9 +117,9 @@ int main(int argc, char** argv)
     image = reader->GetOutput();
 
     // print values
-    for (int iz=IZ ; iz<IZ+NZ; iz++) { ImageIndex[2] = iz;
-    for (int iy=IY ; iy<IY+NY; iy++) { ImageIndex[1] = iy;
-    for (int ix=IX ; ix<IX+NX; ix++) { ImageIndex[0] = ix;
+    for (unsigned int iz=IZ ; iz<IZ+NZ; iz++) { ImageIndex[2] = iz;
+    for (unsigned int iy=IY ; iy<IY+NY; iy++) { ImageIndex[1] = iy;
+    for (unsigned int ix=IX ; ix<IX+NX; ix++) { ImageIndex[0] = ix;
         cout << image->GetPixel(ImageIndex) << endl;
     }}}
 

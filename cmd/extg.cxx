@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 
     // Images
     const unsigned int Dimension = 3;
-    int SZ,SY,SX,SC, NZ,NY,NX,NC, IZ,IY,IX,IC;
+    int SZ,SY,SX, NZ,NY,NX, IZ,IY,IX;
     typedef itk::VectorImage<PixelType, Dimension> ImageType;
     ImageType::Pointer image;
 
@@ -95,19 +95,16 @@ int main(int argc, char** argv)
     SZ = reader->GetImageIO()->GetDimensions(2);
     SY = reader->GetImageIO()->GetDimensions(1);
     SX = reader->GetImageIO()->GetDimensions(0);
-    SC = reader->GetImageIO()->GetNumberOfComponents();
 
     // First index to read.
     IZ = izValue.getValue();
     IY = iyValue.getValue();
     IX = ixValue.getValue();
-    IC = 0;
 
     // Number of plane/column/row read.
     NZ = zValue.getValue()==0 ? SZ-IZ : zValue.getValue();
     NY = yValue.getValue()==0 ? SY-IY : yValue.getValue();
     NX = xValue.getValue()==0 ? SX-IX : xValue.getValue();
-    NC = SC;
 
     // Create region to read
     ImageIndex[2] = IZ;

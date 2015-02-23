@@ -21,27 +21,27 @@
 namespace Heimdali {
 
 /*! \brief Returns appropriately a RegionReaderByLines or a RegionReaderByPlanes */
-RegionReader* RegionReader::make_region_reader(size_t sz, size_t sy, size_t nlines_per_loop)
+RegionReader* RegionReader::make_region_reader(unsigned int sz, unsigned int sy, unsigned int nlines_per_loop)
 {
     // total number of lines to read is the number of planes times the number
     // of lines per plane.
-    size_t nlines = sz*sy;
+    unsigned int nlines = sz*sy;
 
     nlines_per_loop = nlines_per_loop == 0 ? nlines : nlines_per_loop;
 
     // nzmax is the number of plane we read at each loop,
     // sy is the number of lines per plane.
-    size_t nzmax = nlines_per_loop / sy;
+    unsigned int nzmax = nlines_per_loop / sy;
 
     if (nzmax > 0) {
         return new RegionReaderByPlanes(sz,sy, nzmax);
     } else {
-        size_t nymax = nlines_per_loop;
+        unsigned int nymax = nlines_per_loop;
         return new RegionReaderByLines(sz,sy, nymax);
     }
 }
 
-RegionReaderByLines::RegionReaderByLines(size_t sz, size_t sy, size_t nymax)
+RegionReaderByLines::RegionReaderByLines(unsigned int sz, unsigned int sy, unsigned int nymax)
 {
     m_sz = sz;
     m_sy = sy;
@@ -75,7 +75,7 @@ void RegionReaderByLines::next_iteration()
     }
 }
 
-void RegionReaderByLines::values(size_t &iz, size_t &iy, size_t &nz, size_t &ny)
+void RegionReaderByLines::values(unsigned int &iz, unsigned int &iy, unsigned int &nz, unsigned int &ny)
 {
     iz = m_iz;
     iy = m_iy;
@@ -83,7 +83,7 @@ void RegionReaderByLines::values(size_t &iz, size_t &iy, size_t &nz, size_t &ny)
     ny = m_ny;
 }
 
-RegionReaderByPlanes::RegionReaderByPlanes(size_t sz, size_t sy, size_t nzmax)
+RegionReaderByPlanes::RegionReaderByPlanes(unsigned int sz, unsigned int sy, unsigned int nzmax)
 {
     m_sz = sz;
     m_sy = sy;
@@ -114,7 +114,7 @@ void RegionReaderByPlanes::next_iteration()
 
 }
 
-void RegionReaderByPlanes::values(size_t &iz, size_t &iy, size_t &nz, size_t &ny)
+void RegionReaderByPlanes::values(unsigned int &iz, unsigned int &iy, unsigned int &nz, unsigned int &ny)
 {
     iz = m_iz;
     iy = m_iy;

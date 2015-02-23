@@ -15,6 +15,8 @@ using namespace std;
 
 namespace Heimdali {
 
+unsigned int ZD=2, YD=1, XD=0;
+
 typedef float PixelFloat;
 
 //! All images are 3-dimensional.
@@ -23,15 +25,19 @@ const unsigned int ImageDimension = 3;
 typedef itk::VectorImage<PixelFloat, ImageDimension> ImageFloat;
 
 ImageFloat::RegionType
-CreateRegion(int ix, int nx, int iy, int ny, int iz=0, int nz=1);
+CreateRegion(unsigned int ix, unsigned int nx,
+             unsigned int iy, unsigned int ny,
+             unsigned int iz=0, unsigned int nz=1);
 
 ImageFloat::RegionType::IndexType
-CreateIndex(int ix, int iy, int iz=0);
+CreateIndex(unsigned int ix, unsigned int iy, unsigned int iz=0);
 
 void AssertImageSize(ImageFloat::Pointer image, string label, 
-  int nx, int ny, int nz=1, int nv=1);
+                     unsigned int nx, unsigned int ny,
+                     unsigned int nz=1, unsigned int nv=1);
 
-ImageFloat::Pointer CreateImage(int nx, int ny, int nz=1, int nv=1);
+ImageFloat::Pointer CreateImage(unsigned int nx, unsigned int ny,
+                                unsigned int nz=1, unsigned int nv=1);
 
 ImageFloat::Pointer OpenAndReadImage(string fileName);
 

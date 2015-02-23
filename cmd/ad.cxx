@@ -60,8 +60,8 @@ WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
 typedef itk::AddImageFilter <ImageType,ImageType> AddImageFilterType;
 AddImageFilterType::Pointer adder = AddImageFilterType::New ();
 
-size_t iregionmax = 1E+06;
-for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
+unsigned int iregionmax = 1E+06;
+for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     // Read input.
     reader1->next_iteration();
     reader2->next_iteration();

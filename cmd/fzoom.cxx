@@ -57,8 +57,8 @@ int main(int argc, char** argv)
     typedef Heimdali::CmdWriter<Heimdali::ImageFloat> WriterType;
     WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilenameArg.getValue());
 
-    size_t iregionmax = 1E+06;
-    for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
+    unsigned int iregionmax = 1E+06;
+    for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
         // Read input.
         cmdreader->next_iteration();
         if (cmdreader->is_complete()) break;

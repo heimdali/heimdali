@@ -86,8 +86,8 @@ index[0] = 1;
 index[1] = 0;
 index[2] = 0;
 
-size_t iregionmax = 1E+06;
-for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
+unsigned int iregionmax = 1E+06;
+for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     // Read input.
     cmdreader1->next_iteration();
     cmdreader2->next_iteration();
@@ -102,7 +102,7 @@ for (size_t iregion=0 ; iregion<iregionmax ; iregion++) {
     toImage1->SetImage(vectorImage1);
     toImage2->SetImage(vectorImage2);
 
-    for (int ic = 0 ; ic < cmdreader1->get_sc() ; ++ic)
+    for (unsigned int ic = 0 ; ic < cmdreader1->get_sc() ; ++ic)
     {
         // VectorImage to Image
         toImage1->SetExtractComponentIndex(ic);

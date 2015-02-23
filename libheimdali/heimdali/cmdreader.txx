@@ -1,3 +1,4 @@
+#include "heimdali/itkhelper.hxx"
 #include "heimdali/cmdreader.hxx"
 
 using namespace std;
@@ -7,7 +8,7 @@ namespace Heimdali {
 template <typename ImageType>
 CmdReader<ImageType>*
 CmdReader<ImageType>::make_cmd_reader(
-    size_t nlines_per_loop, string filename)
+    unsigned int nlines_per_loop, string filename)
 {
     if (filename == "" or filename == "-") {
         return new CmdReaderFromStdin<ImageType>(nlines_per_loop);
@@ -29,9 +30,8 @@ CmdReader<ImageType>::reader()
 
 template <typename ImageType>
 CmdReaderFromFile<ImageType>::CmdReaderFromFile(
-    size_t nlines_per_loop, string filename)
+    unsigned int nlines_per_loop, string filename)
 {
-    int ZD=2, YD=1, XD=0;
     this->m_is_complete = false;
     this->m_nlines_per_loop = nlines_per_loop;
     this->m_filename = filename;
@@ -60,7 +60,6 @@ template <typename ImageType>
 void
 CmdReaderFromFile<ImageType>::next_iteration()
 {
-    int ZD=2, YD=1, XD=0;
 
     // Compute next region to region.
     this->m_region_reader->next_iteration();
@@ -108,7 +107,7 @@ CmdReaderFromFile<ImageType>::Update()
 
 template <typename ImageType>
 CmdReaderFromStdin<ImageType>::CmdReaderFromStdin(
-    size_t nlines_per_loop)
+    unsigned int nlines_per_loop)
 {
     this->m_nlines_per_loop = nlines_per_loop;
     this->m_HDF5io = itk::HDF5ImageIO::New();
@@ -126,8 +125,6 @@ template <typename ImageType>
 void
 CmdReaderFromStdin<ImageType>::next_iteration()
 {
-    int ZD=2, YD=1, XD=0;
-
     int end_of_stdin=0;
     this->m_fileimage_id = H5UPfileimage_from_stdin(&end_of_stdin, m_traceback);
     if (end_of_stdin==1) {
@@ -148,16 +145,16 @@ CmdReaderFromStdin<ImageType>::next_iteration()
     this->m_sc = m_HDF5io->GetNumberOfComponents();
 
     // Get metadata.
-    itk::Array<size_t> sz_sy_iz_iy(4);
+    itk::Array<unsigned int> sz_sy_iz_iy(4);
     dictionary = this->m_reader->GetMetaDataDictionary();
     string key = "sz_sy_iz_iy";
     if (dictionary.HasKey(key)) {
       m_using_pipe = true;
-      itk::ExposeMetaData< itk::Array<size_t> >(dictionary,key,sz_sy_iz_iy);
-      size_t sz = sz_sy_iz_iy[0];
-      size_t sy = sz_sy_iz_iy[1];
-      size_t iz = sz_sy_iz_iy[2];
-      size_t iy = sz_sy_iz_iy[3];
+      itk::ExposeMetaData< itk::Array<unsigned int> >(dictionary,key,sz_sy_iz_iy);
+      unsigned int sz = sz_sy_iz_iy[0];
+      unsigned int sy = sz_sy_iz_iy[1];
+      unsigned int iz = sz_sy_iz_iy[2];
+      unsigned int iy = sz_sy_iz_iy[3];
 
       // Buffered region.
       typename ImageType::IndexType bindex;
