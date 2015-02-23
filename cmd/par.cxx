@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include <tclap/CmdLine.h>
 
@@ -35,6 +36,8 @@ struct Options
     bool o;
 
     bool F;
+    bool r;
+    bool f;
     string outputFilename;
 };
 
@@ -64,6 +67,10 @@ Options parse_command_line(vector<string> tclap_argv)
     TCLAP::SwitchArg y0Switch("","y0", "Print y origin.", parser);
     TCLAP::SwitchArg x0Switch("","x0", "Print x origin.", parser);
 
+    // -f -r
+    TCLAP::SwitchArg fSwitch("f","integral", "Print pixel type, float or integer", parser);
+    TCLAP::SwitchArg rSwitch("r","float", "Print pixel type, float or integer", parser);
+
     // --wr
     TCLAP::ValueArg<string> wrSwitch("","wr","Output file",not_required,"","output.txt",parser);
 
@@ -87,6 +94,8 @@ Options parse_command_line(vector<string> tclap_argv)
     opt.x0 = x0Switch.getValue();
     opt.o = oSwitch.getValue();
     opt.F = FSwitch.getValue();
+    opt.r = rSwitch.getValue();
+    opt.f = fSwitch.getValue();
     opt.outputFilename = wrSwitch.getValue();
 
     return opt;
@@ -94,7 +103,8 @@ Options parse_command_line(vector<string> tclap_argv)
 
 void postprocess_options(Options& opt)
 {
-    if (not (opt.z or opt.y or opt.x or opt.v or opt.z0 or opt.y0 or opt.x0 or opt.o or opt.F)) {
+    if (not (opt.z or opt.y or opt.x or opt.v or opt.z0 or opt.y0 or opt.x0 
+                   or opt.o or opt.F or opt.f or opt.r)) {
         opt.filename = true;
         opt.z = true;
         opt.y = true;
@@ -104,6 +114,8 @@ void postprocess_options(Options& opt)
         opt.y0 = true;
         opt.x0 = true;
         opt.o = true;
+        opt.r = true;
+        opt.f = true;
     } else {
         opt.filename = false;
     }
@@ -139,6 +151,26 @@ void print_informations(ImageIOBase::Pointer io, Options opt)
         else
             smsg << "-F " << io->GetNameOfClass() << "\t";
     }
+
+    if (opt.r or opt.f) {
+        ostringstream error_msg;
+        switch (io->GetComponentType()) {
+            case ImageIOBase::UNKNOWNCOMPONENTTYPE:
+                error_msg << "Component type is unknown";
+                throw(Heimdali::ValueError(error_msg.str()));
+                break;
+            case ImageIOBase::FLOAT:
+                smsg << "-r\t";
+                break;
+            case ImageIOBase::DOUBLE:
+                smsg << "-r\t";
+                break;
+            default:
+                smsg << "-f\t";
+                break;
+        }
+    }
+
     string msg = smsg.str();
     msg = msg.substr(0, msg.size()-1); // Remove trailing tabluation.
 
