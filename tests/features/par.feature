@@ -25,6 +25,18 @@ Feature: par
             " -x 3"
             """
 
+    Scenario: Print file type
+        Given I am in the heimdali data directory
+        When I run the command: par imtest_z5_y4_x3_c2.<ext> -F
+        Then I see the standard output:
+            """
+            " -F <filetype>"
+            """
+    Examples:
+      | ext | filetype |
+      | h5  | HDF5     |
+      | inr | Inrimage |
+
     Scenario: Print parameters of image with origin different than 0
         Given I am in the heimdali data directory
         When I run the command: par imtest_z5_y4_x3_c2_origin_4_5_6.<ext>

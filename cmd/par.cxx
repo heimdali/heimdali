@@ -33,6 +33,8 @@ struct Options
     bool x0;
 
     bool o;
+
+    bool F;
     string outputFilename;
 };
 
@@ -53,6 +55,9 @@ Options parse_command_line(vector<string> tclap_argv)
 
     // -o
     TCLAP::SwitchArg oSwitch("o","", "Print number of bytes of a pixel.", parser);
+
+    // -F
+    TCLAP::SwitchArg FSwitch("F","image_type", "Print image type, HDF5 or INRimage", parser);
 
     // -z0 -y0 -x0
     TCLAP::SwitchArg z0Switch("","z0", "Print z origin.", parser);
@@ -81,6 +86,7 @@ Options parse_command_line(vector<string> tclap_argv)
     opt.y0 = y0Switch.getValue();
     opt.x0 = x0Switch.getValue();
     opt.o = oSwitch.getValue();
+    opt.F = FSwitch.getValue();
     opt.outputFilename = wrSwitch.getValue();
 
     return opt;
@@ -88,7 +94,7 @@ Options parse_command_line(vector<string> tclap_argv)
 
 void postprocess_options(Options& opt)
 {
-    if (not (opt.z or opt.y or opt.x or opt.v or opt.z0 or opt.y0 or opt.x0 or opt.o)) {
+    if (not (opt.z or opt.y or opt.x or opt.v or opt.z0 or opt.y0 or opt.x0 or opt.o or opt.F)) {
         opt.filename = true;
         opt.z = true;
         opt.y = true;
@@ -125,6 +131,14 @@ void print_informations(ImageIOBase::Pointer io, Options opt)
     if (opt.y0 && io->GetOrigin(YD) != 0) smsg << "-y0 " << io->GetOrigin(YD) << "\t";
     if (opt.z0 && io->GetOrigin(ZD) != 0) smsg << "-z0 " << io->GetOrigin(ZD) << "\t";
     if (opt.o)  smsg << "-o " << io->GetComponentSize() << "\t";
+    if (opt.F) {
+        if ((string) io->GetNameOfClass() == (string) "HDF5ImageIO")
+            smsg << "-F HDF5\t";
+        else if ((string) io->GetNameOfClass() == (string) "INRImageIO")
+            smsg << "-F Inrimage\t";
+        else
+            smsg << "-F " << io->GetNameOfClass() << "\t";
+    }
     string msg = smsg.str();
     msg = msg.substr(0, msg.size()-1); // Remove trailing tabluation.
 
