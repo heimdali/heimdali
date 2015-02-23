@@ -112,15 +112,15 @@ read_informations(string filename)
 
 void print_informations(ImageIOBase::Pointer io, Options opt)
 {
-    ostringstream msg_stream;
-    if (opt.z)  msg_stream << "-z " << io->GetDimensions(ZD) << "\t";
-    if (opt.y)  msg_stream << "-y " << io->GetDimensions(YD) << "\t";
-    if (opt.x)  msg_stream << "-x " << io->GetDimensions(XD) << "\t";
-    if (opt.z0) msg_stream << "-z0 " << io->GetOrigin(ZD) << "\t";
-    if (opt.y0) msg_stream << "-y0 " << io->GetOrigin(YD) << "\t";
-    if (opt.x0) msg_stream << "-x0 " << io->GetOrigin(XD) << "\t";
-    if (opt.o)  msg_stream << "-o " << io->GetComponentSize() << "\t";
-    string msg = msg_stream.str();
+    ostringstream smsg; // Stream MeSsaGe
+    if (opt.z)  smsg << "-z " << io->GetDimensions(ZD) << "\t";
+    if (opt.y)  smsg << "-y " << io->GetDimensions(YD) << "\t";
+    if (opt.x)  smsg << "-x " << io->GetDimensions(XD) << "\t";
+    if (opt.z0 && io->GetOrigin(ZD) != 0) smsg << "-z0 " << io->GetOrigin(ZD) << "\t";
+    if (opt.y0 && io->GetOrigin(YD) != 0) smsg << "-y0 " << io->GetOrigin(YD) << "\t";
+    if (opt.x0 && io->GetOrigin(XD) != 0) smsg << "-x0 " << io->GetOrigin(XD) << "\t";
+    if (opt.o)  smsg << "-o " << io->GetComponentSize() << "\t";
+    string msg = smsg.str();
     msg = msg.substr(0, msg.size()-1); // Remove trailing tabluation.
 
     if (opt.filename) cout << io->GetFileName();
