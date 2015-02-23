@@ -112,18 +112,20 @@ read_informations(string filename)
 
 void print_informations(ImageIOBase::Pointer io, Options opt)
 {
-    //nc = io->GetNumberOfComponents();
+    ostringstream msg_stream;
+    if (opt.z)  msg_stream << "-z " << io->GetDimensions(ZD) << "\t";
+    if (opt.y)  msg_stream << "-y " << io->GetDimensions(YD) << "\t";
+    if (opt.x)  msg_stream << "-x " << io->GetDimensions(XD) << "\t";
+    if (opt.z0) msg_stream << "-z0 " << io->GetOrigin(ZD) << "\t";
+    if (opt.y0) msg_stream << "-y0 " << io->GetOrigin(YD) << "\t";
+    if (opt.x0) msg_stream << "-x0 " << io->GetOrigin(XD) << "\t";
+    if (opt.o)  msg_stream << "-o " << io->GetComponentSize() << "\t";
+    string msg = msg_stream.str();
+    msg = msg.substr(0, msg.size()-1); // Remove trailing tabluation.
 
     if (opt.filename) cout << io->GetFileName();
-    if (opt.z) cout << " -z " << io->GetDimensions(ZD);
-    if (opt.y) cout << " -y " << io->GetDimensions(YD);
-    if (opt.x) cout << " -x " << io->GetDimensions(XD);
-    if (opt.z0) cout << " -z0 " << io->GetOrigin(ZD);
-    if (opt.y0) cout << " -y0 " << io->GetOrigin(YD);
-    if (opt.x0) cout << " -x0 " << io->GetOrigin(XD);
-    if (opt.o) cout << " -o " << io->GetComponentSize();
-    if (opt.filename)
-      cout << endl;
+    cout << " " << msg;
+    if (opt.filename) cout << endl;
 }
 
 

@@ -9,7 +9,7 @@ Feature: par
         When I run the command: par imtest_z5_y4_x3_c2.<ext>
         Then I see the standard output:
             """
-            imtest_z5_y4_x3_c2.<ext> -z 5 -y 4 -x 3 -z0 0 -y0 0 -x0 0 -o 4
+            imtest_z5_y4_x3_c2.<ext> -z 5	-y 4	-x 3	-z0 0	-y0 0	-x0 0	-o 4
             ""
             """
 
