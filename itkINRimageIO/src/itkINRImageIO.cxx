@@ -296,13 +296,27 @@ void INRImageIO ::Write(const void *buffer)
   m_InrImage = c_image( (char*) m_FileName.c_str(), (char*)"c", (char*)"", m_InrFmt);
 
   // Set image format.
-  fmtset_(&m_InrImage,m_InrFmt);
+  unsigned int lfmt_size = 9;
+  unsigned int offsets_size = 3;
+  struct nf_fmt gfmt;
+  for (unsigned int i=0 ; i < lfmt_size ; i++) 
+      gfmt.lfmt[i] = m_InrFmt[i];
+  for (unsigned int i=0 ; i < this->GetNumberOfDimensions() ; i++)  {
+      gfmt.offsets[i] = this->m_Origin[i];
+  }
+  for (unsigned int i=this->GetNumberOfDimensions() ; i<offsets_size ; i++) {
+      gfmt.offsets[i] = 0;
+  }
+  gfmt.maille = 0;
+  gfmt.bias = 0.;
+  gfmt.scale = 1.;
+  gfmset_(&m_InrImage,&gfmt);
 
   // Write image.
   c_ecrflt(m_InrImage,m_InrFmt[I_DIMY],(float *)buffer);
 
   // Close image.
-  fermnf_( &m_InrImage);
+  fermnf_(&m_InrImage);
 }
 
 
@@ -504,10 +518,14 @@ void itk::INRImageIO ::ReadImageInformation()
 
     this->m_NumberOfComponents = m_InrFmt[I_NDIMV];
 
+    struct nf_fmt gfmt;
+    int return_full_format = 1;
+    c_getgfm(m_InrImage, &gfmt, return_full_format);
+
     for (unsigned int i=0 ; i < this->GetNumberOfDimensions() ; i++) 
       {
         this->m_Spacing[i] = 1;
-        this->m_Origin[i] = 0;
+        this->m_Origin[i] = gfmt.offsets[i];
       }
 
     // c_lecflt will be able to read all kind of image into float, but double
