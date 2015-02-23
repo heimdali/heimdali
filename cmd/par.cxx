@@ -113,7 +113,7 @@ read_informations(string filename)
 void print_informations(ImageIOBase::Pointer io, Options opt)
 {
     ostringstream smsg; // Stream MeSsaGe
-    if (opt.z)  smsg << "-z " << io->GetDimensions(ZD) << "\t";
+    if (opt.z && io->GetDimensions(ZD) != 1)  smsg << "-z " << io->GetDimensions(ZD) << "\t";
     if (opt.y)  smsg << "-y " << io->GetDimensions(YD) << "\t";
     if (opt.x)  smsg << "-x " << io->GetDimensions(XD) << "\t";
     if (opt.z0 && io->GetOrigin(ZD) != 0) smsg << "-z0 " << io->GetOrigin(ZD) << "\t";
