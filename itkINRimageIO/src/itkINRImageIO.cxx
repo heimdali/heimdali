@@ -179,19 +179,17 @@ void INRImageIO::Read(void *buffer)
       (char*) m_InrVerif.c_str(), m_InrFmt);
 
   // Use more readable names.
-  int SZ = m_InrFmt[I_NDIMZ];
-  int SY = m_InrFmt[I_NDIMY];
-  int SX = m_InrFmt[I_NDIMX];
-  int SV = m_InrFmt[I_NDIMV];
+  unsigned int SY = m_InrFmt[I_NDIMY];
+  unsigned int SX = m_InrFmt[I_NDIMX];
+  unsigned int SV = m_InrFmt[I_NDIMV];
 
-  int IZ = nDims>2 ? regionToRead.GetIndex(2) : 0;
-  int IY = regionToRead.GetIndex(1);
-  int IX = regionToRead.GetIndex(0);
+  unsigned int IZ = nDims>2 ? regionToRead.GetIndex(2) : 0;
+  unsigned int IY = regionToRead.GetIndex(1);
+  unsigned int IX = regionToRead.GetIndex(0);
 
-  int NZ = nDims>2 ? regionToRead.GetSize(2) : 1;
-  int NY = regionToRead.GetSize(1);
-  int NX = regionToRead.GetSize(0);
-  int NV = this->GetNumberOfComponents(); 
+  unsigned int NZ = nDims>2 ? regionToRead.GetSize(2) : 1;
+  unsigned int NY = regionToRead.GetSize(1);
+  unsigned int NX = regionToRead.GetSize(0);
 
   // Do we want to read just a part of the image?
   if ( largestRegion != m_IORegion )
@@ -249,8 +247,6 @@ void INRImageIO::Read(void *buffer)
       switch( this->m_ComponentType )
       {
           case FLOAT:
-              unsigned int ibuffer, row_cursor;
-              unsigned int iz,iy,ix,iv;
               c_lecflt( m_InrImage, m_InrFmt[I_DIMY], (float*) buffer);
               break;
           case DOUBLE:
@@ -297,7 +293,7 @@ void INRImageIO ::Write(const void *buffer)
   m_InrFmt[I_TYPE] = 1;
 
   // Open image.
-  m_InrImage = c_image( (char*) m_FileName.c_str(), "c", "", m_InrFmt);
+  m_InrImage = c_image( (char*) m_FileName.c_str(), (char*)"c", (char*)"", m_InrFmt);
 
   // Set image format.
   fmtset_(&m_InrImage,m_InrFmt);
@@ -324,7 +320,7 @@ void INRImageIO::FreeInrArgcArgv()
 {
     if (m_InrArgv != NULL)
     {
-        for (int iarg = 0 ; iarg < m_InrArgc ; ++iarg)
+        for (unsigned int iarg = 0 ; iarg < m_InrArgc ; ++iarg)
         {
             if (m_InrArgv[iarg] != NULL)
                 delete[] m_InrArgv[iarg];

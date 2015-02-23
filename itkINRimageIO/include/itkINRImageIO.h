@@ -101,7 +101,7 @@ protected:
   Fort_int m_InrFmt[9];
 
   void FreeInrArgcArgv();
-  int m_InrArgc;
+  unsigned int m_InrArgc;
   char** m_InrArgv;
 
   string m_InrProgVers;
