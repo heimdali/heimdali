@@ -26,6 +26,7 @@ struct Options
     bool z;
     bool y;
     bool x;
+    bool v;
     
     bool z0;
     bool y0; 
@@ -48,6 +49,7 @@ Options parse_command_line(vector<string> tclap_argv)
     TCLAP::SwitchArg zSwitch("z","planes", "Print number of planes", parser);
     TCLAP::SwitchArg ySwitch("y","rows", "Print number of rows", parser);
     TCLAP::SwitchArg xSwitch("x","columns", "Print number of columns", parser);
+    TCLAP::SwitchArg vSwitch("v","component", "Print number of pixel component", parser);
 
     // -o
     TCLAP::SwitchArg oSwitch("o","", "Print number of bytes of a pixel.", parser);
@@ -74,6 +76,7 @@ Options parse_command_line(vector<string> tclap_argv)
     opt.z = zSwitch.getValue();
     opt.y = ySwitch.getValue();
     opt.x = xSwitch.getValue();
+    opt.v = vSwitch.getValue();
     opt.z0 = z0Switch.getValue();
     opt.y0 = y0Switch.getValue();
     opt.x0 = x0Switch.getValue();
@@ -85,11 +88,12 @@ Options parse_command_line(vector<string> tclap_argv)
 
 void postprocess_options(Options& opt)
 {
-    if (not (opt.z or opt.y or opt.x or opt.z0 or opt.y0 or opt.x0 or opt.o)) {
+    if (not (opt.z or opt.y or opt.x or opt.v or opt.z0 or opt.y0 or opt.x0 or opt.o)) {
         opt.filename = true;
         opt.z = true;
         opt.y = true;
         opt.x = true;
+        opt.v = true;
         opt.z0 = true;
         opt.y0 = true;
         opt.x0 = true;
@@ -116,6 +120,7 @@ void print_informations(ImageIOBase::Pointer io, Options opt)
     if (opt.x)  smsg << "-x " << io->GetDimensions(XD) << "\t";
     if (opt.y)  smsg << "-y " << io->GetDimensions(YD) << "\t";
     if (opt.z && io->GetDimensions(ZD) != 1)  smsg << "-z " << io->GetDimensions(ZD) << "\t";
+    if (opt.v && io->GetNumberOfComponents() != 1)  smsg << "-v " << io->GetNumberOfComponents() << "\t";
     if (opt.x0 && io->GetOrigin(XD) != 0) smsg << "-x0 " << io->GetOrigin(XD) << "\t";
     if (opt.y0 && io->GetOrigin(YD) != 0) smsg << "-y0 " << io->GetOrigin(YD) << "\t";
     if (opt.z0 && io->GetOrigin(ZD) != 0) smsg << "-z0 " << io->GetOrigin(ZD) << "\t";
