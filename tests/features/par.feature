@@ -9,7 +9,7 @@ Feature: par
         When I run the command: par imtest_z5_y4_x3_c2.<ext>
         Then I see the standard output:
             """
-            imtest_z5_y4_x3_c2.<ext> -z 5	-y 4	-x 3	-o 4
+            imtest_z5_y4_x3_c2.<ext> -x 3	-y 4	-z 5	-o 4
             ""
             """
     Examples:
@@ -30,7 +30,7 @@ Feature: par
         When I run the command: par imtest_z5_y4_x3_c2_origin_4_5_6.<ext>
         Then I see the standard output:
             """
-            imtest_z5_y4_x3_c2_origin_4_5_6.<ext> -z 5	-y 4	-x 3	-z0 6	-y0 5	-x0 4	-o 4
+            imtest_z5_y4_x3_c2_origin_4_5_6.<ext> -x 3	-y 4	-z 5	-x0 4	-y0 5	-z0 6	-o 4
             ""
             """
     Examples:
@@ -43,7 +43,7 @@ Feature: par
         When I run the command: par imtest_z1_y3_x2_c1.<ext>
         Then I see the standard output:
             """
-            imtest_z1_y3_x2_c1.<ext> -y 3	-x 2	-o 4
+            imtest_z1_y3_x2_c1.<ext> -x 2	-y 3	-o 4
             ""
             """
     Examples:
