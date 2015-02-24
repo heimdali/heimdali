@@ -45,6 +45,9 @@ int main(int argc, char** argv)
 
     vector<string> inputFilenames = inputFilenamesArg.getValue();
 
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+
 
     //////////////////////////////////////////////////////////////////////////
     // Types and instances.
