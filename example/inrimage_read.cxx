@@ -36,7 +36,7 @@ imtest_value(unsigned int iz, unsigned int iy,
 
 //! Check values of plane passed as argument are as expected.
 bool
-check_plane(InrImageType& image, unsigned int offsetz, unsigned int iz,
+check_plane(string label, InrImageType& image, unsigned int offsetz, unsigned int iz,
             unsigned int sy, unsigned int sx, unsigned int sv)
 {
     PixelType value;
@@ -47,7 +47,8 @@ check_plane(InrImageType& image, unsigned int offsetz, unsigned int iz,
         value = image(ix,iy,iz,iv);
         expected_value = imtest_value(offsetz+iz,iy,ix,iv);
         if (value != expected_value) {
-            cerr << "ERROR: image[" << iz << "," << iy << "," 
+            cerr << label << ": "
+                 << "image[" << iz << "," << iy << "," 
                  << ix << "," << iv << "]"
                  << " value is " << value 
                  << ", but expected " << expected_value << endl;
@@ -118,13 +119,13 @@ int main(int argc, char** argv)
     unsigned int iz=0, iy=0, ix=0;
     unsigned int nz=1;
     image.read(offsetz);
-    if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
+    if (! check_plane("plane 2", image,offsetz,iz,sy,sx,sv)) return 1;
     if (! check_buffered_region("plane 2",image,ix,sx,iy,sy,offsetz,nz) ) return 1;
 
     // Read plane 0.
     offsetz = 0;
     image.read(offsetz);
-    if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
+    if (! check_plane("plane 0", image,offsetz,iz,sy,sx,sv)) return 1;
     if (! check_buffered_region("plane 0",image,ix,sx,iy,sy,offsetz,nz) ) return 1;
 
     // Read planes 1, 2 and 3.
@@ -134,7 +135,7 @@ int main(int argc, char** argv)
     ostringstream label;
     for (iz = 0 ; iz < nz ; ++iz) {
         label << "plane " << iz << " of (1,2,3)";
-        if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
+        if (! check_plane(label.str(), image,offsetz,iz,sy,sx,sv)) return 1;
         if (! check_buffered_region(label.str(),image,ix,sx,iy,sy,offsetz,nz) ) return 1;
     }
 
@@ -144,7 +145,7 @@ int main(int argc, char** argv)
     image.read();
     for (iz = 0 ; iz < nz ; ++iz) {
         label << "plane " << iz << " of all";
-        if (! check_plane(image,offsetz,iz,sy,sx,sv)) return 1;
+        if (! check_plane(label.str(), image,offsetz,iz,sy,sx,sv)) return 1;
         if (! check_buffered_region(label.str(),image,ix,sx,iy,sy,offsetz,nz) ) return 1;
     }
 

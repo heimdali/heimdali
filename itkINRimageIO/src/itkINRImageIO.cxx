@@ -172,90 +172,66 @@ void INRImageIO::Read(void *buffer)
     }
 
   // Get region to read.
-  ImageIORegion            regionToRead = this->GetIORegion();
+  ImageIORegion regionToRead = this->GetIORegion();
 
   // Open image.
   m_InrImage = c_image( (char*) m_FileName.c_str(), (char*) m_InrMode.c_str(), 
       (char*) m_InrVerif.c_str(), m_InrFmt);
 
-  // Use more readable names.
-  unsigned int SY = m_InrFmt[I_NDIMY];
-  unsigned int SX = m_InrFmt[I_NDIMX];
-  unsigned int SV = m_InrFmt[I_NDIMV];
-
-  unsigned int IZ = nDims>2 ? regionToRead.GetIndex(2) : 0;
-  unsigned int IY = regionToRead.GetIndex(1);
-  unsigned int IX = regionToRead.GetIndex(0);
-
-  unsigned int NZ = nDims>2 ? regionToRead.GetSize(2) : 1;
-  unsigned int NY = regionToRead.GetSize(1);
-  unsigned int NX = regionToRead.GetSize(0);
-
   // Do we want to read just a part of the image?
-  if ( largestRegion != m_IORegion )
-    {
+  if ( largestRegion != m_IORegion ) {
 
-    // Buffers.
-    float* row_buffer = new float[SX*SV]();
+      // Use more readable names.
+      unsigned int SY = m_InrFmt[I_NDIMY];
+      unsigned int SX = m_InrFmt[I_NDIMX];
+      unsigned int SV = m_InrFmt[I_NDIMV];
 
-    // Iterators.
-    unsigned int ibuffer, row_cursor;
-    unsigned int iz,iy,ix,iv;
+      unsigned int IZ = nDims>2 ? regionToRead.GetIndex(2) : 0;
+      unsigned int IY = regionToRead.GetIndex(1);
+      unsigned int IX = regionToRead.GetIndex(0);
 
-    ibuffer = 0;
-    // Iterate on planes we want to read.
-    for (iz = IZ ; iz < IZ+NZ ; iz++)
-      {
+      unsigned int NZ = nDims>2 ? regionToRead.GetSize(2) : 1;
+      unsigned int NY = regionToRead.GetSize(1);
+      unsigned int NX = regionToRead.GetSize(0);
+
+      // Size (in bytes) of one pixel.
+      unsigned int pixel_size = SV * m_InrFmt[I_BSIZE];
+
+      // full row
+      unsigned int full_row_size = SX * pixel_size;
+      char* full_row_buffer = (char*) malloc(full_row_size);
+
+      // requested row
+      unsigned int requested_row_size = NX * pixel_size;
+      // buffer has been allocated by ITK to NZ*NY*requested_row_size
+      char* buffer_p = (char*) buffer;
+
+      // skipped pixel row.
+      unsigned int skipped_size = IX * pixel_size;
+
       // Iterate on rows we want to read.
-      for (iy = IY ; iy < IY+NY ; iy++)
-        {
-        // Set cursor to row we want to read.
-        row_cursor = 
-          iz*SY // Number of lines in all previous planes.
-          + iy  // Line index in current plane.
-          + 1;  // INRimage counts from 1.
-        c_lptset(m_InrImage, row_cursor);
+      for (unsigned int iz = IZ ; iz < IZ+NZ ; iz++) {
+      for (unsigned int iy = IY ; iy < IY+NY ; iy++) {
+          // Set cursor to row we want to read.
+          unsigned int row_cursor = 
+            iz*SY // Number of lines in all previous planes.
+            + iy  // Line index in current plane.
+            + 1;  // INRimage counts from 1.
+          c_lptset(m_InrImage, row_cursor);
 
-        // Read 1 whole row.
-        switch( this->m_ComponentType )
-          {
-          case FLOAT:
-            c_lecflt(m_InrImage, 1, (float*) row_buffer);
-            break;
-          case DOUBLE:
-            c_lect(m_InrImage, 1, (float*) row_buffer);
-            break;
-          default:
-            itkExceptionMacro(<< "unexpected m_ComponentType, expected FLOAT or DOUBLE." << m_ComponentType);
-            break;
-          }
+          // Read 1 full row.
+          c_lect(m_InrImage, 1, full_row_buffer);
 
-        // Extract columns.
-        for (ix = IX ; ix < IX+NX ; ix++)
-          {
-            for (iv = 0 ; iv < SV ; iv++)
-              {
-                ((float*) buffer)[ibuffer] = row_buffer[ix*SV + iv];
-                ibuffer +=1;
-              }
-          }
-        } // iy loop
-      } // iz loop
+          // Extract columns.
+          memcpy(buffer_p, full_row_buffer + skipped_size, requested_row_size);
+
+          // Update buffer_p
+          buffer_p += requested_row_size;
+      }}
 
   // Or the whole image?
   } else {
-      switch( this->m_ComponentType )
-      {
-          case FLOAT:
-              c_lecflt( m_InrImage, m_InrFmt[I_DIMY], (float*) buffer);
-              break;
-          case DOUBLE:
-              c_lect(m_InrImage,m_InrFmt[I_DIMY],buffer);
-              break;
-          default:
-              itkExceptionMacro(<< "unexpected m_ComponentType, expected FLOAT or DOUBLE." << m_ComponentType);
-              break;
-      }
+      c_lect(m_InrImage,m_InrFmt[I_DIMY],buffer);
   }
 
   // Close image.
@@ -289,8 +265,41 @@ void INRImageIO ::Write(const void *buffer)
   m_InrFmt[I_NDIMV] = this->m_NumberOfComponents;
   m_InrFmt[I_DIMX] = m_InrFmt[I_NDIMX]*m_InrFmt[I_NDIMV];
   m_InrFmt[I_DIMY] = m_InrFmt[I_NDIMY]*m_InrFmt[I_NDIMZ];
-  m_InrFmt[I_BSIZE] = 4;
-  m_InrFmt[I_TYPE] = 1;
+
+  const int inr_integer = 0;
+  const int inr_real = 1;
+
+  switch (this->GetComponentType()) {
+      case ImageIOBase::UNKNOWNCOMPONENTTYPE:
+          itkExceptionMacro(<< "Component type is unknown");
+          break;
+      case ImageIOBase::FLOAT:
+          m_InrFmt[I_TYPE] = inr_real;
+          m_InrFmt[I_BSIZE] = 4;
+          break;
+      case ImageIOBase::DOUBLE:
+          m_InrFmt[I_TYPE] = inr_real;
+          m_InrFmt[I_BSIZE] = 8;
+          break;
+      case ImageIOBase::UCHAR:
+          m_InrFmt[I_TYPE] = inr_real;
+          m_InrFmt[I_BSIZE] = 1;
+          break;
+      case ImageIOBase::UINT:
+          m_InrFmt[I_TYPE] = inr_integer;
+          m_InrFmt[I_BSIZE] = 2;
+          break;
+      case ImageIOBase::ULONG:
+          m_InrFmt[I_TYPE] = inr_integer;
+          m_InrFmt[I_BSIZE] = 4;
+          break;
+      default:
+        itkExceptionMacro(
+            << "Expected pixel component type to be"
+            << "FLOAT, DOUBLE, UCHAR, UINT or ULONG"
+            << "but, got " << this->GetComponentTypeAsString(this->GetComponentType()));
+          break;
+  }
 
   // Open image.
   m_InrImage = c_image( (char*) m_FileName.c_str(), (char*)"c", (char*)"", m_InrFmt);
@@ -487,7 +496,7 @@ bool itk::INRImageIO::CanStreamWrite()
     return false;
 }
 
-void itk::INRImageIO ::ReadImageInformation()
+void itk::INRImageIO::ReadImageInformation()
 {
     InrInit();
 
@@ -534,12 +543,40 @@ void itk::INRImageIO ::ReadImageInformation()
         this->m_Origin[i] = 0;
       }
 
-    // c_lecflt will be able to read all kind of image into float, but double
-    // precision image are manage differently.
-    if ( m_InrFmt[I_TYPE] == 1 && m_InrFmt[I_BSIZE] == 8) {
-        this->m_ComponentType = DOUBLE;
+    const int inr_integer = 0;
+    const int inr_real = 1;
 
-    } else {
-        this->m_ComponentType = FLOAT;
+    switch (m_InrFmt[I_TYPE]) {
+
+       case inr_real:
+           switch (m_InrFmt[I_BSIZE]) {
+             case 4:
+               this->m_ComponentType = FLOAT;
+               break;
+             case 8:
+               this->m_ComponentType = DOUBLE;
+               break;
+             default:
+                itkExceptionMacro(<< "Expected float pixel component byte size to be 4 or 8"
+                                  << "but, got " << m_InrFmt[I_BSIZE]);
+           }
+           break;
+
+       case inr_integer:
+           switch (m_InrFmt[I_BSIZE]) {
+             case 1:
+               this->m_ComponentType = UCHAR;
+               break;
+             case 2:
+               this->m_ComponentType = UINT;
+               break;
+             case 4:
+               this->m_ComponentType = ULONG;
+               break;
+             default:
+                itkExceptionMacro(<< "Expected integer pixel component byte size to be 4 or 8"
+                                  << "but, got " << m_InrFmt[I_BSIZE]);
+           }
+           break;
     }
 }
