@@ -37,6 +37,8 @@ CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     this->m_filename = filename;
     this->m_reader = CmdReader<ImageType>::ReaderType::New();
     this->m_reader->SetFileName(filename);
+    this->m_convert_fixed_point_to_floating_point = false;
+    this->m_convert_fixed_point_to_floating_point_required = false;
 
     // Read image size only.
     this->m_reader->UpdateOutputInformation();
@@ -54,6 +56,46 @@ CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     // Region to read.
     this->m_index[XD] = this->m_ix;
     this->m_size[XD] = this->m_nx;
+
+    // DivideImageFilter.
+    this->m_divider = CmdReader<ImageType>::DivideImageFilterType::New();
+}
+
+int get_fixed_point_divider(itk::ImageIOBase::Pointer io)
+{
+    if ( (string) io->GetNameOfClass() != (string) "HDF5ImageIo" &&
+         (string) io->GetNameOfClass() != (string) "INRImageIO" ) return 0;
+
+    ostringstream error_msg;
+
+    switch (io->GetComponentType())
+    {
+        case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
+            error_msg << "Component type is unknown";
+            throw(Heimdali::ValueError(error_msg.str()));
+            break;
+        case itk::ImageIOBase::FLOAT:
+            return 0;
+            break;
+        case itk::ImageIOBase::DOUBLE:
+            return 0;
+            break;
+        case itk::ImageIOBase::UCHAR:
+            return 255;
+            break;
+        case itk::ImageIOBase::UINT:
+            return 65535;
+            break;
+        case itk::ImageIOBase::ULONG:
+            return 4294967295;
+            break;
+        default:
+            error_msg << "Expected pixel component type to be"
+                      << "FLOAT, DOUBLE, UCHAR, UINT or ULONG"
+                      << "but, got " << io->GetComponentTypeAsString(io->GetComponentType());
+            throw(Heimdali::ValueError(error_msg.str()));
+            break;
+    }
 }
 
 template <typename ImageType>
@@ -77,6 +119,17 @@ CmdReaderFromFile<ImageType>::next_iteration()
     this->m_requestedRegion.SetIndex(this->m_index);
     this->m_requestedRegion.SetSize(this->m_size);
     this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
+
+    int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
+
+    this->m_convert_fixed_point_to_floating_point_required = 
+        this->m_convert_fixed_point_to_floating_point && 
+        (fixed_point_divider != 0);
+
+    if (this->m_convert_fixed_point_to_floating_point_required) {
+        this->m_divider->SetInput1(this->m_reader->GetOutput());
+        this->m_divider->SetConstant2(fixed_point_divider);
+    }
 }
 
 template <typename ImageType>
@@ -89,14 +142,22 @@ template <typename ImageType>
 typename ImageType::Pointer
 CmdReaderFromFile<ImageType>::GetOutput()
 {
-    return this->m_reader->GetOutput();
+    if (this->m_convert_fixed_point_to_floating_point_required) {
+        return this->m_divider->GetOutput();
+    } else {
+        return this->m_reader->GetOutput();
+    }
 }
 
 template <typename ImageType>
 void
 CmdReaderFromFile<ImageType>::Update()
 {
-    this->m_reader->Update();
+    if (this->m_convert_fixed_point_to_floating_point_required) {
+        this->m_divider->Update();
+    } else {
+        this->m_reader->Update();
+    }
 }
 
 
@@ -109,6 +170,8 @@ template <typename ImageType>
 CmdReaderFromStdin<ImageType>::CmdReaderFromStdin(
     unsigned int nlines_per_loop)
 {
+    this->m_convert_fixed_point_to_floating_point = false;
+    this->m_convert_fixed_point_to_floating_point_required = false;
     this->m_nlines_per_loop = nlines_per_loop;
     this->m_HDF5io = itk::HDF5ImageIO::New();
     this->m_is_complete = false;
@@ -149,7 +212,7 @@ CmdReaderFromStdin<ImageType>::next_iteration()
     dictionary = this->m_reader->GetMetaDataDictionary();
     string key = "sz_sy_iz_iy";
     if (dictionary.HasKey(key)) {
-      m_using_pipe = true;
+      this->m_is_streamed_subregion = true;
       itk::ExposeMetaData< itk::Array<unsigned int> >(dictionary,key,sz_sy_iz_iy);
       unsigned int sz = sz_sy_iz_iy[0];
       unsigned int sy = sz_sy_iz_iy[1];
@@ -190,7 +253,7 @@ CmdReaderFromStdin<ImageType>::next_iteration()
       this->m_changeRegion->SetInput( this->m_reader->GetOutput() );
       this->m_changeRegion->Update();
     } else {
-        m_using_pipe = false;
+        this->m_is_streamed_subregion = false;
     }
 }
 
@@ -198,7 +261,7 @@ template <typename ImageType>
 typename ImageType::Pointer
 CmdReaderFromStdin<ImageType>::GetOutput()
 {
-    if (m_using_pipe) {
+    if (this->m_is_streamed_subregion) {
         return this->m_changeRegion->GetOutput();
     } else {
         return this->m_reader->GetOutput();

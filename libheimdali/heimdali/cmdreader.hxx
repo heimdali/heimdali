@@ -6,6 +6,7 @@
 #include <itkMetaDataDictionary.h>
 #include <itkMetaDataObject.h>
 #include "itkChangeRegionImageFilter.h"
+#include <itkDivideImageFilter.h>
 
 #include <string>
 
@@ -31,6 +32,8 @@ class ITK_ABI_EXPORT CmdReader
     public:
         typedef itk::ImageFileReader< ImageType >  ReaderType;
         typedef itk::ImageRegion<ImageType::ImageDimension> RegionType;
+        typedef itk::Image<typename ImageType::InternalPixelType, ImageType::ImageDimension> ScalarImageType;
+        typedef itk::DivideImageFilter<ImageType, ScalarImageType, ImageType> DivideImageFilterType;
     public:
         static CmdReader* make_cmd_reader(
             unsigned int nlines_per_loop, std::string filename);
@@ -43,6 +46,8 @@ class ITK_ABI_EXPORT CmdReader
         unsigned int get_sy() const {return m_sy;};
         unsigned int get_sx() const {return m_sx;};
         unsigned int get_sc() const {return m_sc;};
+        void convert_fixed_point_to_floating_point_on(){m_convert_fixed_point_to_floating_point=true;};
+        void convert_fixed_point_to_floating_point_off(){m_convert_fixed_point_to_floating_point=false;};
     protected:
         unsigned int m_nlines_per_loop;
         bool m_is_complete;
@@ -50,6 +55,9 @@ class ITK_ABI_EXPORT CmdReader
         unsigned int m_iz, m_iy, m_ix;
         unsigned int m_nz, m_ny, m_nx;
         unsigned int m_sz, m_sy, m_sx, m_sc;
+        bool m_convert_fixed_point_to_floating_point;
+        bool m_convert_fixed_point_to_floating_point_required;
+        typename DivideImageFilterType::Pointer m_divider;
 };
 
 template <typename ImageType>
@@ -76,7 +84,7 @@ class ITK_ABI_EXPORT CmdReaderFromStdin: public CmdReader<ImageType>
     public:
         typedef itk::ChangeRegionImageFilter<ImageType> ChangeRegionType;
         CmdReaderFromStdin():
-            m_using_pipe(false)
+            m_is_streamed_subregion(false)
         {};
         CmdReaderFromStdin(unsigned int nlines_per_loop);
         ~CmdReaderFromStdin();
@@ -89,7 +97,7 @@ class ITK_ABI_EXPORT CmdReaderFromStdin: public CmdReader<ImageType>
         itk::HDF5ImageIO::Pointer m_HDF5io;
         H5::H5File* m_fileimage;
         typename ChangeRegionType::Pointer m_changeRegion;
-        bool m_using_pipe;
+        bool m_is_streamed_subregion;
         //Metadata.
         itk::MetaDataDictionary dictionary;
 };

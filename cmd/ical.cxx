@@ -99,8 +99,9 @@ int main(int argc, char** argv)
     for (unsigned int ifile=0 ; ifile<inputFilenames.size() ; ifile++) {
 
         CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, inputFilenames[ifile]);
+        cmdreader->convert_fixed_point_to_floating_point_on();
         cmdreader->next_iteration();
-        cmdreader->reader()->Update();
+        cmdreader->Update();
         vectorImage = cmdreader->GetOutput();
 
         // Get vectorImage dimension
