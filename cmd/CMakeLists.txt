@@ -2,7 +2,7 @@ include_directories(${HEIMDALI_INCLUDE})
 include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
 
-set(CMD_LIST inrtoh5 h5toinr 
+set(CMD_LIST heimdali-convert
              par tpr ical
              so ad di mu bi min max
              sc sd lo ra car exp

@@ -11,9 +11,6 @@
 
 #include "heimdali/version.hxx"
 
-// author: <david.froger@inria.fr>
-// usage: Please see 'help' function bellow.
-
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -32,21 +29,20 @@ int main( int argc, char ** argv )
     ///////////////////////////////////////////////////////////////////////////
 
 
-    TCLAP::CmdLine cmd("Convert HDF5 image to INRimage image.", ' ', HEIMDALI_VERSION);
+    TCLAP::CmdLine cmd("Convert image from one format to another", ' ', HEIMDALI_VERSION);
 
     // input.inr
-    TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
-        "HDF5 image.",true,"","outputFilename",cmd);
+    TCLAP::UnlabeledValueArg<string> inputFilenameArg("IMAGE-IN", 
+        "Input image.",true,"","IMAGE-IN",cmd);
 
     // output.hdf5
-    TCLAP::UnlabeledValueArg<string> outputFilenameArg("outputFilename", 
-        "INRimage image.",true,"","inputFilename",cmd);
+    TCLAP::UnlabeledValueArg<string> outputFilenameArg("IMAGE-OUT", 
+        "Output image.",true,"","IMAGE-OUT",cmd);
 
     cmd.parse(argc,argv);
 
     string inputFilename = inputFilenameArg.getValue();
     string outputFilename = outputFilenameArg.getValue();
-
 
 
    ///////////////////////////////////////////////////////////////////////////
@@ -59,15 +55,13 @@ int main( int argc, char ** argv )
 
    // Image.
    typedef float PixelType;
-   const unsigned int Dimension = 3;
-   typedef itk::VectorImage<PixelType, Dimension> ImageType;
+   const unsigned int ImageDimension = 3;
+   typedef itk::VectorImage<PixelType, ImageDimension> ImageType;
 
    // Reader.
    typedef itk::ImageFileReader< ImageType >  ReaderType;
    ReaderType::Pointer reader = ReaderType::New();
    reader->SetFileName( inputFilename  );
-
-   reader->Update();
 
    // Writer.
    typedef itk::ImageFileWriter<ImageType>  WriterType;
@@ -84,7 +78,7 @@ int main( int argc, char ** argv )
 
   // Command line parser.
   catch (TCLAP::ArgException &e) { 
-      cerr << "hdf52inr: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+      cerr << "heimdali-convert: ERROR: " << e.error() << " for arg " << e.argId() << endl;
   }
 
   return 0;
