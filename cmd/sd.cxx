@@ -40,7 +40,7 @@ typedef itk::Image<PixelType, Dimension>  ScalarImageType;
 
 // DivideImageFilter.
 typedef itk::DivideImageFilter<ImageType, ScalarImageType, ImageType> DivideImageFilterType;
-DivideImageFilterType::Pointer multiplyImageFilter = DivideImageFilterType::New();
+DivideImageFilterType::Pointer divideImageFilter = DivideImageFilterType::New();
 
 // Command line tool reader.
 typedef Heimdali::CmdReader<ImageType> ReaderType;
@@ -58,12 +58,12 @@ for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     cmdreader->next_iteration();
     if (cmdreader->is_complete()) break;
 
-    // Mult by constant.
-    multiplyImageFilter->SetInput1( cmdreader->GetOutput() );
-    multiplyImageFilter->SetConstant2(number.getValue());
+    // Divide by constant.
+    divideImageFilter->SetInput1( cmdreader->GetOutput() );
+    divideImageFilter->SetConstant2(number.getValue());
 
     // Write output.
-    cmdwriter->Write( multiplyImageFilter->GetOutput() );
+    cmdwriter->Write( divideImageFilter->GetOutput() );
     cmdwriter->Update();
 }
 
