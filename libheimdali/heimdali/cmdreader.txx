@@ -63,7 +63,7 @@ CmdReaderFromFile<ImageType>::CmdReaderFromFile(
 
 int get_fixed_point_divider(itk::ImageIOBase::Pointer io)
 {
-    if ( (string) io->GetNameOfClass() != (string) "HDF5ImageIo" &&
+    if ( (string) io->GetNameOfClass() != (string) "HDF5ImageIO" &&
          (string) io->GetNameOfClass() != (string) "INRImageIO" ) return 0;
 
     ostringstream error_msg;
