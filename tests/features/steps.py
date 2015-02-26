@@ -5,11 +5,24 @@ import os
 
 from lettuce import *
 
+MAX_CHAR_OUTPUT = 10000
+
+def truncate_long_output(output):
+    if len(output) > MAX_CHAR_OUTPUT:
+        output = output[:MAX_CHAR_OUTPUT]
+        if output[-1] == '\n':
+            output += '...output truncated...'
+        else:
+            output += '\n...output truncated...'
+    return output
+
 def check_command():
     if world.returncode != 0 or world.stderr != '':
         raise AssertionError, \
             "returncode is: %i, stdout is:\n%s\n, stderr is:\n%s\n" % (
-            world.returncode, world.stdout, world.stderr)
+                world.returncode,
+                truncate_long_output(world.stdout),
+                truncate_long_output(world.stderr))
 
 def check_stdout(actual, expected):
     if actual != expected:

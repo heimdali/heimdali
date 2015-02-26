@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <sstream>
 
 #include <tclap/CmdLine.h>
 
@@ -10,76 +11,123 @@
 #include "itkImageFileWriter.h"
 
 #include "heimdali/version.hxx"
+#include "heimdali/error.hxx"
+#include "heimdali/itkhelper.hxx"
 
 using namespace std;
 
-///////////////////////////////////////////////////////////////////////////
-// Function to print help message.
-///////////////////////////////////////////////////////////////////////////
+typedef unsigned char PixelType;
+
+itk::ImageIOBase::IOComponentType
+read_component_type(string inputFilename)
+{
+    itk::ImageIOBase::Pointer io = 
+        itk::ImageIOFactory::CreateImageIO(inputFilename.c_str(),
+                                      itk::ImageIOFactory::ReadMode);
+    io->SetFileName(inputFilename.c_str());
+    io->ReadImageInformation();
+    return io->GetComponentType();
+}
+
+template<typename PixelType>
+void convert(string inputFilename, string outputFilename)
+{
+    // Image.
+    const unsigned int ImageDimension = 3;
+    typedef itk::VectorImage<PixelType, ImageDimension> ImageType;
+  
+    // Reader.
+    typedef itk::ImageFileReader< ImageType >  ReaderType;
+    typename ReaderType::Pointer reader = ReaderType::New();
+    reader->SetFileName(inputFilename);
+
+    reader->Update();
+  
+    // Writer.
+    typedef itk::ImageFileWriter<ImageType>  WriterType;
+    typename WriterType::Pointer writer = WriterType::New();
+    writer->SetFileName(outputFilename);
+  
+    // Connect reader to writer.
+    writer->SetInput(reader->GetOutput());
+  
+    // Update pipeline.
+    writer->Update();
+}
+
 
 int main( int argc, char ** argv )
 {
-
-
-  try {
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Parse command line arguments.
-    ///////////////////////////////////////////////////////////////////////////
-
+    try {
 
     TCLAP::CmdLine cmd("Convert image from one format to another", ' ', HEIMDALI_VERSION);
-
+    
     // input.inr
     TCLAP::UnlabeledValueArg<string> inputFilenameArg("IMAGE-IN", 
         "Input image.",true,"","IMAGE-IN",cmd);
-
+    
     // output.hdf5
     TCLAP::UnlabeledValueArg<string> outputFilenameArg("IMAGE-OUT", 
         "Output image.",true,"","IMAGE-OUT",cmd);
-
+    
     cmd.parse(argc,argv);
-
     string inputFilename = inputFilenameArg.getValue();
     string outputFilename = outputFilenameArg.getValue();
-
-
-   ///////////////////////////////////////////////////////////////////////////
-   // Read and write image
-   ///////////////////////////////////////////////////////////////////////////
-
-
-   // Put our INRimage reader in the list of readers ITK knows.
-   itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
-
-   // Image.
-   typedef float PixelType;
-   const unsigned int ImageDimension = 3;
-   typedef itk::VectorImage<PixelType, ImageDimension> ImageType;
-
-   // Reader.
-   typedef itk::ImageFileReader< ImageType >  ReaderType;
-   ReaderType::Pointer reader = ReaderType::New();
-   reader->SetFileName( inputFilename  );
-
-   // Writer.
-   typedef itk::ImageFileWriter<ImageType>  WriterType;
-   WriterType::Pointer writer = WriterType::New();
-   writer->SetFileName(outputFilename);
-
-   // Connect reader to writer.
-   writer->SetInput( reader->GetOutput() );
-
-   // Update pipeline.
-   writer->Update();
-
-  }
-
-  // Command line parser.
-  catch (TCLAP::ArgException &e) { 
-      cerr << "heimdali-convert: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-  }
-
-  return 0;
+    
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+    
+    // Image.
+    const unsigned int ImageDimension = 3;
+    typedef itk::VectorImage<PixelType, ImageDimension> ImageType;
+    
+    // Reader.
+    typedef itk::ImageFileReader< ImageType >  ReaderType;
+    typename ReaderType::Pointer reader = ReaderType::New();
+    reader->SetFileName( inputFilename  );
+    
+    itk::ImageIOBase::IOComponentType type = read_component_type(inputFilename);
+    ostringstream error_msg;
+    switch (type)
+    {
+        case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
+            error_msg << "Component type is unknown";
+            throw(Heimdali::ValueError(error_msg.str()));
+            break;
+        case itk::ImageIOBase::UCHAR:
+            cout << "uchar" << endl;
+            convert<unsigned char>(inputFilename, outputFilename);
+            break;
+        case itk::ImageIOBase::UINT:
+            cout << "uint" << endl;
+            convert<unsigned int>(inputFilename, outputFilename);
+            break;
+        case itk::ImageIOBase::ULONG:
+            cout << "ulong" << endl;
+            convert<unsigned long>(inputFilename, outputFilename);
+            break;
+        case itk::ImageIOBase::FLOAT:
+            cout << "float" << endl;
+            convert<float>(inputFilename, outputFilename);
+            break;
+        case itk::ImageIOBase::DOUBLE:
+            cout << "double" << endl;
+            convert<double>(inputFilename, outputFilename);
+            break;
+        default:
+             error_msg 
+             << "Expected pixel component type to be"
+             << "FLOAT, DOUBLE, UCHAR, UINT or ULONG"
+             << "but, got "
+             << itk::ImageIOBase::GetComponentTypeAsString(type);
+            break;
+    }
+    }
+    
+    // Command line parser.
+    catch (TCLAP::ArgException &e) { 
+        cerr << "heimdali-convert: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+    }
+    
+    return 0;
 }

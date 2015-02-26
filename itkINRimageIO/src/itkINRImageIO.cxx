@@ -266,6 +266,8 @@ void INRImageIO ::Write(const void *buffer)
   m_InrFmt[I_DIMX] = m_InrFmt[I_NDIMX]*m_InrFmt[I_NDIMV];
   m_InrFmt[I_DIMY] = m_InrFmt[I_NDIMY]*m_InrFmt[I_NDIMZ];
 
+  m_InrFmt[I_EXP] = 200;
+
   const int inr_integer = 0;
   const int inr_real = 1;
 
@@ -282,7 +284,7 @@ void INRImageIO ::Write(const void *buffer)
           m_InrFmt[I_BSIZE] = 8;
           break;
       case ImageIOBase::UCHAR:
-          m_InrFmt[I_TYPE] = inr_real;
+          m_InrFmt[I_TYPE] = inr_integer;
           m_InrFmt[I_BSIZE] = 1;
           break;
       case ImageIOBase::UINT:
@@ -322,7 +324,7 @@ void INRImageIO ::Write(const void *buffer)
   gfmset_(&m_InrImage,&gfmt);
 
   // Write image.
-  c_ecrflt(m_InrImage,m_InrFmt[I_DIMY],(float *)buffer);
+  c_ecr(m_InrImage,m_InrFmt[I_DIMY], (char*) buffer);
 
   // Close image.
   fermnf_(&m_InrImage);
@@ -510,7 +512,7 @@ void itk::INRImageIO::ReadImageInformation()
     else
       {
       fermnf_( &m_InrImage);
-      throw std::invalid_argument("File can not be read.");
+      itkExceptionMacro(<< "itkINRImageIO: c_image failed with error code: " << ier);
       }
 
     if (m_InrFmt[I_NDIMZ]==1) 
