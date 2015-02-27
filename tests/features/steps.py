@@ -31,10 +31,6 @@ def check_stdout(actual, expected):
         raise AssertionError, "stdout is not as expected " \
             "(- actual, + expected): %s" % (diff,)
 
-@step('I am in the heimdali data directory')
-def in_the_data_directory(step):
-    os.chdir(world.data_dir)
-
 def invoke_from(cmd_string, path):
     """Prefix executable in cmd_string with path"""
     cmd_list = cmd_string.split()
