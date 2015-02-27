@@ -1,6 +1,7 @@
 from lettuce import *
 
-from os.path import dirname, realpath, join, expanduser, isdir, isfile, normpath
+from os.path import dirname, realpath, join, expanduser, isdir, isfile, \
+    normpath, basename
 from os import getenv, mkdir
 from subprocess import check_output, check_call
 import json
@@ -22,6 +23,37 @@ def get_active_conda_env_path():
     active_env_path = json_data['default_prefix']
 
     return realpath(normpath(active_env_path))
+
+def get_conda_env_path(env_name, ensure_is_active=False):
+    """get path to a conda environment"""
+
+    normalize = lambda path : str(realpath(normpath(path)))
+
+    args = 'conda info --json'.split()
+
+    try:
+        json_str = check_output(args)
+    except OSError:
+        raise OSError, "Command 'conda info --json' failed, " \
+                       "is conda installed and in PATH?"
+
+    json_data = json.loads(json_str)
+    env_paths = [normalize(p) for p in json_data['envs']]
+    active_env_path = normalize(json_data['default_prefix'])
+
+    for env_path in env_paths:
+        if basename(env_path) == env_name:
+            break
+    else:
+        raise OSError, "Can not find %s conda environment." % env_name
+
+    if ensure_is_active and env_path != active_env_path:
+        raise OSError, "%s conda environment must be active. " \
+            "Please issue the command: 'source activate %s'" \
+            % (env_name, env_name)
+
+    return env_path
+
 
 def get_data_dir():
     """Path to heimdali-data git repository"""
@@ -96,6 +128,13 @@ def configure_example():
     conda_env_path = get_active_conda_env_path()
     args = 'cmake -DCMAKE_PREFIX_PATH=%s ..' % (conda_env_path,)
     check_call(args.split(), cwd=world.example_build_dir)
+
+@before.all
+def get_reference_inr_commands():
+    inrimage_path = get_conda_env_path('inrimage')
+    world.par = join(inrimage_path, 'bin', 'par')
+    world.so = join(inrimage_path, 'bin', 'so')
+    world.ical = join(inrimage_path, 'bin', 'ical')
 
 @before.all
 def setup_root_workdir():

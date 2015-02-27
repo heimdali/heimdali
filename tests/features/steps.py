@@ -91,7 +91,39 @@ def images_are_equal(step, fileA, fileB):
         check_command()
 
     elif extA == '.inr' and extB == '.inr':
-        raise NotImplementedError
+        # note that par, ical and so are from the original
+        # Inrimage library, not from Heimdali.
+
+        # Execute 'par' on both images, and compare output.
+        cmd = '%s %s %s' % (world.par, fileA, fileB)
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        world.stdout, world.stderr = p.communicate()
+        world.returncode = p.returncode
+        check_command()
+        paramsA, paramsB = world.stdout.strip().split('\n')
+        wordsA = paramsA.split()
+        wordsB = paramsB.split()
+        wordsA.pop(0) # file name
+        wordsB.pop(0) # file name
+        paramsA = ' '.join(wordsA)
+        paramsB = ' '.join(wordsB)
+        if paramsA != paramsB:
+            raise AssertionError, \
+               "Image %s has parameters:\n %r\n, but " \
+               "image %s has parameters:\n %r" % \
+               (fileA, paramsA, fileB, paramsB)
+
+        # Execute so file1 fileB | ical, and check output
+        cmd = '%s %s %s | %s' % (world.so, fileA, fileB, world.ical)
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        world.stdout, world.stderr = p.communicate()
+        world.returncode = p.returncode
+        check_command()
+        im_min, im_avg, im_max = [float(v) for v in world.stdout.split()]
+        if im_min != 0. or im_avg != 0. or im_max !=0.:
+            raise AssertionError, "Images are not equal. " \
+                "min, average, and max of the difference are: %f, %f, %f" % \
+                (im_min, im_avg, im_max)
 
     else:
         raise ValueError,  \
