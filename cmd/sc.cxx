@@ -45,9 +45,8 @@ typedef itk::Image<PixelType, Dimension>  ScalarImageType;
 
 // MultiplyImageFilter.
 typedef itk::MultiplyImageFilter<ImageType, ScalarImageType, ImageType>
-    MultiplyImageFilterType;
-MultiplyImageFilterType::Pointer multiplyImageFilter = 
-    MultiplyImageFilterType::New();
+    MultiplierType;
+MultiplierType::Pointer multiplier = MultiplierType::New();
 
 // Command line tool reader.
 typedef Heimdali::CmdReader<ImageType> ReaderType;
@@ -66,11 +65,11 @@ for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     if (cmdreader->is_complete()) break;
 
     // Mult by constant.
-    multiplyImageFilter->SetInput1( cmdreader->GetOutput() );
-    multiplyImageFilter->SetConstant2(number.getValue());
+    multiplier->SetInput1( cmdreader->GetOutput() );
+    multiplier->SetConstant2(number.getValue());
 
     // Write output.
-    cmdwriter->Write( multiplyImageFilter->GetOutput() );
+    cmdwriter->Write( multiplier->GetOutput() );
     cmdwriter->Update();
 }
 

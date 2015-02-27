@@ -76,7 +76,7 @@ Options parse_command_line(vector<string> tclap_argv)
 
     // input.h5
     TCLAP::UnlabeledMultiArg<string> inputFilenamesArg("inputFilename", 
-        "Input image file name.",required,"INPUT",false);
+        "Input image file name.",not_required,"INPUT",false);
 
     parser.add(inputFilenamesArg);
 
