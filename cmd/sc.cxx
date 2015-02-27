@@ -1,6 +1,7 @@
 #include <tclap/CmdLine.h>
 
 #include <itkImage.h>
+#include <itkINRImageIOFactory.h>
 #include <itkMultiplyImageFilter.h>
 
 #include "heimdali/cmdreader.hxx"
@@ -37,6 +38,9 @@ TCLAP::ValueArg<string> output("o","output",
 
 cmd.parse(argc,argv);
 
+// Put our INRimage reader in the list of readers ITK knows.
+itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+
 // Image type.
 typedef float PixelType;
 const unsigned int Dimension = 3;
@@ -52,6 +56,7 @@ MultiplierType::Pointer multiplier = MultiplierType::New();
 typedef Heimdali::CmdReader<ImageType> ReaderType;
 ReaderType* cmdreader = ReaderType::make_cmd_reader(streaming.getValue(),
                                                     input.getValue());
+cmdreader->convert_fixed_point_to_floating_point_on();
 
 // Command line tool writer.
 typedef Heimdali::CmdWriter<ImageType> WriterType;

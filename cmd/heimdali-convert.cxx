@@ -95,23 +95,18 @@ int main( int argc, char ** argv )
             throw(Heimdali::ValueError(error_msg.str()));
             break;
         case itk::ImageIOBase::UCHAR:
-            cout << "uchar" << endl;
             convert<unsigned char>(inputFilename, outputFilename);
             break;
         case itk::ImageIOBase::UINT:
-            cout << "uint" << endl;
             convert<unsigned int>(inputFilename, outputFilename);
             break;
         case itk::ImageIOBase::ULONG:
-            cout << "ulong" << endl;
             convert<unsigned long>(inputFilename, outputFilename);
             break;
         case itk::ImageIOBase::FLOAT:
-            cout << "float" << endl;
             convert<float>(inputFilename, outputFilename);
             break;
         case itk::ImageIOBase::DOUBLE:
-            cout << "double" << endl;
             convert<double>(inputFilename, outputFilename);
             break;
         default:
