@@ -74,7 +74,7 @@ def then_i_get_the_standard_output(step):
     check_command()
     check_stdout(world.stdout, expected_stdout)
 
-@step("the HDF5 files (.*) and (.*) are equal")
+@step("images (.*) and (.*) are equal")
 def hdf5_files_are_equal(step, fileA, fileB):
     cmd = "h5diff -v --compare " \
           "--exclude-path /HDFVersion " \

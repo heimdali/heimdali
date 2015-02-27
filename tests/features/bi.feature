@@ -6,4 +6,4 @@ Feature: bi
 
     Scenario: Add 1 to each pixel
         When I run the command: bi -n 1 -i $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 -o bi_out.h5
-        Then the HDF5 files bi_out.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_bi1.h5 are equal
+        Then images bi_out.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_bi1.h5 are equal

@@ -6,7 +6,7 @@ Feature: sc
 
     Scenario: Multiply each pixel by <factor>
         When I run the command: sc -n <factor> -i $HEIMDALI_DATA_DIR/<image>.<ext> -o <image>_sc<factor>.<ext>
-        Then the HDF5 files <image>_sc<factor>.<ext> and $HEIMDALI_DATA_DIR/<image>_sc<factor>.<ext> are equal
+        Then images <image>_sc<factor>.<ext> and $HEIMDALI_DATA_DIR/<image>_sc<factor>.<ext> are equal
 
     Examples:
     | image              | ext   | factor |

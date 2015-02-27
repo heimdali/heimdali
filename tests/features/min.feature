@@ -6,4 +6,4 @@ Feature: min
 
     Scenario: Minimum of two images
         When I run the command: min -o min_out.h5 $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_bi-1000_pow2.h5
-        Then the HDF5 files min_out.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_bi-1000_pow2_min_with_orig.h5 are equal
+        Then images min_out.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_bi-1000_pow2_min_with_orig.h5 are equal
