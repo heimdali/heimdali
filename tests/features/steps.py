@@ -75,16 +75,28 @@ def then_i_get_the_standard_output(step):
     check_stdout(world.stdout, expected_stdout)
 
 @step("images (.*) and (.*) are equal")
-def hdf5_files_are_equal(step, fileA, fileB):
-    cmd = "h5diff -v --compare " \
-          "--exclude-path /HDFVersion " \
-          "--exclude-path /ITKVersion " \
-          "--exclude-path /ITKImage/0/MetaData/sz_sy_iz_iy " \
-          "%s %s" % (fileA, fileB)
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-    world.stdout, world.stderr = p.communicate()
-    world.returncode = p.returncode
-    check_command()
+def images_are_equal(step, fileA, fileB):
+    extA = os.path.splitext(fileA)[1]
+    extB = os.path.splitext(fileB)[1]
+
+    if extA in ['.h5', '.hdf5'] and extB in ['.h5', '.hdf5']:
+        cmd = "h5diff -v --compare " \
+              "--exclude-path /HDFVersion " \
+              "--exclude-path /ITKVersion " \
+              "--exclude-path /ITKImage/0/MetaData/sz_sy_iz_iy " \
+              "%s %s" % (fileA, fileB)
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        world.stdout, world.stderr = p.communicate()
+        world.returncode = p.returncode
+        check_command()
+
+    elif extA == '.inr' and extB == '.inr':
+        raise NotImplementedError
+
+    else:
+        raise ValueError,  \
+            "Expected both HDF5 or both INRimage files, " \
+            "but got %r and %r files" % (extA, extB)
 
 @step("the HDF5 files (.*) and (.*) are almost equal with the relative parameter (.*)")
 def hdf5_files_are_equal(step, fileA, fileB, relative):
