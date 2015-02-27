@@ -20,7 +20,7 @@ Feature: heimdali-convert
         Then the HDF5 files imtest_z1_y3_x2_c1.h5 and $HEIMDALI_DATA_DIR/imtest_z1_y3_x2_c1.h5 are equal
 
     Scenario: Convert from HDF5 to INRimage, and back to HDF5, with UCHAR image
-        When I run the command: heimdali-convert $HEIMDALI_DATA_DIR/lena.h5 lena.inr
-        When I run the command: heimdali-convert lena.inr lena.h5
-        Then the HDF5 files lena.h5 and $HEIMDALI_DATA_DIR/lena.h5 are equal
+        When I run the command: heimdali-convert $HEIMDALI_DATA_DIR/lena_f1.h5 lena_f1.inr
+        When I run the command: heimdali-convert lena_f1.inr lena_f1.h5
+        Then the HDF5 files lena_f1.h5 and $HEIMDALI_DATA_DIR/lena_f1.h5 are equal
 

@@ -13,7 +13,7 @@ Feature: ical
             """
 
     Scenario: Compute min, mean, max of a fixed point (unsigned char) image
-        When I run the command: ical $HEIMDALI_DATA_DIR/lena.<ext>
+        When I run the command: ical $HEIMDALI_DATA_DIR/lena_f1.<ext>
         Then I see the standard output:
             """
             +1.1764706E-01 +4.9966636E-01 +9.3725491E-01
