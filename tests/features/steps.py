@@ -61,6 +61,8 @@ def run_the_example(step,cmd):
 @step('I see the line in standard output: (.*)')
 def i_see_the_line(step,line):
     check_command()
+    line = line.replace('$HEIMDALI_DATA_DIR', world.data_dir)
+    line = line.replace('$WORKDIR', world.workdir)
     if not line in world.stdout:
         raise AssertionError, \
             "Expected line: %r in stdout, but stdout is: %r" % (
@@ -68,7 +70,11 @@ def i_see_the_line(step,line):
 
 @step(u'Then I see the standard output:')
 def then_i_get_the_standard_output(step):
-    expected_stdout = step.multiline 
+    expected_stdout = step.multiline
+    expected_stdout = expected_stdout.replace('$HEIMDALI_DATA_DIR', 
+                                              world.data_dir)
+    expected_stdout = expected_stdout.replace('$WORKDIR', 
+                                              world.workdir)
     check_command()
     check_stdout(world.stdout, expected_stdout)
 
