@@ -287,18 +287,18 @@ void INRImageIO ::Write(const void *buffer)
           m_InrFmt[I_TYPE] = inr_integer;
           m_InrFmt[I_BSIZE] = 1;
           break;
-      case ImageIOBase::UINT:
+      case ImageIOBase::USHORT:
           m_InrFmt[I_TYPE] = inr_integer;
           m_InrFmt[I_BSIZE] = 2;
           break;
-      case ImageIOBase::ULONG:
+      case ImageIOBase::UINT:
           m_InrFmt[I_TYPE] = inr_integer;
           m_InrFmt[I_BSIZE] = 4;
           break;
       default:
         itkExceptionMacro(
             << "Expected pixel component type to be"
-            << "FLOAT, DOUBLE, UCHAR, UINT or ULONG"
+            << "FLOAT, DOUBLE, UCHAR, USHORT or UINT"
             << "but, got " << this->GetComponentTypeAsString(this->GetComponentType()));
           break;
   }
@@ -570,13 +570,13 @@ void itk::INRImageIO::ReadImageInformation()
                this->m_ComponentType = UCHAR;
                break;
              case 2:
-               this->m_ComponentType = UINT;
+               this->m_ComponentType = USHORT;
                break;
              case 4:
-               this->m_ComponentType = ULONG;
+               this->m_ComponentType = UINT;
                break;
              default:
-                itkExceptionMacro(<< "Expected integer pixel component byte size to be 4 or 8"
+                itkExceptionMacro(<< "Expected integer pixel component byte size to be 1, 2 or 4"
                                   << "but, got " << m_InrFmt[I_BSIZE]);
            }
            break;

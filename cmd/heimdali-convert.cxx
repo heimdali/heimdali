@@ -97,11 +97,11 @@ int main( int argc, char ** argv )
         case itk::ImageIOBase::UCHAR:
             convert<unsigned char>(inputFilename, outputFilename);
             break;
+        case itk::ImageIOBase::USHORT:
+            convert<unsigned short>(inputFilename, outputFilename);
+            break;
         case itk::ImageIOBase::UINT:
             convert<unsigned int>(inputFilename, outputFilename);
-            break;
-        case itk::ImageIOBase::ULONG:
-            convert<unsigned long>(inputFilename, outputFilename);
             break;
         case itk::ImageIOBase::FLOAT:
             convert<float>(inputFilename, outputFilename);
@@ -111,10 +111,11 @@ int main( int argc, char ** argv )
             break;
         default:
              error_msg 
-             << "Expected pixel component type to be"
-             << "FLOAT, DOUBLE, UCHAR, UINT or ULONG"
+             << "Expected pixel component type to be "
+             << "FLOAT, DOUBLE, UCHAR, USHORT or UINT "
              << "but, got "
              << itk::ImageIOBase::GetComponentTypeAsString(type);
+            throw(Heimdali::ValueError(error_msg.str()));
             break;
     }
     }
@@ -122,6 +123,14 @@ int main( int argc, char ** argv )
     // Command line parser.
     catch (TCLAP::ArgException &e) { 
         cerr << "heimdali-convert: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+    }
+
+    // Heimdali
+    catch (Heimdali::IOError &e) {
+        cerr << "cco: ERROR: " << e.getMessage() << endl;
+    }
+    catch (Heimdali::ValueError &e) {
+        cerr << "cco: ERROR: " << e.getMessage() << endl;
     }
     
     return 0;

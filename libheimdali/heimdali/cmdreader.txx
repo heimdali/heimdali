@@ -83,15 +83,15 @@ int get_fixed_point_divider(itk::ImageIOBase::Pointer io)
         case itk::ImageIOBase::UCHAR:
             return 255;
             break;
-        case itk::ImageIOBase::UINT:
+        case itk::ImageIOBase::USHORT:
             return 65535;
             break;
-        case itk::ImageIOBase::ULONG:
+        case itk::ImageIOBase::UINT:
             return 4294967295;
             break;
         default:
             error_msg << "Expected pixel component type to be"
-                      << "FLOAT, DOUBLE, UCHAR, UINT or ULONG"
+                      << "FLOAT, DOUBLE, UCHAR, USHORT or UINT"
                       << "but, got " << io->GetComponentTypeAsString(io->GetComponentType());
             throw(Heimdali::ValueError(error_msg.str()));
             break;

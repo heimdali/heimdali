@@ -46,7 +46,7 @@ bool is_hdf5_or_inrimage(string filename)
 
 template<typename OutputPixelType>
 void
-write_output(ReaderType* reader, string outputFilename, int fixed_point_divider)
+write_output(ReaderType* reader, string outputFilename, double fixed_point_divider)
 {
     bool convert_floating_to_fixed_point = is_hdf5_or_inrimage(outputFilename) 
                                         && fixed_point_divider != 0;
@@ -125,8 +125,8 @@ write_output(ReaderType* reader, string outputFilename, int fixed_point_divider)
 
             // Threshold image
             thresholder->SetInput(image);
-            thresholder->ThresholdAbove(255.);
-            thresholder->SetOutsideValue(255.);
+            thresholder->ThresholdAbove(fixed_point_divider);
+            thresholder->SetOutsideValue(fixed_point_divider);
             thresholder->Update();
             thresholder->Modified();
 
@@ -182,6 +182,10 @@ int main(int argc, char *argv[])
     string inputFilename = inputFilenameArg.getValue();
     string outputFilename = outputFilenameArg.getValue();
     int nbytes = oSwitch.getValue();
+    bool fixed_point = fixedSwitch.getValue();
+    bool floating_point = floatingSwitch.getValue();
+    if ( (! fixed_point) && (! floating_point) )
+        fixed_point = true;
 
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
@@ -193,7 +197,27 @@ int main(int argc, char *argv[])
 
     ostringstream error_msg;
 
-    if (floatingSwitch.getValue()) {
+    if (fixed_point) {
+        switch (nbytes)
+        {
+        case(1):
+            write_output<unsigned char>(reader, outputFilename, 255);
+            break;
+        case(2):
+            write_output<unsigned short>(reader, outputFilename, 65535);
+            break;
+        case(4):
+            write_output<unsigned int>(reader, outputFilename, 4294967295);
+            break;
+        default:
+            error_msg << "Pixel component size must to be 1, 2 or 4 "
+                      << "for fixed point number, but got "
+                      << nbytes;
+            throw(Heimdali::ValueError(error_msg.str()));
+            break;
+        }
+
+    } else if (floating_point) {
         switch (nbytes)
         {
         case(4):
@@ -209,31 +233,6 @@ int main(int argc, char *argv[])
             throw(Heimdali::ValueError(error_msg.str()));
             break;
         }
-
-    } else if (fixedSwitch.getValue()) {
-        switch (nbytes)
-        {
-        case(1):
-            write_output<unsigned char>(reader, outputFilename, 255);
-            break;
-        case(2):
-            write_output<unsigned int>(reader, outputFilename, 65535);
-            break;
-        case(4):
-            write_output<unsigned long>(reader, outputFilename, 4294967295);
-            break;
-        default:
-            error_msg << "Pixel component size must to be 1, 2 or 4 "
-                      << "for fixed point number, but got "
-                      << nbytes;
-            throw(Heimdali::ValueError(error_msg.str()));
-            break;
-        }
-
-    } else {
-          ostringstream msg;
-          msg << "errror: expected one switch" << endl;
-          throw(Heimdali::IOError(msg.str()));
     }
 
     }
