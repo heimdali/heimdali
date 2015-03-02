@@ -74,6 +74,16 @@ def then_i_get_the_standard_output(step):
     check_command()
     check_stdout(world.stdout, expected_stdout)
 
+def invoke_inrimage_par(filename,flags='-F -x -y -f -o'):
+    cmd = '%s %s  %s' % (world.par, flags, filename)
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    world.stdout, world.stderr = p.communicate()
+    world.returncode = p.returncode
+    check_command()
+    params = world.stdout.strip().split()
+    params.pop(0) # remove file name
+    return ' '.join(params)
+
 @step("images (.*) and (.*) are equal")
 def images_are_equal(step, fileA, fileB):
     extA = os.path.splitext(fileA)[1]
@@ -95,18 +105,8 @@ def images_are_equal(step, fileA, fileB):
         # Inrimage library, not from Heimdali.
 
         # Execute 'par' on both images, and compare output.
-        cmd = '%s %s %s' % (world.par, fileA, fileB)
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        world.stdout, world.stderr = p.communicate()
-        world.returncode = p.returncode
-        check_command()
-        paramsA, paramsB = world.stdout.strip().split('\n')
-        wordsA = paramsA.split()
-        wordsB = paramsB.split()
-        wordsA.pop(0) # file name
-        wordsB.pop(0) # file name
-        paramsA = ' '.join(wordsA)
-        paramsB = ' '.join(wordsB)
+        paramsA = invoke_inrimage_par(fileA)
+        paramsB = invoke_inrimage_par(fileB)
         if paramsA != paramsB:
             raise AssertionError, \
                "Image %s has parameters:\n %r\n, but " \
