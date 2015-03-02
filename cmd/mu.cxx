@@ -66,12 +66,12 @@ WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
 // VectorImage to Image
 typedef itk::VectorImageToImageAdaptor
     <Heimdali::PixelFloat, Heimdali::ImageDimension> ToImageType;
-ToImageType::Pointer toImage1 = ToImageType::New();
-ToImageType::Pointer toImage2 = ToImageType::New();
+ToImageType::Pointer toImage1Filter = ToImageType::New();
+ToImageType::Pointer toImage2Filter = ToImageType::New();
 
 // Multiply filter.
 typedef itk::MultiplyImageFilter <ToImageType,ToImageType,ScalarImageType> MultiplyImageFilterType;
-MultiplyImageFilterType::Pointer multiplier = MultiplyImageFilterType::New ();
+MultiplyImageFilterType::Pointer multiplier = MultiplyImageFilterType::New();
 
 // Duplicator.
 typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
@@ -80,11 +80,6 @@ DuplicatorType::Pointer duplicator = DuplicatorType::New();
 // Image to VectorImage
 typedef itk::ComposeImageFilter<ScalarImageType> ToVectorImageType;
 ToVectorImageType::Pointer toVectorImage = ToVectorImageType::New();
-
-ScalarImageType::IndexType index;
-index[0] = 1;
-index[1] = 0;
-index[2] = 0;
 
 unsigned int iregionmax = 1E+06;
 for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
@@ -99,20 +94,20 @@ for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     vectorImage1 = cmdreader1->GetOutput();
     vectorImage2 = cmdreader2->GetOutput();
 
-    toImage1->SetImage(vectorImage1);
-    toImage2->SetImage(vectorImage2);
+    toImage1Filter->SetImage(vectorImage1);
+    toImage2Filter->SetImage(vectorImage2);
 
     for (unsigned int ic = 0 ; ic < cmdreader1->get_sc() ; ++ic)
     {
         // VectorImage to Image
-        toImage1->SetExtractComponentIndex(ic);
-        toImage2->SetExtractComponentIndex(ic);
-        toImage1->Modified();
-        toImage2->Modified();
+        toImage1Filter->SetExtractComponentIndex(ic);
+        toImage2Filter->SetExtractComponentIndex(ic);
+        toImage1Filter->Modified();
+        toImage2Filter->Modified();
 
         // Multiply images.
-        multiplier->SetInput1(toImage1);
-        multiplier->SetInput2(toImage2);
+        multiplier->SetInput1(toImage1Filter);
+        multiplier->SetInput2(toImage2Filter);
         multiplier->Update();
         multiplier->Modified();
 
