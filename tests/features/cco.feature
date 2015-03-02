@@ -28,7 +28,7 @@ Feature: cco
     | lena_r4_sc8.5.inr |  lena_r4_sc8.5_f1.inr |
     | lena_r4_sc8.5.h5  |  lena_r4_sc8.5_f1.h5  |
 
-    Scenario: Convert fixed point from unsigned char to unsigned int
+    Scenario: Convert fixed point from unsigned char to unsigned short
         When I run the command: cco -o 2 $HEIMDALI_DATA_DIR/<input> <output>
         Then images <output> and $HEIMDALI_DATA_DIR/<output> are equal
     Examples:
@@ -36,4 +36,11 @@ Feature: cco
     | lena_f1.inr       |  lena_f2.inr          |
     | lena_f1.h5        |  lena_f2.h5           |
 
-
+    Scenario: Convert floating point (float) to fixed point (unsigned short)
+        When I run the command: cco -o 2 <input> <output>
+        Then images <output> and $HEIMDALI_DATA_DIR/<output> are equal
+    Examples:
+    | input             |  output               |
+    | lena_r4.inr       |  lena_f2.inr          |
+    | lena_r4.h5        |  lena_f2.h5           |
+   
