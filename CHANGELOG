@@ -52,3 +52,16 @@
     - implement write() method
     - implement write(int offsetz, int nz) method
     - example/inrimage_read.cxx works for .h5 and .inr
+
+0.6.2:
+    - Fix #19: par output format
+    - Replace h5toinr and inrtoh5 with heimdali-convert
+    - cmdreader support fixed point to floating point conversion
+    - itkINRimageIo supports UCHAR, USHORT, UINT, FLOAT, DOUBLE
+    - heimdali-convert supports UCHAR, USHORT, UINT, FLOAT, DOUBLE
+    - cco supports UCHAR, USHORT, UINT, FLOAT, DOUBLE, binary
+    - itkINRimageIO manages image origin
+    - FT: Functional test now execute in their own workdir
+    - FT: support for environment variable in steps
+    - FT: support testing Inrimage equality
+    - Fix compiler warnings
