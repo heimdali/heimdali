@@ -6,9 +6,13 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkCastImageFilter.h"
+#include <itkImageDuplicator.h>
+#include <itkComposeImageFilter.h>
 #include <itkHDF5ImageIO.h>
 #include <itkINRImageIO.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkThresholdImageFilter.h>
+#include "itkNthElementImageAdaptor.h"
 
 #include "heimdali/version.hxx"
 #include "heimdali/cli.hxx"
@@ -16,13 +20,16 @@
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/cmdwriter.hxx"
 
+// http://insight-developers.itk.narkive.com/pprO3gTs/vectorimagetoimageadaptor-dysfunctional
+// http://www.itk.org/Wiki/ITK/Examples/ImageProcessing/ProcessingNthImageElement
+
 using namespace std;
 
 const unsigned int ImageDimension = 3;
 typedef double InputPixelType;
-typedef itk::VectorImage<InputPixelType, ImageDimension> InputImageType;
-typedef itk::Image<InputPixelType, ImageDimension> ScalarInputImageType;
-typedef Heimdali::CmdReader<InputImageType> ReaderType;
+typedef itk::      Image<InputPixelType, ImageDimension> ScalarInputImageType;
+typedef itk::VectorImage<InputPixelType, ImageDimension> VectorInputImageType;
+typedef Heimdali::CmdReader<VectorInputImageType> ReaderType;
 
 bool is_hdf5_or_inrimage(string filename)
 {
@@ -44,31 +51,106 @@ write_output(ReaderType* reader, string outputFilename, int fixed_point_divider)
     bool convert_floating_to_fixed_point = is_hdf5_or_inrimage(outputFilename) 
                                         && fixed_point_divider != 0;
 
-    reader->Update();
-
     // MultiplyImageFilter.
-    typedef itk::MultiplyImageFilter<InputImageType, ScalarInputImageType,
-                                     InputImageType> MultiplierType;
+    typedef itk::MultiplyImageFilter<VectorInputImageType, ScalarInputImageType,
+                                     VectorInputImageType> MultiplierType;
     MultiplierType::Pointer multiplier = MultiplierType::New();
+
+    // Cast image from double to output type.
+    typedef itk::VectorImage<OutputPixelType, ImageDimension> VectorOutputImageType;
+    typedef itk::Image<OutputPixelType, ImageDimension> ScalarOutputImageType;
+    typedef itk::CastImageFilter<VectorInputImageType, VectorOutputImageType > CastFilterType;
+    typename CastFilterType::Pointer caster = CastFilterType::New();
+
+    // Command line tool writer.
+    typedef Heimdali::CmdWriter<VectorOutputImageType> WriterType;
+    WriterType* writer = WriterType::make_cmd_writer(outputFilename);
+
+    // ProcessingNthImageElement
+    typedef itk::NthElementImageAdaptor<VectorInputImageType, InputPixelType> ToImageType;
+    typename ToImageType::Pointer toImageFilter = ToImageType::New();
+
+    // Store output of ProcessingNthImageElement
+    typedef itk::Image<InputPixelType, ImageDimension> ScalarInputImageType;
+    typename ScalarInputImageType::Pointer image = ScalarInputImageType::New();
+    typename ScalarInputImageType::IndexType index;
+    typename ScalarInputImageType::SizeType size;
+    typename ScalarInputImageType::RegionType region;
+    index.Fill(0);
+    size[0] = reader->get_sx();
+    size[1] = reader->get_sy();
+    size[2] = reader->get_sz();
+    region.SetIndex(index);
+    region.SetSize(size);
+    image->SetRegions(region);
+    image->Allocate();
+
+    // Thresholder
+    typedef itk::ThresholdImageFilter<ScalarInputImageType> ThresholderType;
+    typename ThresholderType::Pointer thresholder = ThresholderType::New();
+
+    // Duplicator.
+    typedef itk::ImageDuplicator<ScalarInputImageType> DuplicatorType;
+    typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
+
+    // Image to VectorImage
+    typedef itk::ComposeImageFilter<ScalarInputImageType> ToVectorImageType;
+    typename ToVectorImageType::Pointer toVectorImage = ToVectorImageType::New();
+
+    typename VectorInputImageType::Pointer vectorImage;
+
     if (convert_floating_to_fixed_point) {
         multiplier->SetInput1(reader->GetOutput());
         multiplier->SetConstant2(fixed_point_divider);
-    }
 
-    // Cast image from double to output type.
-    typedef itk::VectorImage<OutputPixelType, ImageDimension> OutputImageType;
-    typedef itk::CastImageFilter<InputImageType, OutputImageType > CastFilterType;
-    typename CastFilterType::Pointer caster = CastFilterType::New();
-    if (convert_floating_to_fixed_point)
-        caster->SetInput(multiplier->GetOutput());
-    else
+        toImageFilter->SetImage(multiplier->GetOutput());
+        for (unsigned int ic = 0 ; ic < reader->get_sc() ; ++ic)
+        {
+            // VectorImage to Image
+            toImageFilter->SelectNthElement(ic);
+            toImageFilter->Modified();
+            toImageFilter->Update();
+
+            for (unsigned int iz=0 ; iz < reader->get_sz() ; iz++) {
+                index[2] = iz;
+                for (unsigned int iy=0 ; iy < reader->get_sy() ; iy++) {
+                    index[1] = iy;
+                    for (unsigned int ix=0 ; ix < reader->get_sx() ; ix++) {
+                        index[0] = ix;
+                        image->SetPixel(index,
+                                        toImageFilter->GetPixel(index));
+                    }
+                }
+            }
+
+            // Threshold image
+            thresholder->SetInput(image);
+            thresholder->ThresholdAbove(255.);
+            thresholder->SetOutsideValue(255.);
+            thresholder->Update();
+            thresholder->Modified();
+
+            // Image to VectorImage
+            duplicator->SetInputImage(thresholder->GetOutput());
+            duplicator->Update();
+
+            toVectorImage->SetInput(ic, duplicator->GetOutput());
+            toVectorImage->Modified();
+            toVectorImage->Update();
+        }
+
+        vectorImage = toVectorImage->GetOutput();
+
+        caster->SetInput(vectorImage);
+        caster->Update();
+
+        writer->Write(caster->GetOutput());
+        vectorImage->Initialize();
+
+    } else {
         caster->SetInput(reader->GetOutput());
-
-    // Command line tool writer.
-    typedef Heimdali::CmdWriter<OutputImageType> WriterType;
-    WriterType* writer = WriterType::make_cmd_writer(outputFilename);
-    writer->Write(caster->GetOutput());
-    writer->Update();
+        writer->Write(caster->GetOutput());
+    }
 }
 
 int main(int argc, char *argv[])
