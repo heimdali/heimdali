@@ -12,6 +12,7 @@
 #include <itkINRImageIO.h>
 #include <itkMultiplyImageFilter.h>
 #include <itkThresholdImageFilter.h>
+#include <itkBinaryThresholdImageFilter.h>
 #include "itkNthElementImageAdaptor.h"
 
 #include "heimdali/version.hxx"
@@ -46,7 +47,7 @@ bool is_hdf5_or_inrimage(string filename)
 
 template<typename OutputPixelType>
 void
-write_output(ReaderType* reader, string outputFilename, double fixed_point_divider)
+write_output(ReaderType* reader, string outputFilename, double fixed_point_divider, bool binary=false)
 {
     bool convert_floating_to_fixed_point = is_hdf5_or_inrimage(outputFilename) 
                                         && fixed_point_divider != 0;
@@ -89,6 +90,10 @@ write_output(ReaderType* reader, string outputFilename, double fixed_point_divid
     typedef itk::ThresholdImageFilter<ScalarInputImageType> ThresholderType;
     typename ThresholderType::Pointer thresholder = ThresholderType::New();
 
+    typedef itk::BinaryThresholdImageFilter<ScalarInputImageType, ScalarInputImageType> 
+        BinaryThresholderType;
+    typename BinaryThresholderType::Pointer binary_thresholder = BinaryThresholderType::New();
+
     // Duplicator.
     typedef itk::ImageDuplicator<ScalarInputImageType> DuplicatorType;
     typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
@@ -124,14 +129,24 @@ write_output(ReaderType* reader, string outputFilename, double fixed_point_divid
             }
 
             // Threshold image
-            thresholder->SetInput(image);
-            thresholder->ThresholdAbove(fixed_point_divider);
-            thresholder->SetOutsideValue(fixed_point_divider);
-            thresholder->Update();
-            thresholder->Modified();
+            if (binary) {
+                binary_thresholder->SetInput(image);
+                binary_thresholder->SetUpperThreshold(127);
+                binary_thresholder->SetInsideValue(0);
+                binary_thresholder->SetOutsideValue(255);
+                binary_thresholder->Update();
+                binary_thresholder->Modified();
+                duplicator->SetInputImage(binary_thresholder->GetOutput());
+            } else {
+                thresholder->SetInput(image);
+                thresholder->ThresholdAbove(fixed_point_divider);
+                thresholder->SetOutsideValue(fixed_point_divider);
+                thresholder->Update();
+                thresholder->Modified();
+                duplicator->SetInputImage(thresholder->GetOutput());
+            }
 
             // Image to VectorImage
-            duplicator->SetInputImage(thresholder->GetOutput());
             duplicator->Update();
 
             toVectorImage->SetInput(ic, duplicator->GetOutput());
@@ -173,6 +188,9 @@ int main(int argc, char *argv[])
     // -f
     TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert to fixed point.", cmd, false);
 
+    // -b
+    TCLAP::ValueArg<int> binarySwitch("b","binary","Convert to binary",false,0,"NBITS",cmd);
+
     // -o
     TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",cmd);
 
@@ -184,7 +202,8 @@ int main(int argc, char *argv[])
     int nbytes = oSwitch.getValue();
     bool fixed_point = fixedSwitch.getValue();
     bool floating_point = floatingSwitch.getValue();
-    if ( (! fixed_point) && (! floating_point) )
+    bool binary = binarySwitch.getValue();
+    if ( (! fixed_point) && (! floating_point) && (binary == 0))
         fixed_point = true;
 
     // Put our INRimage reader in the list of readers ITK knows.
@@ -233,6 +252,8 @@ int main(int argc, char *argv[])
             throw(Heimdali::ValueError(error_msg.str()));
             break;
         }
+    } else if (binary) {
+        write_output<unsigned char>(reader, outputFilename, 255, true);
     }
 
     }

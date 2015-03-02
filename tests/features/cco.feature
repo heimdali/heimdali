@@ -43,4 +43,11 @@ Feature: cco
     | input             |  output               |
     | lena_r4.inr       |  lena_f2.inr          |
     | lena_r4.h5        |  lena_f2.h5           |
-   
+
+    Scenario: Convert fixed point (unsigned short) to binary (unsigned char)
+        When I run the command: cco -b 1 <input> <output>
+        Then images <output> and $HEIMDALI_DATA_DIR/<output> are equal
+    Examples:
+    | input             |  output               |
+    | lena_f2.inr       |  lena_b1_f1.inr       |
+    | lena_f2.h5        |  lena_b1_f1.h5        |
