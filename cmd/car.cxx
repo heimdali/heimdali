@@ -15,6 +15,7 @@
 #include "heimdali/cmdwriter.hxx"
 #include "heimdali/itkhelper.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cli.hxx"
 
 using namespace std;
 
@@ -24,13 +25,12 @@ int main(int argc, char** argv)
 try {
 
 TCLAP::CmdLine parser("Compute square of each pixel", ' ', HEIMDALI_VERSION);
-TCLAP::UnlabeledMultiArg<string> filenamesArg = Heimdali::add_tclap_image_in_image_out(TCLAP::CmdLine& parser)
+HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
 parser.parse(argc,argv);
 string inputFilename;
 string outputFilename;
-Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename)
-
+Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
 
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 

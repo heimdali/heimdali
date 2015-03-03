@@ -33,16 +33,6 @@ preprocess_argv(int argc, char** inrimage_argv)
     return tclap_argv;
 }
 
-/* Add IMAGE-IN IMAGE-OUT command line arguments */
-TCLAP::UnlabeledMultiArg<string>
-add_tclap_image_in_image_out(TCLAP::CmdLine& parser)
-{
-    return TCLAP::UnlabeledMultiArg<string>(
-        "filenames", "Input and ouput images",
-        false, "[IMAGE-IN] [IMAGE-OUT]", parser);
-
-}
-
 /* Parse IMAGE-IN IMAGE-OUT command line arguments */
 void
 parse_tclap_image_in_image_out(TCLAP::UnlabeledMultiArg<string>& filenamesArg,
