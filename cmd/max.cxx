@@ -11,6 +11,7 @@
 #include "heimdali/cmdwriter.hxx"
 #include "heimdali/itkhelper.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cli.hxx"
 
 using namespace std;
 
@@ -19,29 +20,19 @@ int main(int argc, char** argv)
 
 try {
 
-TCLAP::CmdLine cmd("Maximum of two images", ' ', HEIMDALI_VERSION);
-
-// -o output.h5
-TCLAP::ValueArg<string> output("o","output", 
-    "Output image, instead of standard output",false,"","FILENAME", cmd);
+TCLAP::CmdLine parser("Maximum of two images", ' ', HEIMDALI_VERSION);
 
 // -streaming N
 TCLAP::ValueArg<int> streaming("s","streaming", "Number of lines to stream",
-    false, 0,"NUMBER_OF_LINES", cmd);
+    false, 0,"NUMBER_OF_LINES", parser);
+HEIMDALI_TCLAP_IMAGE_IN_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-// --force
-TCLAP::SwitchArg forceSwitch("v","verbose",
-    "ITK HDF5 IO operation are verboses.", cmd);
-
-// image0.h5
-TCLAP::UnlabeledValueArg<string> input0("image0", 
-    "First image.",true,"","IMAGE1",cmd);
-
-// image1.h5
-TCLAP::UnlabeledValueArg<string> input1("image1", 
-    "Second image.",true,"","IMAGE2",cmd);
-
-cmd.parse(argc,argv);
+parser.parse(argc,argv);
+string inputFilename0;
+string inputFilename1;
+string outputFilename;
+Heimdali::parse_tclap_image_in_image_in_image_out(filenamesArg, inputFilename0,
+                                                  inputFilename1, outputFilename);
 
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
@@ -55,13 +46,13 @@ VectorImageType::Pointer vectorImage2;
 // Command line tool readers.
 typedef Heimdali::CmdReader<VectorImageType> ReaderType;
 ReaderType* cmdreader1 = ReaderType::make_cmd_reader( streaming.getValue(),
-                                                      input0.getValue());
+                                                      inputFilename0);
 
 ReaderType* cmdreader2 = ReaderType::make_cmd_reader(streaming.getValue(),
-                                                     input1.getValue());
+                                                     inputFilename1);
 // Command line tool writer.
 typedef Heimdali::CmdWriter<VectorImageType> WriterType;
-WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
+WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
 
 // VectorImage to Image
 typedef itk::VectorImageToImageAdaptor
