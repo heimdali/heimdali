@@ -113,8 +113,8 @@ def assert_inrimage_almost_equal(fileA, fileB):
 
 @step("images (.*) and (.*) are equal")
 def images_are_equal(step, fileA, fileB):
-    extA = os.path.splitext(fileA)[1]
-    extB = os.path.splitext(fileB)[1]
+    extA = os.path.splitext(fileA)[1].strip()
+    extB = os.path.splitext(fileB)[1].strip()
 
     if extA in ['.h5', '.hdf5'] and extB in ['.h5', '.hdf5']:
         cmd = "h5diff -v --compare " \
@@ -140,8 +140,8 @@ def images_are_equal(step, fileA, fileB):
 
 @step("images (.*) and (.*) are almost equal with the relative parameter (.*)")
 def images_are_almost_equal(step, fileA, fileB, relative):
-    extA = os.path.splitext(fileA)[1]
-    extB = os.path.splitext(fileB)[1]
+    extA = os.path.splitext(fileA)[1].strip()
+    extB = os.path.splitext(fileB)[1].strip()
 
     if extA in ['.h5', '.hdf5'] and extB in ['.h5', '.hdf5']:
         cmd = "h5diff -v --compare " \
