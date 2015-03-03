@@ -1,3 +1,7 @@
+#include <string>
+#include <vector>
+#include <sstream>
+
 #include <tclap/CmdLine.h>
 
 #include <itkImage.h>
@@ -19,17 +23,33 @@ int main(int argc, char** argv)
 
 try {
 
-TCLAP::CmdLine cmd("Compute square of each pixel", ' ', HEIMDALI_VERSION);
+TCLAP::CmdLine parser("Compute square of each pixel", ' ', HEIMDALI_VERSION);
+TCLAP::UnlabeledMultiArg<string> filenamesArg("filenames", "Input and ouput images",false,"[IMAGE-IN] [IMAGE-OUT]",parser);
 
-// -o output.h5
-TCLAP::ValueArg<string> output("o","image_out", 
-    "Output image, instead of standard output",false,"","FILENAME", cmd);
+parser.parse(argc,argv);
+vector<string> filenames = filenamesArg.getValue();
+string inputFilename;
+string outputFilename;
+ostringstream error_msg;
+switch (filenames.size())
+{
+case(2):
+    inputFilename = filenames[0];
+    outputFilename = filenames[1];
+    break;
+case(1):
+    inputFilename = filenames[0];
+    outputFilename = "-";
+    break;
+case(0):
+    inputFilename = "-";
+    outputFilename = "-";
+    break;
+default:
+    error_msg << "Expected two, one, on zero file names, but got " << filenames.size();
+    throw(TCLAP::ArgException(error_msg.str()));
+}
 
-// input.h5
-TCLAP::UnlabeledValueArg<string> input0("image_in", 
-    "First image.",true,"","IMAGE-IN",cmd);
-
-cmd.parse(argc,argv);
 
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
@@ -41,11 +61,11 @@ VectorImageType::Pointer vectorImage;
 
 // Command line tool readers.
 typedef Heimdali::CmdReader<VectorImageType> ReaderType;
-ReaderType* cmdreader = ReaderType::make_cmd_reader(0, input0.getValue());
+ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename);
 
 // Command line tool writer.
 typedef Heimdali::CmdWriter<VectorImageType> WriterType;
-WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
+WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
 
 // Duplicator.
 typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
@@ -109,17 +129,17 @@ for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
 
 // Command line parser.
 catch (TCLAP::ArgException &e) { 
-    cerr << "par: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+    cerr << "car: ERROR: " << e.error() << " for arg " << e.argId() << endl;
 }
 
 
 // Input/output.
 catch (Heimdali::IOError &e) {
-    cerr << "par: ERROR: " << e.getMessage() << endl;
+    cerr << "car: ERROR: " << e.getMessage() << endl;
 }
 
 catch (Heimdali::NotImplementedError &e) {
-    cerr << "par: ERROR: " << e.getMessage() << endl;
+    cerr << "car: ERROR: " << e.getMessage() << endl;
 }
 
 return 0;

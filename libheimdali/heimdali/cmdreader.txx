@@ -10,7 +10,7 @@ CmdReader<ImageType>*
 CmdReader<ImageType>::make_cmd_reader(
     unsigned int nlines_per_loop, string filename)
 {
-    if (filename == "" or filename == "-") {
+    if (filename == "" || filename == "-") {
         return new CmdReaderFromStdin<ImageType>(nlines_per_loop);
     } else {
         return new CmdReaderFromFile<ImageType>(nlines_per_loop,filename);

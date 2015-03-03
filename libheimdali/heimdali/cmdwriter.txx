@@ -8,7 +8,7 @@ namespace Heimdali {
 template <typename ImageType>
 CmdWriter<ImageType>* CmdWriter<ImageType>::make_cmd_writer(string filename)
 {
-    if (filename == "") {
+    if (filename == "" || filename == "-") {
         return new CmdWriterToStdout<ImageType>();
     } else {
         return new CmdWriterToFile<ImageType>(filename);

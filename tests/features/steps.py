@@ -84,6 +84,33 @@ def invoke_inrimage_par(filename,flags='-F -x -y -f -o'):
     params.pop(0) # remove file name
     return ' '.join(params)
 
+def assert_inrimage_same_parameters(fileA, fileB):
+    """Execute 'par' on both images, and compare output."""
+    paramsA = invoke_inrimage_par(fileA)
+    paramsB = invoke_inrimage_par(fileB)
+    if paramsA != paramsB:
+        raise AssertionError, \
+           "Image %s has parameters:\n %r\n, but " \
+           "image %s has parameters:\n %r" % \
+           (fileA, paramsA, fileB, paramsB)
+
+def assert_inrimage_equal(fileA, fileB):
+    """ Execute so file1 fileB | ical, and check output """
+    # Execute so file1 fileB | ical, and check output
+    cmd = '%s %s %s | %s' % (world.so, fileA, fileB, world.ical)
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    world.stdout, world.stderr = p.communicate()
+    world.returncode = p.returncode
+    check_command()
+    im_min, im_avg, im_max = [float(v) for v in world.stdout.split()]
+    if im_min != 0. or im_avg != 0. or im_max !=0.:
+        raise AssertionError, "Images are not equal. " \
+            "min, average, and max of the difference are: %f, %f, %f" % \
+            (im_min, im_avg, im_max)
+
+def assert_inrimage_almost_equal(fileA, fileB):
+    pass
+
 @step("images (.*) and (.*) are equal")
 def images_are_equal(step, fileA, fileB):
     extA = os.path.splitext(fileA)[1]
@@ -103,45 +130,41 @@ def images_are_equal(step, fileA, fileB):
     elif extA == '.inr' and extB == '.inr':
         # note that par, ical and so are from the original
         # Inrimage library, not from Heimdali.
-
-        # Execute 'par' on both images, and compare output.
-        paramsA = invoke_inrimage_par(fileA)
-        paramsB = invoke_inrimage_par(fileB)
-        if paramsA != paramsB:
-            raise AssertionError, \
-               "Image %s has parameters:\n %r\n, but " \
-               "image %s has parameters:\n %r" % \
-               (fileA, paramsA, fileB, paramsB)
-
-        # Execute so file1 fileB | ical, and check output
-        cmd = '%s %s %s | %s' % (world.so, fileA, fileB, world.ical)
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        world.stdout, world.stderr = p.communicate()
-        world.returncode = p.returncode
-        check_command()
-        im_min, im_avg, im_max = [float(v) for v in world.stdout.split()]
-        if im_min != 0. or im_avg != 0. or im_max !=0.:
-            raise AssertionError, "Images are not equal. " \
-                "min, average, and max of the difference are: %f, %f, %f" % \
-                (im_min, im_avg, im_max)
+        assert_inrimage_same_parameters(fileA, fileB)
+        assert_inrimage_equal(fileA, fileB)
 
     else:
         raise ValueError,  \
             "Expected both HDF5 or both INRimage files, " \
             "but got %r and %r files" % (extA, extB)
 
-@step("the HDF5 files (.*) and (.*) are almost equal with the relative parameter (.*)")
-def hdf5_files_are_equal(step, fileA, fileB, relative):
-    cmd = "h5diff -v --compare " \
-          "--relative=%s " % (relative, ) + \
-          "--exclude-path /HDFVersion " \
-          "--exclude-path /ITKVersion " \
-          "--exclude-path /ITKImage/0/MetaData/sz_sy_iz_iy " \
-          "%s %s" % (fileA, fileB)
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-    world.stdout, world.stderr = p.communicate()
-    world.returncode = p.returncode
-    check_command()
+@step("images (.*) and (.*) are almost equal with the relative parameter (.*)")
+def images_are_almost_equal(step, fileA, fileB, relative):
+    extA = os.path.splitext(fileA)[1]
+    extB = os.path.splitext(fileB)[1]
+
+    if extA in ['.h5', '.hdf5'] and extB in ['.h5', '.hdf5']:
+        cmd = "h5diff -v --compare " \
+              "--relative=%s " % (relative, ) + \
+              "--exclude-path /HDFVersion " \
+              "--exclude-path /ITKVersion " \
+              "--exclude-path /ITKImage/0/MetaData/sz_sy_iz_iy " \
+              "%s %s" % (fileA, fileB)
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        world.stdout, world.stderr = p.communicate()
+        world.returncode = p.returncode
+        check_command()
+
+    elif extA == '.inr' and extB == '.inr':
+        # note that par, ical and so are from the original
+        # Inrimage library, not from Heimdali.
+        assert_inrimage_same_parameters(fileA, fileB)
+        assert_inrimage_almost_equal(fileA, fileB)
+
+    else:
+        raise ValueError,  \
+            "Expected both HDF5 or both INRimage files, " \
+            "but got %r and %r files" % (extA, extB)
 
 @step("I build the (.*) example")
 def build_example(step, target):
