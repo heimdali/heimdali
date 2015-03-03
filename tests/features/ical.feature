@@ -23,3 +23,21 @@ Feature: ical
         | ext |
         | h5  |
         | inr |
+
+    Scenario: Read from stdin
+        When I run the command: ad $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> | ical -
+        Then I see the standard output:
+            """
+            +2.0000000E+00 +4.3220000E+03 +8.6420000E+03
+            ""
+            """
+        When I run the command: ad $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> | ical
+        Then I see the standard output:
+            """
+            +2.0000000E+00 +4.3220000E+03 +8.6420000E+03
+            ""
+            """
+    Examples:
+        | ext |
+        | h5  |
+        | inr |

@@ -21,29 +21,31 @@ int main(int argc, char** argv)
     //////////////////////////////////////////////////////////////////////////
 
         
-    TCLAP::CmdLine cmd("Compute min, max and mean of images",
+    TCLAP::CmdLine parser("Compute min, max and mean of images",
         ' ', HEIMDALI_VERSION);
 
     // -w output.txt
     TCLAP::ValueArg<string> outputFilenameArg("o","output",
         "Write image file name and results to file.",
-        false,"","output.txt",cmd);
+        false,"","output.txt",parser);
 
     // --force
     TCLAP::SwitchArg forceSwitch("f","force",
-        "Force output file override.", cmd);
+        "Force output file override.", parser);
 
     // --per-component
     TCLAP::SwitchArg perComponentSwitch("p","per-component",
-        "Compute stat on each pixel component, instead of globally.", cmd);
+        "Compute stat on each pixel component, instead of globally.", parser);
 
     // input.h5
     TCLAP::UnlabeledMultiArg<string> inputFilenamesArg("inputFilenames", 
-        "Input image file name.",true,"filename",cmd);
+        "Input image file name.",false,"FILENAMES",parser);
 
-    cmd.parse(argc,argv);
+    parser.parse(argc,argv);
 
     vector<string> inputFilenames = inputFilenamesArg.getValue();
+    if (inputFilenames.size() == 0)
+        inputFilenames.push_back("-");
 
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 

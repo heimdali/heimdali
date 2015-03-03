@@ -12,6 +12,7 @@
 #include "heimdali/cli.hxx"
 #include "heimdali/redirect_stdout.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cmdreader.hxx"
 
 using namespace std;
 using namespace itk;
@@ -46,7 +47,6 @@ Options parse_command_line(vector<string> tclap_argv)
 {
     // Parse command line.
     bool not_required = false;
-    bool required = true;
         
     TCLAP::CmdLine parser("List image formats", ' ', HEIMDALI_VERSION);
 
@@ -75,16 +75,16 @@ Options parse_command_line(vector<string> tclap_argv)
     TCLAP::ValueArg<string> wrSwitch("","wr","Output file",not_required,"","output.txt",parser);
 
     // input.h5
-    TCLAP::UnlabeledMultiArg<string> inputFilenamesArg("inputFilename", 
-        "Input image file name.",not_required,"INPUT",false);
-
-    parser.add(inputFilenamesArg);
+    TCLAP::UnlabeledMultiArg<string> inputFilenamesArg("inputFilenames", 
+        "Input image file name.",false,"FILENAMES",parser);
 
     parser.parse(tclap_argv);
 
     // Store values in opt.
     Options opt;
     opt.inputFilenames = inputFilenamesArg.getValue();
+    if (opt.inputFilenames.size() == 0)
+        opt.inputFilenames.push_back("-");
     opt.z = zSwitch.getValue();
     opt.y = ySwitch.getValue();
     opt.x = xSwitch.getValue();
@@ -124,10 +124,22 @@ void postprocess_options(Options& opt)
 ImageIOBase::Pointer
 read_informations(string filename)
 {
-    ImageIOBase::Pointer imageio = 
-        ImageIOFactory::CreateImageIO( filename.c_str(),
-                                       ImageIOFactory::ReadMode);
-    imageio->SetFileName(filename);
+    ImageIOBase::Pointer imageio;
+
+    if (filename == "" or filename == "-") {
+        typedef float PixelType;
+        const unsigned int Dimension = 3;
+        typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
+        typedef Heimdali::CmdReader<VectorImageType> CmdReaderType;
+        CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, filename);
+        cmdreader->next_iteration();
+        cmdreader->Update();
+        imageio = cmdreader->reader()->GetImageIO();
+    } else {
+        imageio = ImageIOFactory::CreateImageIO( filename.c_str(), ImageIOFactory::ReadMode);
+        imageio->SetFileName(filename);
+    }
+
     imageio->ReadImageInformation();
     return imageio;
 }
@@ -199,7 +211,6 @@ int main(int argc, char** argv)
     // Print informations about images.
     for (unsigned int ifile=0 ; ifile < opt.inputFilenames.size() ; ifile++) {
         ImageIOBase::Pointer imageio = read_informations(opt.inputFilenames[ifile]);
-        read_informations(opt.inputFilenames[ifile]);
         print_informations(imageio,opt);
     }
 

@@ -57,3 +57,25 @@ Feature: par
       | ext |
       | h5  |
       | inr |
+
+    Scenario: Read from stdin
+        When I run the command: ad $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> | par -x -
+        Then I see the standard output:
+            """
+            " -x 3"
+            """
+    Examples:
+      | ext |
+      | h5  |
+      | inr |
+
+    Scenario: Read from stdin
+        When I run the command: ad $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> | par -x
+        Then I see the standard output:
+            """
+            " -x 3"
+            """
+    Examples:
+      | ext |
+      | h5  |
+      | inr |
