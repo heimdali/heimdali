@@ -7,35 +7,26 @@
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/cmdwriter.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cli.hxx"
 
 using namespace std;
 
 int main(int argc, char** argv)
 { 
 
-TCLAP::CmdLine cmd("Subtract two images", ' ', HEIMDALI_VERSION);
-
-// -o output.h5
-TCLAP::ValueArg<string> output("o","output", 
-    "Output image, instead of standard output",false,"","FILENAME", cmd);
+TCLAP::CmdLine parser("Subtract two images", ' ', HEIMDALI_VERSION);
 
 // -streaming N
 TCLAP::ValueArg<int> streaming("s","streaming", "Number of lines to stream",
-    false, 0,"NUMBER_OF_LINES", cmd);
+    false, 0,"NUMBER_OF_LINES", parser);
+HEIMDALI_TCLAP_IMAGE_IN_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-// --force
-TCLAP::SwitchArg forceSwitch("v","verbose",
-    "ITK HDF5 IO operation are verboses.", cmd);
-
-// image0.h5
-TCLAP::UnlabeledValueArg<string> input0("image0", 
-    "First image.",true,"","IMAGE1",cmd);
-
-// image0.h5
-TCLAP::UnlabeledValueArg<string> input1("image1", 
-    "Second image.",true,"","IMAGE2",cmd);
-
-cmd.parse(argc,argv);
+parser.parse(argc,argv);
+string inputFilename0;
+string inputFilename1;
+string outputFilename;
+Heimdali::parse_tclap_image_in_image_in_image_out(filenamesArg, inputFilename0,
+                                                  inputFilename1, outputFilename);
 
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
@@ -48,13 +39,13 @@ typedef itk::VectorImage<PixelType, Dimension> ImageType;
 // Command line tool readers.
 typedef Heimdali::CmdReader<ImageType> ReaderType;
 ReaderType* reader1 = ReaderType::make_cmd_reader( streaming.getValue(),
-                                                   input0.getValue());
+                                                   inputFilename0);
 
 ReaderType* reader2 = ReaderType::make_cmd_reader(streaming.getValue(),
-                                                  input1.getValue());
+                                                  inputFilename1);
 // Command line tool writer.
 typedef Heimdali::CmdWriter<ImageType> WriterType;
-WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
+WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
 
 // Subtract filter.
 typedef itk::SubtractImageFilter <ImageType,ImageType> SubtractImageFilterType;
