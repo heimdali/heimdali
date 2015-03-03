@@ -24,31 +24,12 @@ int main(int argc, char** argv)
 try {
 
 TCLAP::CmdLine parser("Compute square of each pixel", ' ', HEIMDALI_VERSION);
-TCLAP::UnlabeledMultiArg<string> filenamesArg("filenames", "Input and ouput images",false,"[IMAGE-IN] [IMAGE-OUT]",parser);
+TCLAP::UnlabeledMultiArg<string> filenamesArg = Heimdali::add_tclap_image_in_image_out(TCLAP::CmdLine& parser)
 
 parser.parse(argc,argv);
-vector<string> filenames = filenamesArg.getValue();
 string inputFilename;
 string outputFilename;
-ostringstream error_msg;
-switch (filenames.size())
-{
-case(2):
-    inputFilename = filenames[0];
-    outputFilename = filenames[1];
-    break;
-case(1):
-    inputFilename = filenames[0];
-    outputFilename = "-";
-    break;
-case(0):
-    inputFilename = "-";
-    outputFilename = "-";
-    break;
-default:
-    error_msg << "Expected two, one, on zero file names, but got " << filenames.size();
-    throw(TCLAP::ArgException(error_msg.str()));
-}
+Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename)
 
 
 // Put our INRimage reader in the list of readers ITK knows.
