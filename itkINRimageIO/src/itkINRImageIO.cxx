@@ -515,14 +515,13 @@ void itk::INRImageIO::ReadImageInformation()
       itkExceptionMacro(<< "itkINRImageIO: c_image failed with error code: " << ier);
       }
 
+    this->SetNumberOfDimensions(3);
     if (m_InrFmt[I_NDIMZ]==1) 
       {
-        this->SetNumberOfDimensions(2);
         this->m_Dimensions[0] = m_InrFmt[I_NDIMX];
         this->m_Dimensions[1] = m_InrFmt[I_NDIMY];
         this->m_Dimensions[2] = 1;
       } else {
-        this->SetNumberOfDimensions(3);
         this->m_Dimensions[0] = m_InrFmt[I_NDIMX];
         this->m_Dimensions[1] = m_InrFmt[I_NDIMY];
         this->m_Dimensions[2] = m_InrFmt[I_NDIMZ];
