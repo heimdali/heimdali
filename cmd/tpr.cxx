@@ -94,9 +94,9 @@ int main(int argc, char** argv)
     IX = ixValue.getValue();
 
     // Number of plane/column/row read.
-    NZ = zValue.getValue()==0 ? SZ-ImageIndex[2] : zValue.getValue();
-    NY = yValue.getValue()==0 ? SY-ImageIndex[1] : yValue.getValue();
-    NX = xValue.getValue()==0 ? SX-ImageIndex[0] : xValue.getValue();
+    NZ = zValue.getValue()==0 ? SZ-IZ : zValue.getValue();
+    NY = yValue.getValue()==0 ? SY-IY : yValue.getValue();
+    NX = xValue.getValue()==0 ? SX-IX : xValue.getValue();
 
     // Create region to read
     ImageIndex[2] = IZ;
