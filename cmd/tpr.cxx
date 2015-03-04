@@ -14,6 +14,7 @@
 
 #include "heimdali/error.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cli.hxx"
 
 using namespace std;
 
@@ -27,13 +28,15 @@ int main(int argc, char** argv)
     // Parse comamnd line options and arguments.
     //////////////////////////////////////////////////////////////////////////
 
+    vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
+
         
     TCLAP::CmdLine cmd("Print the pixel values of a image subregion",' ', HEIMDALI_VERSION);
 
     // -iz -iy -ix
-    TCLAP::ValueArg<int> ixValue("k","icolumn", "First column",false,0,"IZ",cmd);
-    TCLAP::ValueArg<int> iyValue("j","irow", "First rows",false,0,"IY",cmd);
-    TCLAP::ValueArg<int> izValue("i","iplane", "First plane",false,0,"IX",cmd);
+    TCLAP::ValueArg<int> ixValue("","iz", "First column",false,0,"IZ",cmd);
+    TCLAP::ValueArg<int> iyValue("","iy", "First rows",false,0,"IY",cmd);
+    TCLAP::ValueArg<int> izValue("","ix", "First plane",false,0,"IX",cmd);
 
     // -z -y -x
     TCLAP::ValueArg<int> zValue("z","nplanes", "Number of planes",false,0,"NZ", cmd);
@@ -44,7 +47,7 @@ int main(int argc, char** argv)
     TCLAP::UnlabeledMultiArg<string> inputFilenamesArg("inputFilenames", 
         "Input image file name.",true,"IMAGE",cmd);
 
-    cmd.parse(argc,argv);
+    cmd.parse(tclap_argv);
 
     vector<string> inputFilenames = inputFilenamesArg.getValue();
 
