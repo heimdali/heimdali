@@ -23,6 +23,21 @@ Feature: par
             " -x 3"
             """
 
+    Scenario: Print 2D image parameters
+        When I run the command: par $HEIMDALI_DATA_DIR/lena_f2.inr
+        Then I see the standard output:
+            """
+            $HEIMDALI_DATA_DIR/lena_f2.inr -x 256	-y 256	-o 2	-f
+            ""
+            """
+
+    Scenario: Print 2D image parameters, force -z to be printed
+        When I run the command: par $HEIMDALI_DATA_DIR/lena_f2.inr -z
+        Then I see the standard output:
+            """
+            " -z 1"
+            """
+
     Scenario: Print file type
         When I run the command: par $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> -F
         Then I see the standard output:

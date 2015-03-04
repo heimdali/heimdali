@@ -14,6 +14,11 @@
 #include "heimdali/version.hxx"
 #include "heimdali/cmdreader.hxx"
 
+#define print_switch(name, value, canceling_value) \
+    print_canceled = (value == canceling_value && ! opt.has_switch); \
+    if (opt.name && ! print_canceled )  \
+        smsg << "-" << #name << " "<< value << "\t"
+
 using namespace std;
 using namespace itk;
 
@@ -22,26 +27,21 @@ static int ZD = 2, YD = 1, XD = 0;
 struct Options
 {
     vector<string> inputFilenames;
-
     bool filename;
-
-    bool z;
-    bool y;
-    bool x;
-    bool v;
-    
-    bool z0;
-    bool y0; 
-    bool x0;
-
-    bool o;
-
-    bool F;
-    bool r;
-    bool f;
+    bool z,y,x,v;
+    bool z0,y0,x0;
+    bool o,F,r,f;
+    bool has_switch;
     string outputFilename;
 };
 
+bool
+get_switch(TCLAP::SwitchArg& switch_arg, Options& opt)
+{
+    bool value  = switch_arg.getValue();
+    if (value) opt.has_switch = true;
+    return value;
+}
 
 Options parse_command_line(vector<string> tclap_argv)
 {
@@ -85,17 +85,17 @@ Options parse_command_line(vector<string> tclap_argv)
     opt.inputFilenames = inputFilenamesArg.getValue();
     if (opt.inputFilenames.size() == 0)
         opt.inputFilenames.push_back("-");
-    opt.z = zSwitch.getValue();
-    opt.y = ySwitch.getValue();
-    opt.x = xSwitch.getValue();
-    opt.v = vSwitch.getValue();
-    opt.z0 = z0Switch.getValue();
-    opt.y0 = y0Switch.getValue();
-    opt.x0 = x0Switch.getValue();
-    opt.o = oSwitch.getValue();
-    opt.F = FSwitch.getValue();
-    opt.r = rSwitch.getValue();
-    opt.f = fSwitch.getValue();
+    opt.z = get_switch(zSwitch, opt);
+    opt.y = get_switch(ySwitch, opt);
+    opt.x = get_switch(xSwitch, opt);
+    opt.v = get_switch(vSwitch, opt);
+    opt.z0 = get_switch(z0Switch, opt);
+    opt.y0 = get_switch(y0Switch, opt);
+    opt.x0 = get_switch(x0Switch, opt);
+    opt.o = get_switch(oSwitch, opt);
+    opt.F = get_switch(FSwitch, opt);
+    opt.r = get_switch(rSwitch, opt);
+    opt.f = get_switch(fSwitch, opt);
     opt.outputFilename = wrSwitch.getValue();
 
     return opt;
@@ -103,8 +103,9 @@ Options parse_command_line(vector<string> tclap_argv)
 
 void postprocess_options(Options& opt)
 {
-    if (not (opt.z or opt.y or opt.x or opt.v or opt.z0 or opt.y0 or opt.x0 
-                   or opt.o or opt.F or opt.f or opt.r)) {
+    if (opt.has_switch)
+        opt.filename = false;
+    else {
         opt.filename = true;
         opt.z = true;
         opt.y = true;
@@ -116,8 +117,6 @@ void postprocess_options(Options& opt)
         opt.o = true;
         opt.r = true;
         opt.f = true;
-    } else {
-        opt.filename = false;
     }
 }
 
@@ -147,13 +146,14 @@ read_informations(string filename)
 void print_informations(ImageIOBase::Pointer io, Options opt)
 {
     ostringstream smsg; // Stream MeSsaGe
+    bool print_canceled;
     if (opt.x)  smsg << "-x " << io->GetDimensions(XD) << "\t";
     if (opt.y)  smsg << "-y " << io->GetDimensions(YD) << "\t";
-    if (opt.z && io->GetDimensions(ZD) != 1)  smsg << "-z " << io->GetDimensions(ZD) << "\t";
-    if (opt.v && io->GetNumberOfComponents() != 1)  smsg << "-v " << io->GetNumberOfComponents() << "\t";
-    if (opt.x0 && io->GetOrigin(XD) != 0) smsg << "-x0 " << io->GetOrigin(XD) << "\t";
-    if (opt.y0 && io->GetOrigin(YD) != 0) smsg << "-y0 " << io->GetOrigin(YD) << "\t";
-    if (opt.z0 && io->GetOrigin(ZD) != 0) smsg << "-z0 " << io->GetOrigin(ZD) << "\t";
+    print_switch(z, io->GetDimensions(ZD), 1);
+    print_switch(v, io->GetNumberOfComponents(), 1);
+    print_switch(x0, io->GetOrigin(XD), 0);
+    print_switch(y0, io->GetOrigin(YD), 0);
+    print_switch(z0, io->GetOrigin(ZD), 0);
     if (opt.o)  smsg << "-o " << io->GetComponentSize() << "\t";
     if (opt.F) {
         if ((string) io->GetNameOfClass() == (string) "HDF5ImageIO")
