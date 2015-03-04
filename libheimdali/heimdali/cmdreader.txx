@@ -176,6 +176,9 @@ CmdReaderFromStdin<ImageType>::CmdReaderFromStdin(
     this->m_HDF5io = itk::HDF5ImageIO::New();
     this->m_is_complete = false;
     m_traceback = MTB_new_tb();
+
+    // DivideImageFilter.
+    this->m_divider = CmdReader<ImageType>::DivideImageFilterType::New();
 }
 
 template <typename ImageType>
@@ -207,6 +210,18 @@ CmdReaderFromStdin<ImageType>::next_iteration()
     this->m_sz = m_HDF5io->GetDimensions(XD);
     this->m_sc = m_HDF5io->GetNumberOfComponents();
 
+    int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
+
+    this->m_convert_fixed_point_to_floating_point_required = 
+        this->m_convert_fixed_point_to_floating_point && 
+        (fixed_point_divider != 0);
+
+    if (this->m_convert_fixed_point_to_floating_point_required) {
+        this->m_divider->SetInput1(this->m_reader->GetOutput());
+        this->m_divider->SetConstant2(fixed_point_divider);
+        this->m_divider->Update();
+    }
+
     // Get metadata.
     itk::Array<unsigned int> sz_sy_iz_iy(4);
     dictionary = this->m_reader->GetMetaDataDictionary();
@@ -224,7 +239,8 @@ CmdReaderFromStdin<ImageType>::next_iteration()
       bindex[ZD] = iz;
       bindex[YD] = iy;
       bindex[XD] =  0;
-      typename ImageType::SizeType bsize = this->m_reader->GetOutput()->GetBufferedRegion().GetSize();
+      typename ImageType::SizeType bsize = 
+          this->m_reader->GetOutput()->GetBufferedRegion().GetSize();
       typename ImageType::RegionType bregion(bindex,bsize);
 
       // Largest possible region.
@@ -250,7 +266,10 @@ CmdReaderFromStdin<ImageType>::next_iteration()
       this->m_changeRegion->SetLargestPossibleRegion(lregion);
       this->m_changeRegion->SetBufferedRegion(bregion);
       this->m_changeRegion->SetOrigin(origin);
-      this->m_changeRegion->SetInput( this->m_reader->GetOutput() );
+      if (this->m_convert_fixed_point_to_floating_point_required)
+          this->m_changeRegion->SetInput( this->m_divider->GetOutput() );
+      else
+          this->m_changeRegion->SetInput( this->m_reader->GetOutput() );
       this->m_changeRegion->Update();
     } else {
         this->m_is_streamed_subregion = false;
@@ -264,7 +283,10 @@ CmdReaderFromStdin<ImageType>::GetOutput()
     if (this->m_is_streamed_subregion) {
         return this->m_changeRegion->GetOutput();
     } else {
-        return this->m_reader->GetOutput();
+        if (this->m_convert_fixed_point_to_floating_point_required)
+            return this->m_divider->GetOutput();
+        else
+            return this->m_reader->GetOutput();
     }
 }
 

@@ -45,13 +45,11 @@ int main(int argc, char** argv)
     TCLAP::ValueArg<unsigned int> vArg("x","ncolumns", "Number of values",false,0,"NX", cmd);
 
     // input.h5
-    TCLAP::UnlabeledMultiArg<string> inputFilenamesArg("inputFilenames", 
-        "Input image file name.",true,"IMAGE",cmd);
+    TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
+        "Input image file name.",false,"","FILE-IN", cmd);
 
     cmd.parse(tclap_argv);
-
-    vector<string> inputFilenames = inputFilenamesArg.getValue();
-
+    string inputFilename = inputFilenameArg.getValue();
 
     //////////////////////////////////////////////////////////////////////////
     // Types and instances.
@@ -59,7 +57,6 @@ int main(int argc, char** argv)
 
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
-
 
     // Pixel
     typedef float PixelType;
@@ -72,7 +69,7 @@ int main(int argc, char** argv)
 
     // Readers
     typedef Heimdali::CmdReader<ImageType> CmdReaderType;
-    CmdReaderType* reader = CmdReaderType::make_cmd_reader(0, inputFilenames[0]);
+    CmdReaderType* reader = CmdReaderType::make_cmd_reader(0, inputFilename);
     reader->convert_fixed_point_to_floating_point_on();
     reader->next_iteration();
     reader->Update();
