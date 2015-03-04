@@ -17,7 +17,7 @@ Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
 .. code-block:: bash
 
     conda config --add channels http://conda.binstar.org/dfroger
-    conda create -n heimdali-dev h5unixpipe itk-heimdali libinrimage tclap cmake pip
+    conda create -n heimdali-dev h5unixpipe itk-heimdali-dbg libinrimage tclap cmake pip
 
 For the rest of the section, we need to activate the conda environment, and
 set the CONDA_ENV_PATH environment variable:
