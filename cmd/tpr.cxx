@@ -20,7 +20,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    cout << scientific << showpos << setprecision(7) << uppercase;
+    //cout << scientific << showpos << setprecision(7) << uppercase;
 
     try {
 
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
     // Images
     const unsigned int Dimension = 3;
-    unsigned int SZ,SY,SX, NZ,NY,NX, IZ,IY,IX;
+    unsigned int SZ,SY,SX,SV, NZ,NY,NX, IZ,IY,IX;
     typedef itk::VectorImage<PixelType, Dimension> ImageType;
     ImageType::Pointer image;
 
@@ -90,6 +90,7 @@ int main(int argc, char** argv)
     SZ = reader->GetImageIO()->GetDimensions(2);
     SY = reader->GetImageIO()->GetDimensions(1);
     SX = reader->GetImageIO()->GetDimensions(0);
+    SV = reader->GetImageIO()->GetNumberOfComponents();
 
     // First index to read.
     IZ = izValue.getValue();
@@ -119,12 +120,33 @@ int main(int argc, char** argv)
     reader->Update();
     image = reader->GetOutput();
 
-    // print values
-    for (unsigned int iz=IZ ; iz<IZ+NZ; iz++) { ImageIndex[2] = iz;
-    for (unsigned int iy=IY ; iy<IY+NY; iy++) { ImageIndex[1] = iy;
-    for (unsigned int ix=IX ; ix<IX+NX; ix++) { ImageIndex[0] = ix;
-        cout << image->GetPixel(ImageIndex) << endl;
-    }}}
+    // Print values.
+    typedef itk::VariableLengthVector<PixelType> VariableVectorType;
+    VariableVectorType value;
+    value.SetSize(SV);
+    int nprinted = 0;
+    int nprinted_by_console_line = 5;
+    for (unsigned int iz=IZ ; iz<IZ+NZ; iz++) { 
+        ImageIndex[2] = iz;
+        for (unsigned int iy=IY ; iy<IY+NY; iy++) { 
+            cout << "plane " << iz << ", line " << iy << endl;
+            ImageIndex[1] = iy;
+            for (unsigned int ix=IX ; ix<IX+NX; ix++) {
+                ImageIndex[0] = ix;
+                value = image->GetPixel(ImageIndex);
+                for (unsigned int iv=0 ; iv<SV ; iv++) {
+                    nprinted++;
+                    if (nprinted == nprinted_by_console_line || 
+                            (iv==SV-1 && ix==IX+NX-1) ) {
+                        cout << value[iv] << endl;
+                        nprinted = 0;
+                    } else {
+                        cout << value[iv] << " ";
+                    }
+                }
+            }
+        }
+    }
 
 
     //////////////////////////////////////////////////////////////////////////

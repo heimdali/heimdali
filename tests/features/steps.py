@@ -39,6 +39,11 @@ def invoke_from(cmd_string, path):
     cmd_list[0] = executable
     return ' '.join(cmd_list)
 
+def expand_env_var(text):
+    text = text.replace('$HEIMDALI_DATA_DIR', world.data_dir)
+    text = text.replace('$WORKDIR', world.workdir)
+    return text
+
 @step('I run the command: (.*)')
 def run_the_command(step,cmd):
     p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
@@ -56,7 +61,6 @@ def run_the_example(step,cmd):
 
 @step('I see the line in standard output: (.*)')
 def i_see_the_line(step,line):
-    check_command()
     line = line.replace('$HEIMDALI_DATA_DIR', world.data_dir)
     line = line.replace('$WORKDIR', world.workdir)
     if not line in world.stdout:
@@ -64,14 +68,14 @@ def i_see_the_line(step,line):
             "Expected line: %r in stdout, but stdout is: %r" % (
                 line,world.stdout)
 
-@step(u'Then I see the standard output:')
-def then_i_get_the_standard_output(step):
-    expected_stdout = step.multiline
-    expected_stdout = expected_stdout.replace('$HEIMDALI_DATA_DIR', 
-                                              world.data_dir)
-    expected_stdout = expected_stdout.replace('$WORKDIR', 
-                                              world.workdir)
-    check_command()
+@step('I see the standard output:')
+def i_see_the_standard_output(step):
+    expected_stdout = expand_env_var(step.multiline)
+    check_stdout(world.stdout, expected_stdout)
+
+@step('I see as standard output the content of the file (.*)')
+def i_see_as_standard_output_file_content(step,filename):
+    expected_stdout = open(expand_env_var(filename)).read()
     check_stdout(world.stdout, expected_stdout)
 
 def invoke_inrimage_par(filename,flags='-F -x -y -f -o'):
