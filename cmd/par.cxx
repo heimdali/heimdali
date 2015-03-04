@@ -82,6 +82,7 @@ Options parse_command_line(vector<string> tclap_argv)
 
     // Store values in opt.
     Options opt;
+    opt.has_switch = false;
     opt.inputFilenames = inputFilenamesArg.getValue();
     if (opt.inputFilenames.size() == 0)
         opt.inputFilenames.push_back("-");
