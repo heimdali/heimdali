@@ -520,6 +520,7 @@ void itk::INRImageIO::ReadImageInformation()
         this->SetNumberOfDimensions(2);
         this->m_Dimensions[0] = m_InrFmt[I_NDIMX];
         this->m_Dimensions[1] = m_InrFmt[I_NDIMY];
+        this->m_Dimensions[2] = 1;
       } else {
         this->SetNumberOfDimensions(3);
         this->m_Dimensions[0] = m_InrFmt[I_NDIMX];
@@ -537,6 +538,11 @@ void itk::INRImageIO::ReadImageInformation()
       {
         this->m_Spacing[i] = 1;
         this->m_Origin[i] = gfmt.offsets[i];
+      }
+    for (unsigned int i=this->GetNumberOfDimensions(); i < 3 ; i++) 
+      {
+        this->m_Spacing[i] = 1;
+        this->m_Origin[i] = 0;
       }
 
     const int inr_integer = 0;
