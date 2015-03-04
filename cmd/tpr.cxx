@@ -21,8 +21,6 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    //cout << scientific << showpos << setprecision(7) << uppercase;
-
     try {
 
     //////////////////////////////////////////////////////////////////////////
@@ -47,6 +45,9 @@ int main(int argc, char** argv)
     // -c, -cz
     TCLAP::SwitchArg cSwitch("c","", "Compact format, suppress line and plane number printing", parser);
     TCLAP::SwitchArg czSwitch("","cz", "Compact format, but with plane number printing", parser);
+
+    // -f
+    TCLAP::ValueArg<string> fArg("f","format", "printf format to print values",false,"%g","FORMAT", parser);
 
     // input.h5
     TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
@@ -159,6 +160,8 @@ int main(int argc, char** argv)
     unsigned int nprinted = 0;
     unsigned int nprinted_by_console_line = 5;
     unsigned int iv;
+    string fmt_space = fArg.getValue() + " ";
+    string fmt_newline = fArg.getValue() + "\n";
     for (unsigned int iz=IZ ; iz<IZ+NZ; iz++) { 
         ImageIndex[2] = iz;
         if (czSwitch.getValue())
@@ -178,10 +181,10 @@ int main(int argc, char** argv)
                     nprinted++;
                     if (nprinted == nprinted_by_console_line || 
                             (iv==IV+NV-1) ) {
-                        cout << value[ic] << endl;
+                        printf(fmt_newline.c_str(), value[ic]);
                         nprinted = 0;
                     } else {
-                        cout << value[ic] << " ";
+                        printf(fmt_space.c_str(), value[ic]);
                     }
                 }
             }
