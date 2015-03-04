@@ -46,6 +46,9 @@ int main(int argc, char** argv)
     TCLAP::SwitchArg cSwitch("c","", "Compact format, suppress line and plane number printing", parser);
     TCLAP::SwitchArg czSwitch("","cz", "Compact format, but with plane number printing", parser);
 
+    // -l 
+    TCLAP::ValueArg<unsigned int> lArg("l","nvalues", "Maximal number of value printed per console row (0 for full line)",false,5,"NVALUES", parser);
+
     // -f
     TCLAP::ValueArg<string> fArg("f","format", "printf format to print values",false,"%g","FORMAT", parser);
 
@@ -158,7 +161,9 @@ int main(int argc, char** argv)
     VariableVectorType value;
     value.SetSize(SC);
     unsigned int nprinted = 0;
-    unsigned int nprinted_by_console_line = 5;
+    unsigned int nprinted_by_console_line = lArg.getValue();
+    if (nprinted_by_console_line == 0)
+        nprinted_by_console_line = SX*SC;
     unsigned int iv;
     string fmt_space = fArg.getValue() + " ";
     string fmt_newline = fArg.getValue() + "\n";
