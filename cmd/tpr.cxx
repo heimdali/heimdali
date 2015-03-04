@@ -32,24 +32,34 @@ int main(int argc, char** argv)
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
 
         
-    TCLAP::CmdLine cmd("Print the pixel values of a image subregion",' ', HEIMDALI_VERSION);
+    TCLAP::CmdLine parser("Print the pixel values of a image subregion",' ', HEIMDALI_VERSION);
 
     // -iz -iy -ix
-    TCLAP::ValueArg<unsigned int> izArg("","iz", "First plane",false,0,"IZ",cmd);
-    TCLAP::ValueArg<unsigned int> iyArg("","iy", "First row",false,0,"IY",cmd);
-    TCLAP::ValueArg<unsigned int> ivArg("","ix", "First value",false,0,"IX",cmd);
+    TCLAP::ValueArg<unsigned int> izArg("","iz", "First plane",false,0,"IZ",parser);
+    TCLAP::ValueArg<unsigned int> iyArg("","iy", "First row",false,0,"IY",parser);
+    TCLAP::ValueArg<unsigned int> ivArg("","ix", "First value",false,0,"IX",parser);
 
     // -z -y -x
-    TCLAP::ValueArg<unsigned int> zArg("z","nplanes", "Number of planes",false,0,"NZ", cmd);
-    TCLAP::ValueArg<unsigned int> yArg("y","nrows", "Number of rows",false,0,"NY", cmd);
-    TCLAP::ValueArg<unsigned int> vArg("x","ncolumns", "Number of values",false,0,"NX", cmd);
+    TCLAP::ValueArg<unsigned int> zArg("z","nplanes", "Number of planes",false,0,"NZ", parser);
+    TCLAP::ValueArg<unsigned int> yArg("y","nrows", "Number of rows",false,0,"NY", parser);
+    TCLAP::ValueArg<unsigned int> vArg("x","ncolumns", "Number of values",false,0,"NX", parser);
+
+    // -c, -cz
+    TCLAP::SwitchArg cSwitch("c","", "Compact format, suppress line and plane number printing", parser);
+    TCLAP::SwitchArg czSwitch("","cz", "Compact format, but with plane number printing", parser);
 
     // input.h5
     TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
-        "Input image file name.",false,"","FILE-IN", cmd);
+        "Input image file name.",false,"","FILE-IN", parser);
 
-    cmd.parse(tclap_argv);
+    parser.parse(tclap_argv);
     string inputFilename = inputFilenameArg.getValue();
+
+    if (cSwitch.getValue() && czSwitch.getValue()) {
+        ostringstream error_msg;
+        error_msg << "Flags -c and -cz are incompatible";
+        throw(TCLAP::ArgException(error_msg.str()));
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // Types and instances.
@@ -151,8 +161,11 @@ int main(int argc, char** argv)
     unsigned int iv;
     for (unsigned int iz=IZ ; iz<IZ+NZ; iz++) { 
         ImageIndex[2] = iz;
+        if (czSwitch.getValue())
+            cout << "plane " << iz << endl;
         for (unsigned int iy=IY ; iy<IY+NY; iy++) { 
-            cout << "plane " << iz << ", line " << iy << endl;
+            if (! cSwitch.getValue() && ! czSwitch.getValue())
+                cout << "plane " << iz << ", line " << iy << endl;
             ImageIndex[1] = iy;
             iv = -1;
             for (unsigned int ix=IX ; ix<IX+NX; ix++) {
@@ -184,13 +197,13 @@ int main(int argc, char** argv)
 
     // Command line parser.
     catch (TCLAP::ArgException &e) { 
-        cerr << "ical: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+        cerr << "tpr: ERROR: " << e.error() << " for arg " << e.argId() << endl;
     }
 
 
     // Input/output.
     catch (Heimdali::IOError &e) {
-        cerr << "ical: ERROR: " << e.getMessage() << endl;
+        cerr << "tpr: ERROR: " << e.getMessage() << endl;
     }
 
     return 0;
