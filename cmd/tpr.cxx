@@ -7,7 +7,6 @@
 
 #include <itkImage.h>
 #include <itkArray.h>
-#include <itkImageFileReader.h>
 #include <itkINRImageIOFactory.h>
 #include <itkStatisticsImageFilter.h>
 #include <itkINRImageIO.h>
@@ -16,6 +15,7 @@
 #include "heimdali/error.hxx"
 #include "heimdali/version.hxx"
 #include "heimdali/cli.hxx"
+#include "heimdali/cmdreader.hxx"
 
 using namespace std;
 
@@ -57,6 +57,9 @@ int main(int argc, char** argv)
     // Types and instances.
     //////////////////////////////////////////////////////////////////////////
 
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+
 
     // Pixel
     typedef float PixelType;
@@ -68,9 +71,11 @@ int main(int argc, char** argv)
     ImageType::Pointer image;
 
     // Readers
-    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
-    typedef itk::ImageFileReader< ImageType >  ReaderType;
-    ReaderType::Pointer reader = ReaderType::New();
+    typedef Heimdali::CmdReader<ImageType> CmdReaderType;
+    CmdReaderType* reader = CmdReaderType::make_cmd_reader(0, inputFilenames[0]);
+    reader->convert_fixed_point_to_floating_point_on();
+    reader->next_iteration();
+    reader->Update();
 
     // Region
     typedef itk::ImageRegion<Dimension> RegionType;
@@ -83,15 +88,11 @@ int main(int argc, char** argv)
     // Read file.
     //////////////////////////////////////////////////////////////////////////
 
-    // Read image size only.
-    reader->SetFileName( inputFilenames[0] );
-    reader->UpdateOutputInformation();
-
     // Total size.
-    SZ = reader->GetImageIO()->GetDimensions(2);
-    SY = reader->GetImageIO()->GetDimensions(1);
-    SX = reader->GetImageIO()->GetDimensions(0);
-    SC = reader->GetImageIO()->GetNumberOfComponents();
+    SZ = reader->get_sz();
+    SY = reader->get_sy();
+    SX = reader->get_sx();
+    SC = reader->get_sc();
 
     // First plane to read and print
     IZ = izArg.getValue();
@@ -138,11 +139,10 @@ int main(int argc, char** argv)
     requestedRegion.SetSize(ImageSize);
 
     // Read requested region.
-    reader->GetOutput()->SetRequestedRegion(requestedRegion);
-    reader->UpdateOutputInformation();
+    //reader->GetOutput()->SetRequestedRegion(requestedRegion);
+    //reader->UpdateOutputInformation();
 
     // Read image.
-    reader->Update();
     image = reader->GetOutput();
 
     // Print values.
