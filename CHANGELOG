@@ -65,3 +65,14 @@
     - FT: support for environment variable in steps
     - FT: support testing Inrimage equality
     - Fix compiler warnings
+
+0.6.3:
+   - par,ical,car,bi,sc,sd,lo,exp,ra can read/write to/from stdin/stout
+    (this fix #11, #13, #14)
+   - Fix so,ad,mu,min,max command line interface (this fix #10)
+   - Fix invalid memory write (this fix #25)
+   - Fix par output using -z -v -x0 -y0 -z0
+   - heimdali-convert renamed hconv
+   - par: fix uninitialized values
+   - new itk-heimdali-dbg package
+   - fix #27: Urgent and various issues on tpr
