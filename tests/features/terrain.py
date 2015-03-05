@@ -7,6 +7,7 @@ from subprocess import check_output, check_call
 import json
 import shutil
 import os
+import platform
 
 def get_active_conda_env_path():
     """Path to the active conda environment"""
@@ -131,7 +132,10 @@ def configure_example():
 
 @before.all
 def get_reference_inr_commands():
-    inrimage_path = get_conda_env_path('inrimage')
+    if platform.system() == "Darwin":
+        inrimage_path = "/usr/local/"
+    else:
+        inrimage_path = get_conda_env_path('inrimage')
     world.par = join(inrimage_path, 'bin', 'par')
     world.so = join(inrimage_path, 'bin', 'so')
     world.ical = join(inrimage_path, 'bin', 'ical')
