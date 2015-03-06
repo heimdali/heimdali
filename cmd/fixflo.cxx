@@ -35,6 +35,8 @@ TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",
 TCLAP::ValueArg<int> eSwitch("e","exponent","Exponent value",false,1,"EXPONENT",parser);
 
 parser.parse(argc,argv);
+bool is_signed = signedSwitch.getValue();
+bool is_fixed = fixedSwitch.getValue();
 
 vector<int> fixed_points = fixedPointArgs.getValue();
 vector<int>::iterator it;
@@ -45,10 +47,12 @@ ostringstream error_msg;
 for(it =  fixed_points.begin() ; it != fixed_points.end() ; ++it)
 {
     inputValue = *it;
-    if (fixedSwitch.getValue()) {
-        outputValue = inputValue / 255.;
-    }
-    else {
+    if (is_fixed) {
+        if (is_signed)
+            outputValue = inputValue > 0 ? inputValue / 127. : inputValue / 128.;
+        else
+            outputValue = inputValue / 255.;
+    } else {
         error_msg << "Not implemented";
         throw(Heimdali::NotImplementedError(error_msg.str()));
     }

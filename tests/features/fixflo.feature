@@ -12,13 +12,13 @@ Feature: fixflo
             ""
             """
 
-    #Scenario: Convert from signed char
-        #When I run the command: fixflo -s -- -128 0 127
-        #Then I see the standard output:
-            #"""
-            #"-1.000000 0.000000 1.000000 "
-            #""
-            #"""
+    Scenario: Convert from signed char
+        When I run the command: fixflo -s -- -128 0 127
+        Then I see the standard output:
+            """
+            "-1.000000 0.000000 1.000000 "
+            ""
+            """
             
     #Scenario: Convert from 2 signed bits
         #When I run the command: fixflo -b -s -- -2 0 1
