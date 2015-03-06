@@ -77,8 +77,8 @@ write_output(ReaderType* reader, string outputFilename, double fixed_point_divid
 
     // caster
     typedef itk::VectorImage<OutputPixelType, ImageDimension> VectorOutputImageType;
-    typedef itk::CastImageFilter<VectorInputImageType, VectorOutputImageType > CastFilterType;
-    typename CastFilterType::Pointer caster = CastFilterType::New();
+    typedef itk::CastImageFilter<VectorInputImageType, VectorOutputImageType > CasterType;
+    typename CasterType::Pointer caster = CasterType::New();
 
     // Command line tool writer.
     typedef Heimdali::CmdWriter<VectorOutputImageType> WriterType;
