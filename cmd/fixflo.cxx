@@ -18,6 +18,20 @@ TCLAP::CmdLine parser(
 
 TCLAP::UnlabeledMultiArg<int> fixedPointArgs("FixedPoints", "Fixed point number to convert",
                                               false,"FIXED-POINT",parser);
+// -s
+TCLAP::SwitchArg signedSwitch("s","signed", "Fixed point is signed.", parser, false);
+
+// -f
+TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert from fixed point.", parser, false);
+
+// -b
+TCLAP::ValueArg<int> binarySwitch("b","binary","Convert from binary",false,0,"NBITS",parser);
+
+// -o
+TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
+
+// -e
+TCLAP::ValueArg<int> eSwitch("e","exponent","Exponent value",false,1,"EXPONENT",parser);
 
 parser.parse(argc,argv);
 
