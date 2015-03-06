@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <math.h>
 
 #include <tclap/CmdLine.h>
 
@@ -26,36 +27,47 @@ TCLAP::SwitchArg signedSwitch("s","signed", "Fixed point is signed.", parser, fa
 TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert from fixed point.", parser, true);
 
 // -b
-TCLAP::ValueArg<int> binarySwitch("b","binary","Convert from binary",false,0,"NBITS",parser);
+TCLAP::ValueArg<unsigned int> bitsSwitch("b","bits","Convert from binary",false,0,"NBITS",parser);
 
 // -o
 TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",parser);
 
 // -e
-TCLAP::ValueArg<int> eSwitch("e","exponent","Exponent value",false,1,"EXPONENT",parser);
+TCLAP::ValueArg<int> eSwitch("e","exponent","Exponent value",false,0,"EXPONENT",parser);
 
 parser.parse(argc,argv);
 bool is_signed = signedSwitch.getValue();
-bool is_fixed = fixedSwitch.getValue();
+unsigned int nbits;
+unsigned int exponent = eSwitch.getValue();
+ostringstream error_msg;
+
+if (bitsSwitch.getValue() != 0) {
+    nbits = bitsSwitch.getValue();
+} else if (fixedSwitch.getValue()) {
+    nbits = 8;
+} else {
+    error_msg << "Not implemented";
+    throw(Heimdali::NotImplementedError(error_msg.str()));
+}
 
 vector<int> fixed_points = fixedPointArgs.getValue();
 vector<int>::iterator it;
 
-float inputValue, outputValue;
-ostringstream error_msg;
+float inputValue, outputValue, factor;
+
 
 for(it =  fixed_points.begin() ; it != fixed_points.end() ; ++it)
 {
     inputValue = *it;
-    if (is_fixed) {
-        if (is_signed)
-            outputValue = inputValue > 0 ? inputValue / 127. : inputValue / 128.;
+    if (is_signed) {
+        if (inputValue > 0)
+            factor = pow(2,exponent) / (pow(2, nbits-1) - 1);
         else
-            outputValue = inputValue / 255.;
+            factor = pow(2,exponent) / pow(2, nbits-1);
     } else {
-        error_msg << "Not implemented";
-        throw(Heimdali::NotImplementedError(error_msg.str()));
+        factor = pow(2,exponent) / (pow(2,nbits) - 1);
     }
+    outputValue = inputValue * factor;
     printf("%.6f ", outputValue);
 }
 cout << endl;
