@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 
 #include <tclap/CmdLine.h>
 
@@ -22,13 +23,13 @@ TCLAP::UnlabeledMultiArg<int> fixedPointArgs("FixedPoints", "Fixed point number 
 TCLAP::SwitchArg signedSwitch("s","signed", "Fixed point is signed.", parser, false);
 
 // -f
-TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert from fixed point.", parser, false);
+TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert from fixed point.", parser, true);
 
 // -b
 TCLAP::ValueArg<int> binarySwitch("b","binary","Convert from binary",false,0,"NBITS",parser);
 
 // -o
-TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
+TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",parser);
 
 // -e
 TCLAP::ValueArg<int> eSwitch("e","exponent","Exponent value",false,1,"EXPONENT",parser);
@@ -38,9 +39,20 @@ parser.parse(argc,argv);
 vector<int> fixed_points = fixedPointArgs.getValue();
 vector<int>::iterator it;
 
+float inputValue, outputValue;
+ostringstream error_msg;
+
 for(it =  fixed_points.begin() ; it != fixed_points.end() ; ++it)
 {
-    printf("%.6f ",(float) *it / 255.);
+    inputValue = *it;
+    if (fixedSwitch.getValue()) {
+        outputValue = inputValue / 255.;
+    }
+    else {
+        error_msg << "Not implemented";
+        throw(Heimdali::NotImplementedError(error_msg.str()));
+    }
+    printf("%.6f ", outputValue);
 }
 cout << endl;
 
@@ -48,16 +60,16 @@ cout << endl;
 
 // Command line parser.
 catch (TCLAP::ArgException &e) { 
-    cerr << "mb: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+    cerr << "fixflo: ERROR: " << e.error() << " for arg " << e.argId() << endl;
 }
 
 // Input/output.
 catch (Heimdali::IOError &e) {
-    cerr << "mb: ERROR: " << e.getMessage() << endl;
+    cerr << "fixflo: ERROR: " << e.getMessage() << endl;
 }
 
 catch (Heimdali::NotImplementedError &e) {
-    cerr << "mb: ERROR: " << e.getMessage() << endl;
+    cerr << "fixflo: ERROR: " << e.getMessage() << endl;
 }
 
 return 0;

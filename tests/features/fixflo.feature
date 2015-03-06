@@ -4,13 +4,13 @@ Feature: fixflo
         When I run the command: fixflo --help
         Then I see the line in standard output: Converts from fixed point to floating point
 
-    #Scenario: Convert from unsigned char
-        #When I run the command: fixflo 0 127 255
-        #Then I see the standard output:
-            #"""
-            #"0.000000 0.498039 1.000000 "
-            #""
-            #"""
+    Scenario: Convert from unsigned char
+        When I run the command: fixflo 0 127 255
+        Then I see the standard output:
+            """
+            "0.000000 0.498039 1.000000 "
+            ""
+            """
 
     #Scenario: Convert from signed char
         #When I run the command: fixflo -s -- -128 0 127
