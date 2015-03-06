@@ -13,16 +13,13 @@
 #include <itkMultiplyImageFilter.h>
 #include <itkThresholdImageFilter.h>
 #include <itkBinaryThresholdImageFilter.h>
-#include "itkNthElementImageAdaptor.h"
+#include <itkVectorIndexSelectionCastImageFilter.h>
 
 #include "heimdali/version.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/error.hxx"
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/cmdwriter.hxx"
-
-// http://insight-developers.itk.narkive.com/pprO3gTs/vectorimagetoimageadaptor-dysfunctional
-// http://www.itk.org/Wiki/ITK/Examples/ImageProcessing/ProcessingNthImageElement
 
 using namespace std;
 
@@ -57,19 +54,35 @@ write_output(ReaderType* reader, string outputFilename, double fixed_point_divid
                                      VectorInputImageType> MultiplierType;
     MultiplierType::Pointer multiplier = MultiplierType::New();
 
-    // Cast image from double to output type.
+    // indexer
+    typedef itk::VectorIndexSelectionCastImageFilter<VectorInputImageType, ScalarInputImageType> IndexerType;
+    IndexerType::Pointer indexer = IndexerType::New();
+
+    // thresholder
+    typedef itk::ThresholdImageFilter<ScalarInputImageType> ThresholderType;
+    typename ThresholderType::Pointer thresholder = ThresholderType::New();
+
+    // binary_thresholder
+    typedef itk::BinaryThresholdImageFilter<ScalarInputImageType, ScalarInputImageType> 
+        BinaryThresholderType;
+    typename BinaryThresholderType::Pointer binary_thresholder = BinaryThresholderType::New();
+
+    // duplicator
+    typedef itk::ImageDuplicator<ScalarInputImageType> DuplicatorType;
+    typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
+
+    // composer
+    typedef itk::ComposeImageFilter<ScalarInputImageType> ComposerType;
+    typename ComposerType::Pointer composer = ComposerType::New();
+
+    // caster
     typedef itk::VectorImage<OutputPixelType, ImageDimension> VectorOutputImageType;
-    typedef itk::Image<OutputPixelType, ImageDimension> ScalarOutputImageType;
     typedef itk::CastImageFilter<VectorInputImageType, VectorOutputImageType > CastFilterType;
     typename CastFilterType::Pointer caster = CastFilterType::New();
 
     // Command line tool writer.
     typedef Heimdali::CmdWriter<VectorOutputImageType> WriterType;
     WriterType* writer = WriterType::make_cmd_writer(outputFilename);
-
-    // ProcessingNthImageElement
-    typedef itk::NthElementImageAdaptor<VectorInputImageType, InputPixelType> ToImageType;
-    typename ToImageType::Pointer toImageFilter = ToImageType::New();
 
     // Store output of ProcessingNthImageElement
     typedef itk::Image<InputPixelType, ImageDimension> ScalarInputImageType;
@@ -86,51 +99,19 @@ write_output(ReaderType* reader, string outputFilename, double fixed_point_divid
     image->SetRegions(region);
     image->Allocate();
 
-    // Thresholder
-    typedef itk::ThresholdImageFilter<ScalarInputImageType> ThresholderType;
-    typename ThresholderType::Pointer thresholder = ThresholderType::New();
-
-    typedef itk::BinaryThresholdImageFilter<ScalarInputImageType, ScalarInputImageType> 
-        BinaryThresholderType;
-    typename BinaryThresholderType::Pointer binary_thresholder = BinaryThresholderType::New();
-
-    // Duplicator.
-    typedef itk::ImageDuplicator<ScalarInputImageType> DuplicatorType;
-    typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
-
-    // Image to VectorImage
-    typedef itk::ComposeImageFilter<ScalarInputImageType> ToVectorImageType;
-    typename ToVectorImageType::Pointer toVectorImage = ToVectorImageType::New();
-
-    typename VectorInputImageType::Pointer vectorImage;
-
     if (convert_floating_to_fixed_point) {
         multiplier->SetInput1(reader->GetOutput());
         multiplier->SetConstant2(fixed_point_divider);
 
-        toImageFilter->SetImage(multiplier->GetOutput());
+        indexer->SetInput(multiplier->GetOutput());
+
         for (unsigned int ic = 0 ; ic < reader->get_sc() ; ++ic)
         {
-            // VectorImage to Image
-            toImageFilter->SelectNthElement(ic);
-            toImageFilter->Modified();
-            toImageFilter->Update();
-
-            for (unsigned int iz=0 ; iz < reader->get_sz() ; iz++) {
-                index[2] = iz;
-                for (unsigned int iy=0 ; iy < reader->get_sy() ; iy++) {
-                    index[1] = iy;
-                    for (unsigned int ix=0 ; ix < reader->get_sx() ; ix++) {
-                        index[0] = ix;
-                        image->SetPixel(index,
-                                        toImageFilter->GetPixel(index));
-                    }
-                }
-            }
+            indexer->SetIndex(ic);
 
             // Threshold image
             if (binary) {
-                binary_thresholder->SetInput(image);
+                binary_thresholder->SetInput(indexer->GetOutput());
                 binary_thresholder->SetUpperThreshold(127);
                 binary_thresholder->SetInsideValue(0);
                 binary_thresholder->SetOutsideValue(255);
@@ -138,7 +119,7 @@ write_output(ReaderType* reader, string outputFilename, double fixed_point_divid
                 binary_thresholder->Modified();
                 duplicator->SetInputImage(binary_thresholder->GetOutput());
             } else {
-                thresholder->SetInput(image);
+                thresholder->SetInput(indexer->GetOutput());
                 thresholder->ThresholdAbove(fixed_point_divider);
                 thresholder->SetOutsideValue(fixed_point_divider);
                 thresholder->Update();
@@ -149,18 +130,15 @@ write_output(ReaderType* reader, string outputFilename, double fixed_point_divid
             // Image to VectorImage
             duplicator->Update();
 
-            toVectorImage->SetInput(ic, duplicator->GetOutput());
-            toVectorImage->Modified();
-            toVectorImage->Update();
+            composer->SetInput(ic, duplicator->GetOutput());
+            composer->Modified();
+            composer->Update();
         }
 
-        vectorImage = toVectorImage->GetOutput();
-
-        caster->SetInput(vectorImage);
+        caster->SetInput(composer->GetOutput());
         caster->Update();
 
         writer->Write(caster->GetOutput());
-        vectorImage->Initialize();
 
     } else {
         caster->SetInput(reader->GetOutput());
