@@ -24,7 +24,7 @@ TCLAP::UnlabeledMultiArg<int> fixedPointArgs("FixedPoints", "Fixed point number 
 TCLAP::SwitchArg signedSwitch("s","signed", "Fixed point is signed.", parser, false);
 
 // -f
-TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert from fixed point.", parser, true);
+TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert from fixed point.", parser, false);
 
 // -b
 TCLAP::ValueArg<unsigned int> bitsSwitch("b","bits","Convert from binary",false,0,"NBITS",parser);
@@ -38,16 +38,18 @@ TCLAP::ValueArg<int> eSwitch("e","exponent","Exponent value",false,0,"EXPONENT",
 parser.parse(argc,argv);
 bool is_signed = signedSwitch.getValue();
 unsigned int nbits;
-unsigned int exponent = eSwitch.getValue();
+int exponent = eSwitch.getValue();
 ostringstream error_msg;
+
+if (bitsSwitch.getValue() && fixedSwitch.getValue()) {
+    error_msg << "-b and -f are incompatible";
+    throw(TCLAP::ArgException(error_msg.str()));
+}
 
 if (bitsSwitch.getValue() != 0) {
     nbits = bitsSwitch.getValue();
-} else if (fixedSwitch.getValue()) {
-    nbits = 8;
 } else {
-    error_msg << "Not implemented";
-    throw(Heimdali::NotImplementedError(error_msg.str()));
+    nbits = 8 * oSwitch.getValue();
 }
 
 vector<int> fixed_points = fixedPointArgs.getValue();
@@ -60,12 +62,14 @@ for(it =  fixed_points.begin() ; it != fixed_points.end() ; ++it)
 {
     inputValue = *it;
     if (is_signed) {
-        if (inputValue > 0)
+        if (inputValue > 0) {
             factor = pow(2,exponent) / (pow(2, nbits-1) - 1);
-        else
+        }
+        else {
             factor = pow(2,exponent) / pow(2, nbits-1);
+        }
     } else {
-        factor = pow(2,exponent) / (pow(2,nbits) - 1);
+        factor = pow(2,exponent) / (pow(2, nbits) - 1);
     }
     outputValue = inputValue * factor;
     printf("%.6f ", outputValue);
