@@ -20,11 +20,14 @@ int main(int argc, char** argv)
 
 try {
 
-TCLAP::CmdLine parser("Set image values to THRESHOLD if values are above THRESHOLD",
+TCLAP::CmdLine parser("Set image values to VALUE if values are below THRESHOLD",
                       ' ', HEIMDALI_VERSION);
 // -n
-TCLAP::ValueArg<float> numberArg("n","number", "Threshold value",true,
+TCLAP::ValueArg<float> numberArg("n","number", "Threshold",true,
                                  1,"THRESHOLD", parser);
+// -v
+TCLAP::ValueArg<float> valueArg("v","value", "Value to replace with",true,
+                                 1,"VALUE", parser);
 
 HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
@@ -55,8 +58,8 @@ IndexerType::Pointer indexer = IndexerType::New();
 // thresholder
 typedef itk::ThresholdImageFilter<ScalarImageType> ThresholderType;
 typename ThresholderType::Pointer thresholder = ThresholderType::New();
-thresholder->ThresholdAbove(numberArg.getValue());
-thresholder->SetOutsideValue(numberArg.getValue());
+thresholder->ThresholdBelow(numberArg.getValue());
+thresholder->SetOutsideValue(valueArg.getValue());
 
 // duplicator
 typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
@@ -101,17 +104,17 @@ for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
 
 // Command line parser.
 catch (TCLAP::ArgException &e) { 
-    cerr << "sha: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+    cerr << "vb: ERROR: " << e.error() << " for arg " << e.argId() << endl;
 }
 
 
 // Input/output.
 catch (Heimdali::IOError &e) {
-    cerr << "sha: ERROR: " << e.getMessage() << endl;
+    cerr << "vb: ERROR: " << e.getMessage() << endl;
 }
 
 catch (Heimdali::NotImplementedError &e) {
-    cerr << "sha: ERROR: " << e.getMessage() << endl;
+    cerr << "sba: ERROR: " << e.getMessage() << endl;
 }
 
 return 0;

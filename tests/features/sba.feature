@@ -2,7 +2,7 @@ Feature: sba
 
     Scenario: Invoke sba
         When I run the command: sba --help
-        Then I see the line in standard output: Set image values to THRESH if values are below THRESH
+        Then I see the line in standard output: Set image values to THRESHOLD if values are below THRESHOLD
 
     Scenario: Threshold an image
         When I run the command: sba -n 0.5 $HEIMDALI_DATA_DIR/cossin_z5_y5_x5_c2_r4.<ext> cossin_z5_y5_x5_c2_r4_sba_0_5.<ext>

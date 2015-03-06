@@ -20,11 +20,11 @@ int main(int argc, char** argv)
 
 try {
 
-TCLAP::CmdLine parser("Set image values to THRESH if values are below THRESH",
+TCLAP::CmdLine parser("Set image values to THRESHOLD if values are below THRESHOLD",
                       ' ', HEIMDALI_VERSION);
 // -n
 TCLAP::ValueArg<float> numberArg("n","number", "Threshold value",true,
-                                 1,"NUNMBER", parser);
+                                 1,"THRESHOLD", parser);
 
 HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 

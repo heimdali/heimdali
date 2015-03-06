@@ -2,7 +2,7 @@ Feature: sha
 
     Scenario: Invoke sha
         When I run the command: sha --help
-        Then I see the line in standard output: Set image values to THRESH if values are above THRESH
+        Then I see the line in standard output: Set image values to THRESHOLD if values are above THRESHOLD
 
     Scenario: Threshold an image
         When I run the command: sha -n 0.5 $HEIMDALI_DATA_DIR/cossin_z5_y5_x5_c2_r4.<ext> cossin_z5_y5_x5_c2_r4_sha_0_5.<ext>
