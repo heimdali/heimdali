@@ -6,7 +6,9 @@ set(CMD_LIST hconv
              par tpr ical
              so ad di mu bi min max
              sc sd lo ra car exp
-             extg raz cco melg fzoom)
+             extg raz cco melg fzoom
+             sba
+             )
 foreach(cmd ${CMD_LIST})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
   TARGET_LINK_LIBRARIES(${cmd}
