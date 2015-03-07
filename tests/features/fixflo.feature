@@ -28,7 +28,7 @@ Feature: fixflo
             ""
             """
 
-    Scenario: Exponent value is taking into accout
+    Scenario: Exponent value is taken into accout
         When I run the command: fixflo -f -e 1 -- 255
         Then I see the standard output:
             """
@@ -36,7 +36,7 @@ Feature: fixflo
             ""
             """
 
-    Scenario: Exponent value is taking into accout
+    Scenario: Exponent value is taken into accout
         When I run the command: fixflo -f -e -1 -- 255
         Then I see the standard output:
             """

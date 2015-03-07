@@ -57,7 +57,6 @@ vector<int>::iterator it;
 
 float inputValue, outputValue, factor;
 
-
 for(it =  fixed_points.begin() ; it != fixed_points.end() ; ++it)
 {
     inputValue = *it;
