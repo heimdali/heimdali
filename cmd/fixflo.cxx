@@ -27,7 +27,7 @@ TCLAP::SwitchArg signedSwitch("s","signed", "Fixed point is signed.", parser, fa
 TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert from fixed point.", parser, false);
 
 // -b
-TCLAP::ValueArg<unsigned int> bitsSwitch("b","bits","Convert from binary",false,0,"NBITS",parser);
+TCLAP::ValueArg<unsigned int> bitsSwitch("b","bits","Number of bits",false,0,"NBITS",parser);
 
 // -o
 TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",parser);
