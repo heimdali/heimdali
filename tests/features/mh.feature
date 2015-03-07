@@ -2,7 +2,7 @@ Feature: mh
 
     Scenario: Invoke mh
         When I run the command: mh --help
-        Then I see the line in standard output: Set image values to VALUE if values are above THRESHOLD
+        Then I see the line in standard output: Set image values to 1 if above THRESHOLD and 0 if below
 
     Scenario: Threshold an image
         When I run the command: mh -n 0.5 $HEIMDALI_DATA_DIR/cossin_z5_y5_x5_c2_r4.<ext> cossin_z5_y5_x5_c2_r4_mh_0_5_f1.<ext>

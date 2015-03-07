@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
 try {
 
-TCLAP::CmdLine parser("Set image values to VALUE if values are below THRESHOLD",
+TCLAP::CmdLine parser("Set image values to 1 if below THRESHOLD and 0 if above",
                       ' ', HEIMDALI_VERSION);
 // -n
 TCLAP::ValueArg<float> numberArg("n","number", "Threshold",true,
