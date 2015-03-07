@@ -9,6 +9,7 @@ set(CMD_LIST hconv
              extg raz cco melg fzoom
              sba sha vb vh mb mh
              mo carflo fixflo flofix logic
+             cim
              )
 foreach(cmd ${CMD_LIST})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
