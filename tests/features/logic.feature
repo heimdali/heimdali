@@ -4,7 +4,7 @@ Feature: logic
         When I run the command: logic --help
         Then I see the line in standard output: Boolean operation on image
 
-    Scenario: Binary operation on two images
+    Scenario: Binary AND, OR, XOR on two images
         When I run the command: logic <flag> $HEIMDALI_DATA_DIR/<input0> $HEIMDALI_DATA_DIR/<input1> <output>
         Then images <output> and $HEIMDALI_DATA_DIR/<output> are equal
 
@@ -16,3 +16,12 @@ Feature: logic
     | boolean_f1.inr | boolean_another_f1.inr | -ou  | boolean_or_f1.inr  |
     | boolean_f1.h5  | boolean_another_f1.h5  | -xou | boolean_xor_f1.h5  |
     | boolean_f1.inr | boolean_another_f1.inr | -xou | boolean_xor_f1.inr |
+
+#   Scenario: Boolean INV on two images
+#       When I run the command: logic <flag> $HEIMDALI_DATA_DIR/<input> <output>
+#       Then images <output> and $HEIMDALI_DATA_DIR/<output> are equal
+
+#   Examples:
+#   | input          | flag | output             |
+#   | boolean_f1.h5  | -inv | boolean_not_f1.h5  |
+#   | boolean_f1.inr | -inv | boolean_not_f1.inr |
