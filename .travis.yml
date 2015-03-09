@@ -16,7 +16,7 @@ before_install:
   - conda config --set always_yes yes --set changeps1 no
   - conda config --add channels http://conda.binstar.org/dfroger
   - conda update conda
-  - conda install conda-build pip
+  - conda install conda-build pip pexpect
   - conda create -n inrimage inrimage
   - pip install lettuce
   - hash -r
