@@ -3,6 +3,8 @@ from os.path import realpath, expandvars, join, isfile
 from difflib import ndiff
 import os
 
+import pexpect
+
 from lettuce import *
 
 MAX_CHAR_OUTPUT = 10000
@@ -174,3 +176,26 @@ def images_are_almost_equal(step, fileA, fileB, relative):
 def build_example(step, target):
     world.assert_examples_are_configured()
     check_call(['make', target], cwd=world.example_build_dir)
+
+@step('I run the interactive command: (.*)')
+def run_interactive_command(step, cmd):
+    world.child = pexpect.spawn(cmd)
+
+@step('I see in the interactive command standard output the text:')
+def see_interactive_command_output(step):
+    expected_stdout = expand_env_var(step.multiline)
+    world.child.expect(expected_stdout)
+
+@step('I see in the interactive command standard output: (.*)')
+def see_interactive_command_output_line(step,line):
+    line = expand_env_var(line)
+    world.child.expect(line)
+
+@step('I input to the interactive command the text:')
+def enter_standard_input(step):
+    for line in step.multiline.split('\n'):
+        world.child.sendline(line)
+
+@step('I input to the interactive command: (.*)')
+def enter_standard_input(step,line):
+    world.child.sendline(line)

@@ -153,6 +153,7 @@ def setup_root_workdir():
 @before.each_scenario
 def move_to_workdir(scenario):
     os.chdir(world.workdir)
+    world.child = None
 
 @before.each_feature
 def setup_feature_workdir(feature):
