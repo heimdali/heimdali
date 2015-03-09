@@ -5,7 +5,7 @@ Feature: cim
         Then I see the line in standard output: Inputs ASCII value into image
 
     Scenario: Read from standard input
-        When I run the interactive command: cim imtest_z5_y4_x3_c2.h5
+        When I run the interactive command: cim imtest_z5_y4_x3_c2.<ext>
 
         Then I see in the interactive command standard output: Enter sx, sy, sv, sz
         When I input to the interactive command: 3 4 2 5
@@ -41,5 +41,10 @@ Feature: cim
         4300 4301 4310 4311 4320 4321 
         """
 
-        Then I see in the interactive command standard output: imtest_z5_y4_x3_c2.h5
-        Then images imtest_z5_y4_x3_c2.h5 and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 are equal
+        Then I see in the interactive command standard output: imtest_z5_y4_x3_c2.<ext>
+        Then images imtest_z5_y4_x3_c2.<ext> and $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> are equal
+
+    Examples:
+      | ext |
+      | h5  |
+      | inr |

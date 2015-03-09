@@ -1,4 +1,5 @@
 #include "itkImageFileWriter.h"
+#include <itkINRImageIOFactory.h>
 
 #include <tclap/CmdLine.h>
 
@@ -22,9 +23,13 @@ TCLAP::CmdLine parser("Inputs ASCII value into image",
 TCLAP::UnlabeledValueArg<string> inputFilenameArg("IMAGE-OUT", 
     "Output image file name.",false,"","IMAGE-OUT", parser);
 
+// Parse command line.
 vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
 parser.parse(tclap_argv);
 string inputFilename = inputFilenameArg.getValue();
+
+// Put our INRimage reader in the list of readers ITK knows.
+itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
 // Read image dimension
 cout << "Enter sx, sy, sv, sz: ";
