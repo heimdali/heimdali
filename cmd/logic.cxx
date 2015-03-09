@@ -3,6 +3,7 @@
 #include "itkVectorImage.h"
 #include "itkAndImageFilter.h"
 #include "itkOrImageFilter.h"
+#include "itkXorImageFilter.h"
 #include <itkINRImageIOFactory.h>
 #include <itkComposeImageFilter.h>
 #include <itkImageDuplicator.h>
@@ -118,11 +119,16 @@ itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() );
 // Filters
 typedef itk::AndImageFilter<ScalarImageType> AndFilterType;
 typedef itk::OrImageFilter<ScalarImageType> OrFilterType;
+typedef itk::XorImageFilter<ScalarImageType> XorFilterType;
 
 if (andSwitch.getValue())
     compute_image<AndFilterType>(inputFilename0, inputFilename1, outputFilename);
+
 else if (orSwitch.getValue())
     compute_image<OrFilterType>(inputFilename0, inputFilename1, outputFilename);
+
+else if (xorSwitch.getValue())
+    compute_image<XorFilterType>(inputFilename0, inputFilename1, outputFilename);
 
 } // End of 'try' block.
 

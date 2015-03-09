@@ -14,3 +14,5 @@ Feature: logic
     | boolean_f1.inr | boolean_another_f1.inr | -et  | boolean_and_f1.inr |
     | boolean_f1.h5  | boolean_another_f1.h5  | -ou  | boolean_or_f1.h5   |
     | boolean_f1.inr | boolean_another_f1.inr | -ou  | boolean_or_f1.inr  |
+    | boolean_f1.h5  | boolean_another_f1.h5  | -xou | boolean_xor_f1.h5  |
+    | boolean_f1.inr | boolean_another_f1.inr | -xou | boolean_xor_f1.inr |
