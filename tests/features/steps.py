@@ -199,3 +199,9 @@ def enter_standard_input(step):
 @step('I input to the interactive command: (.*)')
 def enter_standard_input(step,line):
     world.child.sendline(line)
+
+@step('I input the interactive command with the content of the file: (.*)')
+def enter_standard_input_with_file(step,filename):
+    filename = expand_env_var(filename)
+    for line in open(filename).readlines():
+        world.child.sendline(line)
