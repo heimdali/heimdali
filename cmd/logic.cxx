@@ -2,6 +2,7 @@
 
 #include "itkVectorImage.h"
 #include "itkAndImageFilter.h"
+#include "itkOrImageFilter.h"
 #include <itkINRImageIOFactory.h>
 #include <itkComposeImageFilter.h>
 #include <itkImageDuplicator.h>
@@ -14,6 +15,76 @@
 #include "heimdali/error.hxx"
 
 using namespace std;
+
+// Image type.
+typedef unsigned char PixelType;
+const unsigned int Dimension = 3;
+typedef itk::Image<PixelType, Dimension> ScalarImageType;
+typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
+
+template <typename FilterType>
+void
+compute_image(string inputFilename0, string inputFilename1, string outputFilename)
+{
+
+    // Command line tool readers.
+    typedef Heimdali::CmdReader<VectorImageType> ReaderType;
+    ReaderType* reader0 = ReaderType::make_cmd_reader(0, inputFilename0);
+    ReaderType* reader1 = ReaderType::make_cmd_reader(0, inputFilename1);
+
+    // indexer
+    typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
+    IndexerType::Pointer indexer0 = IndexerType::New();
+    IndexerType::Pointer indexer1 = IndexerType::New();
+
+    // duplicator
+    typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
+    DuplicatorType::Pointer duplicator = DuplicatorType::New();
+
+    // composer
+    typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
+    ComposerType::Pointer composer = ComposerType::New();
+
+    // Command line tool writer.
+    typedef Heimdali::CmdWriter<VectorImageType> WriterType;
+    WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
+
+    typename FilterType::Pointer filter = FilterType::New();
+
+    unsigned int iregionmax = 1E+06;
+    for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
+        // Read input.
+        reader0->next_iteration();
+        reader1->next_iteration();
+        if (reader0->is_complete()) break;
+
+        indexer0->SetInput(reader0->GetOutput());
+        indexer1->SetInput(reader1->GetOutput());
+
+        for (unsigned int componentIndex = 0 ;
+                          componentIndex < reader0->get_sc() ;
+                          componentIndex++)
+        {
+            indexer0->SetIndex(componentIndex);
+            indexer1->SetIndex(componentIndex);
+
+            // Binary AND images.
+            filter->SetInput(0, indexer0->GetOutput());
+            filter->SetInput(1, indexer1->GetOutput());
+            filter->Update();
+
+            duplicator->SetInputImage(filter->GetOutput());
+            duplicator->Update();
+
+            composer->SetInput(componentIndex, duplicator->GetOutput());
+        }
+        composer->Update();
+
+        // Write output.
+        cmdwriter->Write( composer->GetOutput() );
+        cmdwriter->Update();
+    }
+}
 
 int main(int argc, char** argv)
 { 
@@ -44,87 +115,30 @@ Heimdali::parse_tclap_image_in_image_in_image_out(filenamesArg, inputFilename0,
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-// Image type.
-typedef unsigned char PixelType;
-const unsigned int Dimension = 3;
-typedef itk::Image<PixelType, Dimension> ScalarImageType;
-typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
-
-// Command line tool readers.
-typedef Heimdali::CmdReader<VectorImageType> ReaderType;
-ReaderType* reader0 = ReaderType::make_cmd_reader(0, inputFilename0);
-ReaderType* reader1 = ReaderType::make_cmd_reader(0, inputFilename1);
-
-// indexer
-typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
-IndexerType::Pointer indexer0 = IndexerType::New();
-IndexerType::Pointer indexer1 = IndexerType::New();
-
-// duplicator
-typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
-DuplicatorType::Pointer duplicator = DuplicatorType::New();
-
-// composer
-typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
-ComposerType::Pointer composer = ComposerType::New();
-
-// AndFillter
+// Filters
 typedef itk::AndImageFilter<ScalarImageType> AndFilterType;
-AndFilterType::Pointer andFilter = AndFilterType::New();
+typedef itk::OrImageFilter<ScalarImageType> OrFilterType;
 
-// Command line tool writer.
-typedef Heimdali::CmdWriter<VectorImageType> WriterType;
-WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
-
-unsigned int iregionmax = 1E+06;
-for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
-    // Read input.
-    reader0->next_iteration();
-    reader1->next_iteration();
-    if (reader0->is_complete()) break;
-
-    indexer0->SetInput(reader0->GetOutput());
-    indexer1->SetInput(reader1->GetOutput());
-
-    for (unsigned int componentIndex = 0 ;
-                      componentIndex < reader0->get_sc() ;
-                      componentIndex++)
-    {
-        indexer0->SetIndex(componentIndex);
-        indexer1->SetIndex(componentIndex);
-
-        // Binary AND images.
-        andFilter->SetInput(0, indexer0->GetOutput());
-        andFilter->SetInput(1, indexer1->GetOutput());
-        andFilter->Update();
-
-        duplicator->SetInputImage(andFilter->GetOutput());
-        duplicator->Update();
-
-        composer->SetInput(componentIndex, duplicator->GetOutput());
-    }
-    composer->Update();
-
-    // Write output.
-    cmdwriter->Write( composer->GetOutput() );
-    cmdwriter->Update();
-}
+if (andSwitch.getValue())
+    compute_image<AndFilterType>(inputFilename0, inputFilename1, outputFilename);
+else if (orSwitch.getValue())
+    compute_image<OrFilterType>(inputFilename0, inputFilename1, outputFilename);
 
 } // End of 'try' block.
 
 
 // Command line parser.
 catch (TCLAP::ArgException &e) { 
-    cerr << "mb: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+    cerr << "logic: ERROR: " << e.error() << " for arg " << e.argId() << endl;
 }
 
 // Input/output.
 catch (Heimdali::IOError &e) {
-    cerr << "mb: ERROR: " << e.getMessage() << endl;
+    cerr << "logic: ERROR: " << e.getMessage() << endl;
 }
 
 catch (Heimdali::NotImplementedError &e) {
-    cerr << "mb: ERROR: " << e.getMessage() << endl;
+    cerr << "logic: ERROR: " << e.getMessage() << endl;
 }
 
 return 0;

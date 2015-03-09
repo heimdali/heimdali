@@ -4,11 +4,13 @@ Feature: logic
         When I run the command: logic --help
         Then I see the line in standard output: Boolean operation on image
 
-    Scenario: Binary AND two images
-        When I run the command: logic -et $HEIMDALI_DATA_DIR/boolean_f1.<ext> $HEIMDALI_DATA_DIR/boolean_another_f1.<ext> boolean_and_f1.<ext>
-        Then images boolean_and_f1.<ext> and $HEIMDALI_DATA_DIR/boolean_and_f1.<ext> are equal
+    Scenario: Binary operation on two images
+        When I run the command: logic <flag> $HEIMDALI_DATA_DIR/<input0> $HEIMDALI_DATA_DIR/<input1> <output>
+        Then images <output> and $HEIMDALI_DATA_DIR/<output> are equal
 
     Examples:
-    | ext |
-    | h5  |
-    | inr |
+    | input0         | input1                 | flag | output             |
+    | boolean_f1.h5  | boolean_another_f1.h5  | -et  | boolean_and_f1.h5  |
+    | boolean_f1.inr | boolean_another_f1.inr | -et  | boolean_and_f1.inr |
+    | boolean_f1.h5  | boolean_another_f1.h5  | -ou  | boolean_or_f1.h5   |
+    | boolean_f1.inr | boolean_another_f1.inr | -ou  | boolean_or_f1.inr  |
