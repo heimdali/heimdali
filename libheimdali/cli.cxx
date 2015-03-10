@@ -93,4 +93,27 @@ parse_tclap_image_in_image_in_image_out(TCLAP::UnlabeledMultiArg<string>& filena
     }
 }
 
+
+/* Parse IMAGE-IN IMAGE0-OUT IMAGE1-OUT command line arguments */
+void
+parse_tclap_image_in_image_out_image_out(TCLAP::UnlabeledMultiArg<string>& filenamesArg,
+                               string& inputFilename,
+                               string& outputFilename0,
+                               string& outputFilename1)
+{
+    vector<string> filenames = filenamesArg.getValue();
+    ostringstream error_msg;
+    switch (filenames.size())
+    {
+    case(3):
+        inputFilename = filenames[0];
+        outputFilename0 = filenames[1];
+        outputFilename1 = filenames[2];
+        break;
+    default:
+        error_msg << "Expected three file names, but got " << filenames.size();
+        throw(TCLAP::ArgException(error_msg.str()));
+    }
+}
+
 };
