@@ -7,7 +7,7 @@
 #include <itkVectorIndexSelectionCastImageFilter.h>
 #include "itkImageFileWriter.h"
 #include <itkComposeImageFilter.h>
-#include "itkPermuteAxesImageFilter.h"
+//#include "itkPermuteAxesImageFilter.h"
 
 #include "heimdali/version.hxx"
 #include "heimdali/cli.hxx"
