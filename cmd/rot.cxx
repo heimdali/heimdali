@@ -47,6 +47,9 @@ main(int argc, char** argv)
     TCLAP::ValueArg<int> xcArg("","xc", "Center of rotation (-1: image center)",false, -1,"XC", parser);
     TCLAP::ValueArg<int> ycArg("","yc", "Center of rotation (-1: image center)",false, -1,"YC", parser);
 
+    TCLAP::ValueArg<int> txArg("","tx", "Translation to apply after rotation",false, -1,"TX", parser);
+    TCLAP::ValueArg<int> tyArg("","ty", "Translation to apply after rotation",false, -1,"TY", parser);
+
     TCLAP::ValueArg<float> xArg("x","columns", "Number of columns",false, 0,"NX", parser);
     TCLAP::ValueArg<float> yArg("y","rows", "Number of rows",false, 0,"NY", parser);
 
@@ -87,33 +90,11 @@ main(int argc, char** argv)
     typedef itk::CenteredRigid2DTransform<double> TransformType;
     TransformType::Pointer transform = TransformType::New();
 
-    // Rotation
-    TransformType::InputPointType center;
-    /*
-    if (xcArg.getValue() != -1)
-        center[XD] = xcArg.getValue(); // * inputImage->GetSpacing()[XD];
-    if (ycArg.getValue() != -1)
-        center[YD] = ycArg.getValue(); // * inputImage->GetSpacing()[YD];
-    */
-    center[XD] = 128;
-    center[YD] = 128;
-    transform->SetCenter(center);
-    transform->SetAngleInDegrees(angleArg.getValue());
-
-    // Translation
-    TransformType::OutputVectorType translation;
-    //translation[XD] = xArg.getValue();
-    //translation[YD] = yArg.getValue();
-    translation[XD] = 0.;
-    translation[YD] = 0.;
-    transform->SetTranslation(translation);
-
     // resampler
     typedef itk::ResampleImageFilter< Scalar2DImageType, Scalar2DImageType > ResamplerType;
     ResamplerType::Pointer resampler = ResamplerType::New();
     resampler->SetInterpolator(interpolator);
-    //resampler->SetDefaultPixelValue(0);
-    resampler->SetDefaultPixelValue(200);
+    resampler->SetDefaultPixelValue(0);
     resampler->SetTransform(transform);
 
     // composer
@@ -122,8 +103,8 @@ main(int argc, char** argv)
 
     // duplicator
     //typedef itk::ImageDuplicator<Scalar2DImageType> DuplicatorType;
-    typedef itk::ImageDuplicator<Scalar3DImageType> DuplicatorType;
-    typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    //typedef itk::ImageDuplicator<Scalar3DImageType> DuplicatorType;
+    //typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
 
     // slicer
     typedef itk::SliceBySliceImageFilter<Scalar3DImageType,Scalar3DImageType,ResamplerType,ResamplerType> SlicerType;
@@ -138,7 +119,7 @@ main(int argc, char** argv)
 
     Scalar2DImageType::SizeType size2D;
     size2D[XD] = size3D[XD];
-    size2D[YD] = size2D[YD];
+    size2D[YD] = size3D[YD];
     resampler->SetSize(size2D);
 
     Scalar2DImageType::PointType origin2D;
@@ -160,14 +141,26 @@ main(int argc, char** argv)
 
     indexer->SetInput(reader->GetOutput());
 
-    Vector3DImageType::IndexType indexV3D;
-    indexV3D[0] = 0;
-    indexV3D[1] = 0;
-    indexV3D[2] = 0;
+    // Rotation
+    TransformType::InputPointType center;
+    if (xcArg.getValue() == -1)
+        center[XD] = 0.5 * spacing2D[XD] * (size2D[XD]-1.5);
+    else
+        center[XD] = xcArg.getValue();
 
-    Scalar2DImageType::IndexType indexS2D;
-    indexS2D[0] = 0;
-    indexS2D[1] = 0;
+    if (ycArg.getValue() == -1)
+        center[YD] = 0.5 * spacing2D[YD] * (size2D[YD]-1.5);
+    else
+        center[YD] = ycArg.getValue();
+
+    transform->SetCenter(center);
+    transform->SetAngleInDegrees(angleArg.getValue());
+
+    // Translation
+    TransformType::OutputVectorType translation;
+    translation[XD] = txArg.getValue();
+    translation[YD] = tyArg.getValue();
+    transform->SetTranslation(translation);
 
     for (unsigned int componentIndex = 0 ;
                       componentIndex < reader->GetImageIO()->GetNumberOfComponents() ;
@@ -177,8 +170,6 @@ main(int argc, char** argv)
         indexer->SetIndex(componentIndex);
         indexer->Update();
 
-        cout << (int) reader->GetOutput()->GetPixel(indexV3D)[0] << endl;
-
         slicer->SetFilter(resampler);
         slicer->SetInputFilter(resampler);
         slicer->SetOutputFilter(resampler);
@@ -187,7 +178,6 @@ main(int argc, char** argv)
         slicer->Update();
 
         resampler->Update();
-        cout << "resampler: " << (int) resampler->GetOutput()->GetPixel(indexS2D) << endl;
 
         //duplicator->SetInputImage(resampler->GetOutput());
         //duplicator->SetInputImage(indexer->GetOutput());
@@ -201,7 +191,6 @@ main(int argc, char** argv)
     typedef itk::ImageFileWriter< Vector3DImageType > WriterType;
     WriterType::Pointer writer = WriterType::New();
     writer->SetFileName(outputFilename);
-    cout << "writer: " << (int) composer->GetOutput()->GetPixel(indexV3D)[0] << endl;
     writer->SetInput(composer->GetOutput());
     writer->Update();
 
