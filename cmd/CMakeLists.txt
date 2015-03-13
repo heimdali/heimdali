@@ -10,7 +10,7 @@ set(CMD_LIST hconv
              sba sha vb vh mb mh
              mo carflo fixflo flofix logic
              cim asm rot
-             med rdf ddf
+             med rdf ddf idf ri
              )
 foreach(cmd ${CMD_LIST})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
