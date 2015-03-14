@@ -6,7 +6,7 @@ set(CMD_LIST hconv
              par tpr ical
              so ad di mu bi min max
              sc sd lo ra car exp
-             extg raz cco melg fzoom
+             extg raz cco melg fzoom izoom
              sba sha vb vh mb mh
              mo carflo fixflo flofix logic
              cim asm rot
