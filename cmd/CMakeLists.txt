@@ -7,7 +7,7 @@ set(CMD_LIST hconv
              so ad di mu bi min max
              sc sd lo ra car exp
              extg raz cco melg fzoom izoom
-             sba sha vb vh mb mh
+             sba sha vb vh mb mh muls
              mo carflo fixflo flofix logic
              cim asm rot
              med rdf ddf idf ri ma conv fmoy
