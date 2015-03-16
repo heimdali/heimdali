@@ -32,6 +32,8 @@ template <typename ImageType>
 CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     unsigned int nlines_per_loop, string filename)
 {
+    unsigned int ZD=2, YD=1, XD=0;
+
     this->m_is_complete = false;
     this->m_nlines_per_loop = nlines_per_loop;
     this->m_filename = filename;
@@ -102,6 +104,8 @@ template <typename ImageType>
 void
 CmdReaderFromFile<ImageType>::next_iteration()
 {
+
+    unsigned int ZD=2, YD=1;
 
     // Compute next region to region.
     this->m_region_reader->next_iteration();
@@ -191,6 +195,8 @@ template <typename ImageType>
 void
 CmdReaderFromStdin<ImageType>::next_iteration()
 {
+    unsigned int ZD=2, YD=1, XD=0;
+
     int end_of_stdin=0;
     this->m_fileimage_id = H5UPfileimage_from_stdin(&end_of_stdin, m_traceback);
     if (end_of_stdin==1) {

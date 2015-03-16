@@ -38,6 +38,8 @@ CmdWriterToFile<ImageType>::CmdWriterToFile(string filename)
 template <typename ImageType>
 void CmdWriterToFile<ImageType>::Write(typename ImageType::Pointer image)
 {
+    unsigned int ZD=2, YD=1, XD=0;
+
     typename ImageType::SizeType size = image->GetBufferedRegion().GetSize();
     typename ImageType::IndexType index = image->GetBufferedRegion().GetIndex();
 
@@ -80,6 +82,8 @@ CmdWriterToStdout<ImageType>::CmdWriterToStdout()
 template <typename ImageType>
 void CmdWriterToStdout<ImageType>::Write(typename ImageType::Pointer image)
 {
+    unsigned int ZD=2, YD=1;
+
     image->Update();
     typename ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
     typename ImageType::IndexType index = image->GetBufferedRegion().GetIndex();

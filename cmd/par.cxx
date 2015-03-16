@@ -13,6 +13,7 @@
 #include "heimdali/redirect_stdout.hxx"
 #include "heimdali/version.hxx"
 #include "heimdali/cmdreader.hxx"
+#include "heimdali/cmdhelper.hxx"
 
 #define print_switch(name, value, canceling_value) \
     print_canceled = (value == canceling_value && ! opt.has_switch); \
@@ -123,29 +124,6 @@ postprocess_options(Options& opt)
     }
 }
 
-ImageIOBase::Pointer
-read_informations(string filename)
-{
-    ImageIOBase::Pointer imageio;
-
-    if (filename == "" or filename == "-") {
-        typedef float PixelType;
-        const unsigned int Dimension = 3;
-        typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
-        typedef Heimdali::CmdReader<VectorImageType> CmdReaderType;
-        CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, filename);
-        cmdreader->next_iteration();
-        cmdreader->Update();
-        imageio = cmdreader->reader()->GetImageIO();
-    } else {
-        imageio = ImageIOFactory::CreateImageIO( filename.c_str(), ImageIOFactory::ReadMode);
-        imageio->SetFileName(filename);
-    }
-
-    imageio->ReadImageInformation();
-    return imageio;
-}
-
 void
 print_informations(ImageIOBase::Pointer io, Options opt)
 {
@@ -214,7 +192,7 @@ int main(int argc, char** argv)
 
     // Print informations about images.
     for (unsigned int ifile=0 ; ifile < opt.inputFilenames.size() ; ifile++) {
-        ImageIOBase::Pointer imageio = read_informations(opt.inputFilenames[ifile]);
+        ImageIOBase::Pointer imageio = Heimdali::read_informations(opt.inputFilenames[ifile]);
         print_informations(imageio,opt);
     }
 

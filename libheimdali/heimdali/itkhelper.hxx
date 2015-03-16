@@ -15,8 +15,6 @@ using namespace std;
 
 namespace Heimdali {
 
-unsigned int ZD=2, YD=1, XD=0;
-
 typedef float PixelFloat;
 
 //! All images are 3-dimensional.

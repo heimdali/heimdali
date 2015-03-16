@@ -7,6 +7,7 @@ add_library(${HEIMDALI_LIBRARY} SHARED
   redirect_stdout.cxx
   regionreader.cxx
   itkhelper.cxx
+  cmdhelper.cxx
   )
 
 target_link_libraries(${HEIMDALI_LIBRARY}
