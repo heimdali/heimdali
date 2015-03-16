@@ -20,6 +20,9 @@ namespace Heimdali{
 std::vector<std::string>
 preprocess_argv(int argc, char** inrimage_argv);
 
+unsigned int
+count_arguments(std::vector<std::string> argv);
+
 void
 parse_tclap_image_in_image_out(TCLAP::UnlabeledMultiArg<std::string>& filenamesArg,
                                std::string& inputFilename,

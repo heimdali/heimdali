@@ -33,6 +33,18 @@ preprocess_argv(int argc, char** inrimage_argv)
     return tclap_argv;
 }
 
+/* Count arguments, ie string not starting with '-' */
+unsigned int
+count_arguments(vector<string> argv)
+{
+    unsigned int nargs = 0;
+    char dash = '-';
+    for (unsigned int iarg = 1 ; iarg < argv.size() ; iarg++) {
+        if (argv[iarg][0] != dash) nargs++;
+    }
+    return nargs;
+}
+
 /* Parse IMAGE-IN IMAGE-OUT command line arguments */
 void
 parse_tclap_image_in_image_out(TCLAP::UnlabeledMultiArg<string>& filenamesArg,
