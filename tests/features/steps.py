@@ -18,8 +18,8 @@ def truncate_long_output(output):
             output += '\n...output truncated...'
     return output
 
-def check_command():
-    if world.returncode != 0 or world.stderr != '':
+def check_command(returncode=0):
+    if world.returncode != int(returncode) or world.stderr != '':
         raise AssertionError, \
             "returncode is: %i, stdout is:\n%s\n, stderr is:\n%s\n" % (
                 world.returncode,
@@ -52,6 +52,13 @@ def run_the_command(step,cmd):
     world.stdout, world.stderr = p.communicate()
     world.returncode = p.returncode
     check_command()
+
+@step('I run the command \(with return code (\d+)\): (.*)')
+def run_the_command(step, returncode, cmd):
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    world.stdout, world.stderr = p.communicate()
+    world.returncode = p.returncode
+    check_command(returncode=returncode)
 
 @step('I run the example: (.*)')
 def run_the_example(step,cmd):
