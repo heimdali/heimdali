@@ -43,6 +43,9 @@ int main(int argc, char** argv)
     TCLAP::ValueArg<unsigned int> y0Value("","y0", "y origin",false,0,"Y0", parser);
     TCLAP::ValueArg<unsigned int> x0Value("","x0", "x origin",false,0,"X0", parser);
 
+    // -o
+    TCLAP::ValueArg<unsigned int> oValue("o","", "Number of bytes of a pixel component",false,0,"NBYTES", parser);
+
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
     parser.parse(tclap_argv);
 
@@ -76,6 +79,10 @@ int main(int argc, char** argv)
     if (z0Value.isSet()) test_value("z origin", io->GetOrigin(ZD), z0Value.getValue(), error_msg);
     if (y0Value.isSet()) test_value("y origin", io->GetOrigin(YD), y0Value.getValue(), error_msg);
     if (x0Value.isSet()) test_value("x origin", io->GetOrigin(XD), x0Value.getValue(), error_msg);
+
+    if (oValue.isSet())
+        test_value("Number of bytes of a pixel component", io->GetComponentSize(), oValue.getValue(), error_msg);
+
 
     string error_msg_str = error_msg.str();
     if (error_msg.str().empty()) {

@@ -59,7 +59,7 @@ parse_command_line(vector<string> tclap_argv)
     TCLAP::SwitchArg vSwitch("v","component", "Print number of pixel component", parser);
 
     // -o
-    TCLAP::SwitchArg oSwitch("o","", "Print number of bytes of a pixel.", parser);
+    TCLAP::SwitchArg oSwitch("o","", "Print number of bytes of a pixel component.", parser);
 
     // -F
     TCLAP::SwitchArg FSwitch("F","image_type", "Print image type, HDF5 or INRimage", parser);
