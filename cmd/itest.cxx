@@ -32,10 +32,11 @@ int main(int argc, char** argv)
     TCLAP::UnlabeledMultiArg<string> inputFilenamesArg("inputFilenames", 
         "Input image file name.",false,"IMAGE0-IN [IMAGE1-IN]",parser);
 
-    // -z -y -x
+    // -z -y -x -v
     TCLAP::ValueArg<unsigned int> zValue("z","nplanes", "Number of planes",false,0,"NZ", parser);
     TCLAP::ValueArg<unsigned int> yValue("y","nrows", "Number of rows",false,0,"NY", parser);
     TCLAP::ValueArg<unsigned int> xValue("x","ncolumns", "Number of columns",false,0,"NX", parser);
+    TCLAP::ValueArg<unsigned int> vValue("v","component", "Number of pixel components",false,0, "NV", parser);
 
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
     parser.parse(tclap_argv);
@@ -65,6 +66,7 @@ int main(int argc, char** argv)
     test_value("Number of plane", io->GetDimensions(ZD), zValue.getValue(), error_msg); 
     test_value("Number of rows", io->GetDimensions(YD), yValue.getValue(), error_msg); 
     test_value("Number of columns", io->GetDimensions(XD), xValue.getValue(), error_msg); 
+    test_value("Number of components", io->GetNumberOfComponents(), vValue.getValue(), error_msg); 
 
     string error_msg_str = error_msg.str();
     if (error_msg.str().empty()) {
