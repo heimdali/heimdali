@@ -39,3 +39,32 @@ Feature: itest
             Number of bytes of a pixel component are different: 2 VS 4 .
             ""
             """
+
+    Scenario: Check image type (fixed point or floating point)
+        When I run the command: itest -f $HEIMDALI_DATA_DIR/lena_f2.inr
+        Then I see the standard output:
+            """
+            Image informations are the same.
+            ""
+            """
+        When I run the command (with return code 1): itest -f $HEIMDALI_DATA_DIR/lena_r4.inr
+        Then I see the standard output:
+            """
+            Image informations are different.
+            Component pixel type is floating point, not fixed point
+            ""
+            """
+        When I run the command: itest -r $HEIMDALI_DATA_DIR/lena_r4.inr
+        Then I see the standard output:
+            """
+            Image informations are the same.
+            ""
+            """
+        When I run the command (with return code 1): itest -r $HEIMDALI_DATA_DIR/lena_f2.inr
+        Then I see the standard output:
+            """
+            Image informations are different.
+            Component pixel type is fixed point, not floating point
+            ""
+            """
+
