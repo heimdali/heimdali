@@ -3,7 +3,7 @@ include_directories(${ITKINRIMAGEIO_INCLUDE})
 include_directories(${H5UNIXPIPE_INCLUDE})
 
 set(CMD_LIST hconv
-             par tpr ical
+             par tpr ical itest
              so ad di mu bi min max
              sc sd lo ra car exp
              extg raz cco melg fzoom izoom

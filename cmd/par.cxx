@@ -43,7 +43,8 @@ get_switch(TCLAP::SwitchArg& switch_arg, Options& opt)
     return value;
 }
 
-Options parse_command_line(vector<string> tclap_argv)
+Options
+parse_command_line(vector<string> tclap_argv)
 {
     // Parse command line.
     bool not_required = false;
@@ -102,7 +103,8 @@ Options parse_command_line(vector<string> tclap_argv)
     return opt;
 }
 
-void postprocess_options(Options& opt)
+void
+postprocess_options(Options& opt)
 {
     if (opt.has_switch)
         opt.filename = false;
@@ -144,7 +146,8 @@ read_informations(string filename)
     return imageio;
 }
 
-void print_informations(ImageIOBase::Pointer io, Options opt)
+void
+print_informations(ImageIOBase::Pointer io, Options opt)
 {
     ostringstream smsg; // Stream MeSsaGe
     bool print_canceled;
