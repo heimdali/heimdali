@@ -1,4 +1,4 @@
-Feature: conv
+Feature: itest
 
     Scenario: Invoke itest
         When I run the command: itest --help
