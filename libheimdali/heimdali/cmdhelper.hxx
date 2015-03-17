@@ -13,6 +13,18 @@ namespace Heimdali {
 itk::ImageIOBase::Pointer
 read_informations(std::string filename);
 
+bool
+is_floating_point_type(itk::ImageIOBase::Pointer io);
+
+void
+read_information(itk::ImageIOBase::Pointer io, string name, unsigned int& value);
+
+void
+read_information(itk::ImageIOBase::Pointer io, string name, float& value);
+
+void
+read_information(itk::ImageIOBase::Pointer io, string name, bool& value);
+
 }
 
 #endif
