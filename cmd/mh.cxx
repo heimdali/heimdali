@@ -54,7 +54,7 @@ IndexerType::Pointer indexer = IndexerType::New();
 // binary_thresholder
 typedef itk::BinaryThresholdImageFilter<ScalarImageType, ScalarImageType> 
     BinaryThresholderType;
-typename BinaryThresholderType::Pointer binary_thresholder = BinaryThresholderType::New();
+BinaryThresholderType::Pointer binary_thresholder = BinaryThresholderType::New();
 
 // duplicator
 typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
@@ -66,7 +66,7 @@ ComposerType::Pointer composer = ComposerType::New();
 
 // caster
 typedef itk::CastImageFilter<FloatVectorImageType, BinaryVectorImageType > CasterType;
-typename CasterType::Pointer caster = CasterType::New();
+CasterType::Pointer caster = CasterType::New();
 
 // Command line tool writer.
 typedef Heimdali::CmdWriter<BinaryVectorImageType> WriterType;

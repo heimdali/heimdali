@@ -83,7 +83,7 @@ int main( int argc, char ** argv )
     
     // Reader.
     typedef itk::ImageFileReader< ImageType >  ReaderType;
-    typename ReaderType::Pointer reader = ReaderType::New();
+    ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName( inputFilename  );
     
     itk::ImageIOBase::IOComponentType type = read_component_type(inputFilename);

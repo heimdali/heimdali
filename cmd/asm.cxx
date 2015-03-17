@@ -121,7 +121,7 @@ main(int argc, char** argv)
     itk::ImageIORegion ioregion(Dimension);
 
     // Origin.
-    typename ImageType::PointType origin;
+    ImageType::PointType origin;
     origin[ZD] = 0;
     origin[YD] = 0;
     origin[XD] = 0;
@@ -178,7 +178,7 @@ main(int argc, char** argv)
         writer->Update();
 
         // Force objects to close.
-        reader = typename ReaderType::Pointer();
+        reader = ReaderType::Pointer();
         changeRegion = ChangeRegionType::Pointer();
     }
 

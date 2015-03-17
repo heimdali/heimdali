@@ -99,7 +99,7 @@ main(int argc, char** argv)
 
     // composer
     typedef itk::ComposeImageFilter<Scalar3DImageType> ComposerType;
-    typename ComposerType::Pointer composer = ComposerType::New();
+    ComposerType::Pointer composer = ComposerType::New();
 
     // duplicator
     //typedef itk::ImageDuplicator<Scalar2DImageType> DuplicatorType;

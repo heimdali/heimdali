@@ -127,7 +127,7 @@ int main(int argc, char** argv)
     bregion.SetSize(size);
 
     // IMAGE-OUT Origin.
-    typename Heimdali::ImageFloat::PointType origin;
+    Heimdali::ImageFloat::PointType origin;
     origin[ZD] = 0;
     origin[YD] = 0;
     origin[XD] = 0;
