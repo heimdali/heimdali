@@ -438,7 +438,7 @@ void INRImageIO::SetInrUcmd(const char* InrUcmd)
 
 void INRImageIO::SetInrUdetail(const char* InrUdetail)
 {
-    InrUdetail = InrUdetail;
+    m_InrUdetail = InrUdetail;
 }
 
 void INRImageIO::SetInrMode(const char* InrMode)
