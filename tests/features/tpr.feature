@@ -47,3 +47,23 @@ Feature: tpr
    Examples:
        | input                     | stdout                   |
        | lena_r4.h5                | tpr_lena_r4_region.txt   |
+
+    Scenario: Print fixed-point format for unsigned char
+        When I run the command: tpr <flag> -x 1 -y 1 -c <input>
+        Then I see the standard output:
+            """
+            <output>
+            ""
+            """
+   Examples:
+        | flag    | input       | output      |
+        |         | lena_f1.inr | 165         |
+        |         | lena_f1.h5  | 165         |
+        | -f "%d" | lena_f1.inr | 165         |
+        | -f "%d" | lena_f1.h5  | 165         |
+        | -f "%g" | lena_f1.inr | 0.647059    |
+        | -f "%g" | lena_f1.h5  | 0.647059    |
+        |         | lena_f2.inr | 0.647059    |
+        |         | lena_f2.h5  | 0.647059    |
+        | -f "%g" | lena_f2.inr | 0.647059    |
+        | -f "%g" | lena_f2.h5  | 0.647059    |

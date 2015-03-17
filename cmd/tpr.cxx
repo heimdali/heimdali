@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     TCLAP::ValueArg<unsigned int> lArg("l","nvalues", "Maximal number of value printed per console row (0 for full line)",false,5,"NVALUES", parser);
 
     // -f
-    TCLAP::ValueArg<string> fArg("f","format", "printf format to print values",false,"%g","FORMAT", parser);
+    TCLAP::ValueArg<string> fArg("f","format", "printf format to print values",false,"%14g","FORMAT", parser);
 
     // input.h5
     TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
@@ -84,7 +84,9 @@ int main(int argc, char** argv)
     // Readers
     typedef Heimdali::CmdReader<ImageType> CmdReaderType;
     CmdReaderType* reader = CmdReaderType::make_cmd_reader(0, inputFilename);
-    reader->convert_fixed_point_to_floating_point_on();
+    if () {
+        reader->convert_fixed_point_to_floating_point_on();
+    }
     reader->next_iteration();
     reader->Update();
 

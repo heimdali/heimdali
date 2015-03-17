@@ -46,8 +46,13 @@ class ITK_ABI_EXPORT CmdReader
         unsigned int get_sy() const {return m_sy;};
         unsigned int get_sx() const {return m_sx;};
         unsigned int get_sc() const {return m_sc;};
-        void convert_fixed_point_to_floating_point_on(){m_convert_fixed_point_to_floating_point=true;};
-        void convert_fixed_point_to_floating_point_off(){m_convert_fixed_point_to_floating_point=false;};
+        void convert_fixed_point_to_floating_point_on(bool convert_fixed_point_to_floating_point_f1=true){
+            m_convert_fixed_point_to_floating_point = true;
+            m_convert_fixed_point_to_floating_point_f1 = convert_fixed_point_to_floating_point_f1;
+        };
+        void convert_fixed_point_to_floating_point_off(){
+            m_convert_fixed_point_to_floating_point = false;
+        };
     protected:
         unsigned int m_nlines_per_loop;
         bool m_is_complete;
@@ -56,6 +61,7 @@ class ITK_ABI_EXPORT CmdReader
         unsigned int m_nz, m_ny, m_nx;
         unsigned int m_sz, m_sy, m_sx, m_sc;
         bool m_convert_fixed_point_to_floating_point;
+        bool m_convert_fixed_point_to_floating_point_f1;
         bool m_convert_fixed_point_to_floating_point_required;
         typename DivideImageFilterType::Pointer m_divider;
 };

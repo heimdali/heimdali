@@ -128,7 +128,8 @@ CmdReaderFromFile<ImageType>::next_iteration()
 
     this->m_convert_fixed_point_to_floating_point_required = 
         this->m_convert_fixed_point_to_floating_point && 
-        (fixed_point_divider != 0);
+        (fixed_point_divider != 0) &&
+        (this->m_convert_fixed_point_to_floating_point_f1 || fixed_point_divider!=255);
 
     if (this->m_convert_fixed_point_to_floating_point_required) {
         this->m_divider->SetInput1(this->m_reader->GetOutput());
@@ -220,7 +221,8 @@ CmdReaderFromStdin<ImageType>::next_iteration()
 
     this->m_convert_fixed_point_to_floating_point_required = 
         this->m_convert_fixed_point_to_floating_point && 
-        (fixed_point_divider != 0);
+        (fixed_point_divider != 0) &&
+        (this->m_convert_fixed_point_to_floating_point_f1 || fixed_point_divider!=255);
 
     if (this->m_convert_fixed_point_to_floating_point_required) {
         this->m_divider->SetInput1(this->m_reader->GetOutput());
