@@ -9,10 +9,32 @@
 #include "heimdali/version.hxx"
 #include "heimdali/cmdhelper.hxx"
 
-#define ADD_TO_MAP(map,arg) if (arg.isSet()) map[arg.getName()] = arg.getValue()
+#define ADD_VALUEARG_TO_MAP(map,arg) if (arg.isSet()) map[arg.getName()] = arg.getValue()
+#define ADD_SWITCHARG_TO_MAP(map,arg) if (arg.isSet()) add_key_to_map(map, arg.getName())
 #define HAS_KEY(map,key) map.find(key) != map.end()
 
 using namespace std;
+
+template <typename T>
+void
+add_key_to_map(map<string,T>& m, string key)
+{
+    m[key] = T();
+}
+
+template <typename T>
+void
+copy_map_keys(map<string,T>& src, map<string,T>& dst)
+{
+    for (typename map<string,T>::iterator
+            it  = src.begin() ;
+            it != src.end() ;
+            it++)
+    {
+        string key = it->first;
+        dst[key] = T();
+    }
+}
 
 template <typename S, typename T>
 void
@@ -21,6 +43,24 @@ test_value(string label, S value, T expected_value, ostringstream& msg)
     if (value != expected_value)
         msg << label << " are different: " << value 
             << " VS " << expected_value << " ." << endl;;
+}
+
+/* Read keys of maps and fill its values.
+ */
+template <typename T>
+void
+read_image_info_from_file(const string filename, map<string, T>& m,
+                          itk::ImageIOBase::Pointer io)
+{
+
+    for (typename map<string, T>::iterator
+            it  = m.begin() ;
+            it != m.end() ;
+            it++)
+    {
+        string key = it->first;
+        Heimdali::read_information(io, key, m[key]);
+    }
 }
 
 /* Fill keys and values of maps.
@@ -60,50 +100,74 @@ parse_cli_one_filename(vector<string> tclap_argv,
 
     inputFilename = inputFilenameArg.getValue();
 
-    ADD_TO_MAP(map_uint, zValue);
-    ADD_TO_MAP(map_uint, yValue);
-    ADD_TO_MAP(map_uint, xValue);
-    ADD_TO_MAP(map_uint, vValue);
-    ADD_TO_MAP(map_uint, oValue);
+    ADD_VALUEARG_TO_MAP(map_uint, zValue);
+    ADD_VALUEARG_TO_MAP(map_uint, yValue);
+    ADD_VALUEARG_TO_MAP(map_uint, xValue);
+    ADD_VALUEARG_TO_MAP(map_uint, vValue);
+    ADD_VALUEARG_TO_MAP(map_uint, oValue);
 
-    ADD_TO_MAP(map_float, z0Value);
-    ADD_TO_MAP(map_float, y0Value);
-    ADD_TO_MAP(map_float, x0Value);
+    ADD_VALUEARG_TO_MAP(map_float, z0Value);
+    ADD_VALUEARG_TO_MAP(map_float, y0Value);
+    ADD_VALUEARG_TO_MAP(map_float, x0Value);
 
-    ADD_TO_MAP(map_bool, fSwitch);
-    ADD_TO_MAP(map_bool, rSwitch);
+    ADD_VALUEARG_TO_MAP(map_bool, fSwitch);
+    ADD_VALUEARG_TO_MAP(map_bool, rSwitch);
 }
 
-/* Read keys of maps and fill its values.
+/* Fill keys of maps.
  */
-template <typename T>
 void
-read_image_info_from_file(const string filename, map<string, T>& m,
-                          itk::ImageIOBase::Pointer io)
+parse_cli_two_filenames(vector<string> tclap_argv,
+                       string& inputFilenameA,
+                       string& inputFilenameB,
+                       map<string, unsigned int>& map_uint,
+                       map<string, bool>& map_bool,
+                       map<string, float>& map_float)
 {
+    // Parse command line.
+    TCLAP::CmdLine parser("Perform simple tests on image informations", ' ', HEIMDALI_VERSION);
 
-    for (typename map<string, T>::iterator
-            it  = m.begin() ;
-            it != m.end() ;
-            it++)
-    {
-        string key = it->first;
-        Heimdali::read_information(io, key, m[key]);
-    }
-}
+    TCLAP::UnlabeledValueArg<string> inputFilenameAArg("inputFilenameA", 
+        "Input image file name.",true,"","IMAGE-A-IN", parser);
 
-template <typename T>
-void
-copy_map_keys(map<string,T>& src, map<string,T>& dst)
-{
-    for (typename map<string,T>::iterator
-            it  = src.begin() ;
-            it != src.end() ;
-            it++)
-    {
-        string key = it->first;
-        dst[key] = T();
-    }
+    TCLAP::UnlabeledValueArg<string> inputFilenameBArg("inputFilenameB", 
+        "Input image file name.",true,"","IMAGE-B-IN", parser);
+
+    // -z -y -x -v
+    TCLAP::SwitchArg zSwitch("z","nplanes", "Number of planes", parser);
+    TCLAP::SwitchArg ySwitch("y","nrows", "Number of rows", parser);
+    TCLAP::SwitchArg xSwitch("x","ncolumns", "Number of columns", parser);
+    TCLAP::SwitchArg vSwitch("v","ncomponents", "Number of pixel components", parser);
+
+    // -z0 -y0 -x0
+    TCLAP::SwitchArg z0Switch("","z0", "z origin", parser);
+    TCLAP::SwitchArg y0Switch("","y0", "y origin", parser);
+    TCLAP::SwitchArg x0Switch("","x0", "x origin", parser);
+
+    // -o
+    TCLAP::SwitchArg oSwitch("o","componentsize", "Number of bytes of a pixel component", parser);
+
+    // -f -r
+    TCLAP::SwitchArg fSwitch("f","fixed-point", "Pixel type is fixed point number", parser);
+    TCLAP::SwitchArg rSwitch("r","floating-point", "Pixel type is floating point number", parser);
+
+    parser.parse(tclap_argv);
+
+    inputFilenameA = inputFilenameAArg.getValue();
+    inputFilenameB = inputFilenameBArg.getValue();
+
+    ADD_SWITCHARG_TO_MAP(map_uint, zSwitch);
+    ADD_SWITCHARG_TO_MAP(map_uint, ySwitch);
+    ADD_SWITCHARG_TO_MAP(map_uint, xSwitch);
+    ADD_SWITCHARG_TO_MAP(map_uint, vSwitch);
+    ADD_SWITCHARG_TO_MAP(map_uint, oSwitch);
+
+    ADD_SWITCHARG_TO_MAP(map_float, z0Switch);
+    ADD_SWITCHARG_TO_MAP(map_float, y0Switch);
+    ADD_SWITCHARG_TO_MAP(map_float, x0Switch);
+
+    ADD_SWITCHARG_TO_MAP(map_bool, fSwitch);
+    ADD_SWITCHARG_TO_MAP(map_bool, rSwitch);
 }
 
 template <typename T>
@@ -151,6 +215,21 @@ int main(int argc, char** argv)
         copy_map_keys(map_uintA, map_uintB);
         copy_map_keys(map_boolA, map_boolB);
         copy_map_keys(map_floatA, map_floatB);
+        io = Heimdali::read_informations(inputFilenameB);
+        read_image_info_from_file(inputFilenameB, map_uintB, io);
+        read_image_info_from_file(inputFilenameB, map_boolB, io);
+        read_image_info_from_file(inputFilenameB, map_floatB, io);
+        break;
+    case 2:
+        parse_cli_two_filenames(tclap_argv, inputFilenameA, inputFilenameB,
+                                 map_uintA, map_boolA, map_floatA);
+        copy_map_keys(map_uintA, map_uintB);
+        copy_map_keys(map_boolA, map_boolB);
+        copy_map_keys(map_floatA, map_floatB);
+        io = Heimdali::read_informations(inputFilenameA);
+        read_image_info_from_file(inputFilenameA, map_uintA, io);
+        read_image_info_from_file(inputFilenameA, map_boolA, io);
+        read_image_info_from_file(inputFilenameA, map_floatA, io);
         io = Heimdali::read_informations(inputFilenameB);
         read_image_info_from_file(inputFilenameB, map_uintB, io);
         read_image_info_from_file(inputFilenameB, map_boolB, io);
