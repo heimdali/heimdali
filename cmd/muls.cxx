@@ -100,7 +100,7 @@ IndexerType::Pointer indexer = IndexerType::New();
 
 // thresholder
 typedef itk::ThresholdImageFilter<ScalarImageType> ThresholderType;
-typename ThresholderType::Pointer thresholder = ThresholderType::New();
+ThresholderType::Pointer thresholder = ThresholderType::New();
 
 // duplicator
 typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;

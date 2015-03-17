@@ -54,7 +54,7 @@ IndexerType::Pointer indexer = IndexerType::New();
 
 // thresholder
 typedef itk::ThresholdImageFilter<ScalarImageType> ThresholderType;
-typename ThresholderType::Pointer thresholder = ThresholderType::New();
+ThresholderType::Pointer thresholder = ThresholderType::New();
 thresholder->ThresholdAbove(numberArg.getValue());
 thresholder->SetOutsideValue(numberArg.getValue());
 
