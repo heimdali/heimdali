@@ -76,3 +76,7 @@
    - par: fix uninitialized values
    - new itk-heimdali-dbg package
    - fix #27: Urgent and various issues on tpr
+
+0.7.0:
+  - Add commands: sba sha vb vh mb mh mo carflot fixflo flofix logic cim med
+    rdf asm rot ddf ri ma conv fmoy izoom muls norma ce input detc
