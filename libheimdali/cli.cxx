@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "heimdali/cli.hxx"
+#include "heimdali/util.hxx"
 
 using namespace std;
 
@@ -33,14 +34,24 @@ preprocess_argv(int argc, char** inrimage_argv)
     return tclap_argv;
 }
 
-/* Count arguments, ie string not starting with '-' */
+/* Counts command line arguments (ie, not flag).
+ *
+ * A word if not a flag if starts with '-' or if it is a float.
+ *
+ * For example:
+ *   ./main first second         # 2 arguments
+ *   ./main -f 5 first second    # 2 arguments
+ *   ./main -f five first second # 3 arguments
+ */
 unsigned int
 count_arguments(vector<string> argv)
 {
     unsigned int nargs = 0;
     char dash = '-';
+    string arg;
     for (unsigned int iarg = 1 ; iarg < argv.size() ; iarg++) {
-        if (argv[iarg][0] != dash) nargs++;
+        arg = argv[iarg];
+        if (arg[0] != dash && ! Heimdali::is_float(arg)) nargs++;
     }
     return nargs;
 }
