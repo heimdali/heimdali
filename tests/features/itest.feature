@@ -1,7 +1,7 @@
 Feature: itest
 
     Scenario: Invoke itest
-        When I run the command: itest --help
+        When I run the command: itest A --help
         Then I see the line in standard output: Perform simple tests on image informations 
 
     Scenario: Check image dimensions 
@@ -14,8 +14,7 @@ Feature: itest
         When I run the command (with return code 1): itest -z 5 -y 7 -x 3 -v 2 $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.inr
         Then I see the standard output:
             """
-            Image informations are different.
-            Number of rows are different: 4 VS 7 .
+            Image informations are different: nrows
             ""
             """
 
@@ -35,8 +34,7 @@ Feature: itest
         When I run the command (with return code 1): itest -o 4 $HEIMDALI_DATA_DIR/lena_f2.inr
         Then I see the standard output:
             """
-            Image informations are different.
-            Number of bytes of a pixel component are different: 2 VS 4 .
+            Image informations are different: componentsize
             ""
             """
 
@@ -50,8 +48,7 @@ Feature: itest
         When I run the command (with return code 1): itest -f $HEIMDALI_DATA_DIR/lena_r4.inr
         Then I see the standard output:
             """
-            Image informations are different.
-            Component pixel type is floating point, not fixed point
+            Image informations are different: fixed-point
             ""
             """
         When I run the command: itest -r $HEIMDALI_DATA_DIR/lena_r4.inr
@@ -63,8 +60,7 @@ Feature: itest
         When I run the command (with return code 1): itest -r $HEIMDALI_DATA_DIR/lena_f2.inr
         Then I see the standard output:
             """
-            Image informations are different.
-            Component pixel type is fixed point, not floating point
+            Image informations are different: floating-point
             ""
             """
 

@@ -9,9 +9,10 @@
 #include "heimdali/version.hxx"
 #include "heimdali/cmdhelper.hxx"
 
-using namespace std;
+#define ADD_TO_MAP(map,arg) if (arg.isSet()) map[arg.getName()] = arg.getValue()
+#define HAS_KEY(map,key) map.find(key) != map.end()
 
-static int ZD = 2, YD = 1, XD = 0;
+using namespace std;
 
 template <typename S, typename T>
 void
@@ -22,120 +23,162 @@ test_value(string label, S value, T expected_value, ostringstream& msg)
             << " VS " << expected_value << " ." << endl;;
 }
 
-int main(int argc, char** argv)
+/* Fill keys and values of maps.
+ */
+void
+parse_cli_one_filename(vector<string> tclap_argv,
+                       string& inputFilename,
+                       map<string, unsigned int>& map_uint,
+                       map<string, bool>& map_bool,
+                       map<string, float>& map_float)
 {
-    try {
-
     // Parse command line.
     TCLAP::CmdLine parser("Perform simple tests on image informations", ' ', HEIMDALI_VERSION);
 
-    TCLAP::UnlabeledMultiArg<string> inputFilenamesArg("inputFilenames", 
-        "Input image file name.",false,"IMAGE0-IN [IMAGE1-IN]",parser);
+    TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
+        "Input image file name.",true,"","IMAGE-IN", parser);
 
     // -z -y -x -v
     TCLAP::ValueArg<unsigned int> zValue("z","nplanes", "Number of planes",false,0,"NZ", parser);
     TCLAP::ValueArg<unsigned int> yValue("y","nrows", "Number of rows",false,0,"NY", parser);
     TCLAP::ValueArg<unsigned int> xValue("x","ncolumns", "Number of columns",false,0,"NX", parser);
-    TCLAP::ValueArg<unsigned int> vValue("v","component", "Number of pixel components",false,0, "NV", parser);
+    TCLAP::ValueArg<unsigned int> vValue("v","ncomponents", "Number of pixel components",false,0, "NV", parser);
 
     // -z0 -y0 -x0
-    TCLAP::ValueArg<unsigned int> z0Value("","z0", "z origin",false,0,"Z0", parser);
-    TCLAP::ValueArg<unsigned int> y0Value("","y0", "y origin",false,0,"Y0", parser);
-    TCLAP::ValueArg<unsigned int> x0Value("","x0", "x origin",false,0,"X0", parser);
+    TCLAP::ValueArg<float> z0Value("","z0", "z origin",false,0,"Z0", parser);
+    TCLAP::ValueArg<float> y0Value("","y0", "y origin",false,0,"Y0", parser);
+    TCLAP::ValueArg<float> x0Value("","x0", "x origin",false,0,"X0", parser);
 
     // -o
-    TCLAP::ValueArg<unsigned int> oValue("o","", "Number of bytes of a pixel component",false,0,"NBYTES", parser);
+    TCLAP::ValueArg<unsigned int> oValue("o","componentsize", "Number of bytes of a pixel component",false,0,"NBYTES", parser);
 
     // -f -r
-    TCLAP::SwitchArg fSwitch("f","fixed", "Pixel type is fixed point number", parser);
-    TCLAP::SwitchArg rSwitch("r","float", "Pixel type is floating point number", parser);
+    TCLAP::SwitchArg fSwitch("f","fixed-point", "Pixel type is fixed point number", parser);
+    TCLAP::SwitchArg rSwitch("r","floating-point", "Pixel type is floating point number", parser);
+
+    parser.parse(tclap_argv);
+
+    inputFilename = inputFilenameArg.getValue();
+
+    ADD_TO_MAP(map_uint, zValue);
+    ADD_TO_MAP(map_uint, yValue);
+    ADD_TO_MAP(map_uint, xValue);
+    ADD_TO_MAP(map_uint, vValue);
+    ADD_TO_MAP(map_uint, oValue);
+
+    ADD_TO_MAP(map_float, z0Value);
+    ADD_TO_MAP(map_float, y0Value);
+    ADD_TO_MAP(map_float, x0Value);
+
+    ADD_TO_MAP(map_bool, fSwitch);
+    ADD_TO_MAP(map_bool, rSwitch);
+}
+
+/* Read keys of maps and fill its values.
+ */
+template <typename T>
+void
+read_image_info_from_file(const string filename, map<string, T>& m,
+                          itk::ImageIOBase::Pointer io)
+{
+
+    for (typename map<string, T>::iterator
+            it  = m.begin() ;
+            it != m.end() ;
+            it++)
+    {
+        string key = it->first;
+        Heimdali::read_information(io, key, m[key]);
+    }
+}
+
+template <typename T>
+void
+copy_map_keys(map<string,T>& src, map<string,T>& dst)
+{
+    for (typename map<string,T>::iterator
+            it  = src.begin() ;
+            it != src.end() ;
+            it++)
+    {
+        string key = it->first;
+        dst[key] = T();
+    }
+}
+
+template <typename T>
+void
+compare_informations(map<string,T> A, map<string,T> B, ostringstream& msg)
+{
+    string key;
+    T valueA, valueB;
+    for (typename map<string, T>::iterator
+            itA  = A.begin() ;
+            itA != A.end() ;
+            itA++)
+    {
+        string key = itA->first;
+        valueA = itA->second;
+        valueB = B[key];
+        if (valueA != valueB)
+            msg << " " << key;
+    }
+}
+
+int main(int argc, char** argv)
+{
+    try {
 
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
-    parser.parse(tclap_argv);
 
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-    // Parse input file names.
-    vector<string> inputFilenames = inputFilenamesArg.getValue();
-    string inputFilename0;
-    string inputFilename1;
+    map<string, unsigned int> map_uintA, map_uintB;
+    map<string, bool> map_boolA, map_boolB;
+    map<string, float> map_floatA, map_floatB;
+    string inputFilenameA, inputFilenameB;
+    itk::ImageIOBase::Pointer io;
+
     ostringstream error_msg;
-    ostringstream msg;
-    switch (inputFilenames.size())
+
+    unsigned int numberOfInputFilenames = Heimdali::count_arguments(tclap_argv);
+
+    switch (numberOfInputFilenames)
     {
     case 1:
-        inputFilename0 = inputFilenames[0];
+        parse_cli_one_filename(tclap_argv, inputFilenameB, map_uintA, map_boolA, map_floatA);
+        copy_map_keys(map_uintA, map_uintB);
+        copy_map_keys(map_boolA, map_boolB);
+        copy_map_keys(map_floatA, map_floatB);
+        io = Heimdali::read_informations(inputFilenameB);
+        read_image_info_from_file(inputFilenameB, map_uintB, io);
+        read_image_info_from_file(inputFilenameB, map_boolB, io);
+        read_image_info_from_file(inputFilenameB, map_floatB, io);
         break;
     default:
-        error_msg << "One or two fileanmes expected, but got: "
-                  << inputFilenames.size();
+        error_msg << "ERROR: One or two fileanmes expected, but got: " 
+                  << numberOfInputFilenames << endl
+                  << "To get help on usage with one filename, use: " << endl
+                  << "    itest A --help" << endl
+                  << "To get help on usage with two filename, use: " << endl
+                  << "    itest A B --help";
         throw(Heimdali::ValueError(error_msg.str()));
         break;
     }
 
-    itk::ImageIOBase::Pointer io = Heimdali::read_informations(inputFilename0);
-
-    // Check image dimension.
-    if (zValue.isSet()) test_value("Number of plane", io->GetDimensions(ZD), zValue.getValue(), msg); 
-    if (yValue.isSet()) test_value("Number of rows", io->GetDimensions(YD), yValue.getValue(), msg); 
-    if (xValue.isSet()) test_value("Number of columns", io->GetDimensions(XD), xValue.getValue(), msg); 
-    if (vValue.isSet()) test_value("Number of components", io->GetNumberOfComponents(), vValue.getValue(), msg); 
-
-    // Check image origin.
-    if (zValue.isSet()) test_value("Number of plane", io->GetDimensions(ZD), zValue.getValue(), msg); 
-    if (z0Value.isSet()) test_value("z origin", io->GetOrigin(ZD), z0Value.getValue(), msg);
-    if (y0Value.isSet()) test_value("y origin", io->GetOrigin(YD), y0Value.getValue(), msg);
-    if (x0Value.isSet()) test_value("x origin", io->GetOrigin(XD), x0Value.getValue(), msg);
-
-    // Check pixel component number of bytes.
-    if (oValue.isSet())
-        test_value("Number of bytes of a pixel component", io->GetComponentSize(), oValue.getValue(), msg);
-
-    // Check pixel type (fixed point or floating point)
-    bool is_floating_point = false;
-    if (fSwitch.isSet() || rSwitch.isSet()) {
-        switch (io->GetComponentType()) {
-            case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
-                error_msg << "Pixel component type is unknown";
-                throw(Heimdali::ValueError(error_msg.str()));
-                break;
-            case itk::ImageIOBase::FLOAT:
-                is_floating_point = true;
-                break;
-            case itk::ImageIOBase::DOUBLE:
-                is_floating_point = true;
-                break;
-            case itk::ImageIOBase::UCHAR:
-                is_floating_point = false;
-                break;
-            case itk::ImageIOBase::USHORT:
-                is_floating_point = false;
-                break;
-            case itk::ImageIOBase::UINT:
-                is_floating_point = false;
-                break;
-            default:
-                error_msg
-                    << "Expected pixel component type to be "
-                    << "FLOAT, DOUBLE, UCHAR, USHORT or UINT"
-                    << "but, got " << io->GetComponentTypeAsString(io->GetComponentType());
-                throw(Heimdali::ValueError(error_msg.str()));
-                break;
-        }
-    }
-    if (fSwitch.isSet() && is_floating_point)
-        msg << "Component pixel type is floating point, not fixed point" << endl;
-    if (rSwitch.isSet() && ! is_floating_point)
-        msg << "Component pixel type is fixed point, not floating point" << endl;
+    // Compare informations.
+    ostringstream msg;
+    compare_informations(map_uintA, map_uintB, msg);
+    compare_informations(map_boolA, map_boolB, msg);
+    compare_informations(map_floatA, map_floatB, msg);
 
     // Output message and return code.
     if (msg.str().empty()) {
         cout << "Image informations are the same." << endl;
         return 0;
     } else {
-        cout << "Image informations are different." << endl;
-        cout << msg.str();
+        cout << "Image informations are different:" << msg.str() << endl;
         return 1;
     }
 
