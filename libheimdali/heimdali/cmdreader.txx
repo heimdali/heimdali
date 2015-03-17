@@ -211,9 +211,9 @@ CmdReaderFromStdin<ImageType>::next_iteration()
     this->m_reader->SetImageIO(this->m_HDF5io);
     this->m_reader->Update();
 
-    this->m_sx = m_HDF5io->GetDimensions(ZD);
+    this->m_sz = m_HDF5io->GetDimensions(ZD);
     this->m_sy = m_HDF5io->GetDimensions(YD);
-    this->m_sz = m_HDF5io->GetDimensions(XD);
+    this->m_sx = m_HDF5io->GetDimensions(XD);
     this->m_sc = m_HDF5io->GetNumberOfComponents();
 
     int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
