@@ -10,6 +10,7 @@ set(CMD_LIST hconv
              sba sha vb vh mb mh muls norma
              mo carflo fixflo flofix logic
              cim asm rot
+             detc
              med rdf ddf idf ri ma conv fmoy ce
              )
 foreach(cmd ${CMD_LIST})

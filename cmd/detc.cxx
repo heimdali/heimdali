@@ -9,7 +9,7 @@
 #include <itkImageDuplicator.h>
 #include <itkINRImageIOFactory.h>
 #include <itkVectorIndexSelectionCastImageFilter.h>
-#include "itkRescaleIntensityImageFilter.h"
+#include "itkSobelEdgeDetectionImageFilter.h"
 
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/cmdwriter.hxx"
@@ -19,7 +19,7 @@
 
 using namespace std;
 
-typedef unsigned char PixelType;
+typedef float PixelType;
 
 int main(int argc, char** argv)
 { 
@@ -28,8 +28,14 @@ try {
 
 vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
 
-TCLAP::CmdLine parser("Rescale image value between 0 and 1",
+TCLAP::CmdLine parser("Detect image contour",
                       ' ', HEIMDALI_VERSION);
+
+TCLAP::SwitchArg sobSwitch("","sob", "Sobel", parser);
+TCLAP::SwitchArg kirSwitch("","kir", "Kirsh", parser);
+TCLAP::SwitchArg lapSwitch("","lap", "Laplace", parser);
+TCLAP::SwitchArg hueSwitch("","hue", "Hueckel", parser);
+TCLAP::SwitchArg walSwitch("","wal", "Wallis", parser);
 
 HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
@@ -37,6 +43,13 @@ parser.parse(tclap_argv);
 string inputFilename;
 string outputFilename;
 Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
+
+if (kirSwitch.isSet() || lapSwitch.isSet() || hueSwitch.isSet() ||
+    walSwitch.isSet()) {
+    ostringstream error_msg;
+    error_msg << "Only Sobel implemented";
+    throw(Heimdali::NotImplementedError(error_msg.str()));
+}
 
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
@@ -57,11 +70,9 @@ WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
 typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
 IndexerType::Pointer indexer = IndexerType::New();
 
-// thresholder
-typedef itk::RescaleIntensityImageFilter<ScalarImageType,ScalarImageType > RescalerType;
-RescalerType::Pointer rescaler = RescalerType::New();
-rescaler->SetOutputMinimum(0);
-rescaler->SetOutputMaximum(255);
+// Sobel filter
+typedef itk::SobelEdgeDetectionImageFilter <ScalarImageType, ScalarImageType> SobelFilterType;
+SobelFilterType::Pointer sobelFilter = SobelFilterType::New();
 
 // duplicator
 typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
@@ -86,11 +97,11 @@ for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
     {
         indexer->SetIndex(componentIndex);
 
-        rescaler->SetInput(indexer->GetOutput());
-        rescaler->Modified();
-        rescaler->Update();
+        sobelFilter->SetInput(indexer->GetOutput());
+        sobelFilter->Modified();
+        sobelFilter->Update();
 
-        duplicator->SetInputImage(rescaler->GetOutput());
+        duplicator->SetInputImage(sobelFilter->GetOutput());
         duplicator->Update();
 
         composer->SetInput(componentIndex, duplicator->GetOutput());
@@ -107,17 +118,17 @@ for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
 
 // Command line parser.
 catch (TCLAP::ArgException &e) { 
-    cerr << "sha: ERROR: " << e.error() << " for arg " << e.argId() << endl;
+    cerr << "detc: ERROR: " << e.error() << " for arg " << e.argId() << endl;
 }
 
 
 // Input/output.
 catch (Heimdali::IOError &e) {
-    cerr << "sha: ERROR: " << e.getMessage() << endl;
+    cerr << "detc: ERROR: " << e.getMessage() << endl;
 }
 
 catch (Heimdali::NotImplementedError &e) {
-    cerr << "sha: ERROR: " << e.getMessage() << endl;
+    cerr << "detc: ERROR: " << e.getMessage() << endl;
 }
 
 return 0;
