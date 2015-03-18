@@ -137,6 +137,39 @@ View the documentation:
 Note that breathe_, a Sphinx extension, is already provided in
 `heimdali/doc/ext/breathe`.
 
+Dependencies
+====================================
+
+Here is a summary of Heimdali dependencies, if you want to apply modifications on
+it:
+
++-----------------------------+------------------------+
+| sources or homepage         | conda recipe           |
++=============================+========================+
+| heimdali_                   | `heimdali recipe`_     |
++-----------------------------+------------------------+
+| itk-heimdali_               | `itk-heimdali recipe`_ |
++-----------------------------+------------------------+
+| tclap_                      | `tclap recipe`_        |
++-----------------------------+------------------------+
+| h5unixpipe_                 | `h5unixpipe recipe`_   |
++-----------------------------+------------------------+
+| libinrimage_                | `libinrimage recipe`_  |
++-----------------------------+------------------------+
+
+Conda packages are hosted on `binstar dfroger channel`_.
+
 .. _Sphinx: http://sphinx-doc.org/
 .. _Doxygen: www.doxygen.org/
 .. _breathe: https://breathe.readthedocs.org
+.. _heimdali: https://github.com/dfroger/heimdali
+.. _heimdali recipe: https://github.com/dfroger/heimdali/tree/master/conda-recipe
+.. _itk-heimdali: https://github.com/dfroger/itk/tree/heimdali
+.. _itk-heimdali recipe: https://github.com/dfroger/df-conda-recipe/tree/master/itk-heimdali
+.. _tclap: http://tclap.sourceforge.net/
+.. _tclap recipe: https://github.com/dfroger/df-conda-recipe/tree/master/tclap
+.. _h5unixpipe: https://github.com/dfroger/h5unixpipe
+.. _h5unixpipe recipe: https://github.com/dfroger/h5unixpipe/tree/master/conda
+.. _libinrimage: http://inrimage.gforge.inria.fr
+.. _libinrimage recipe: https://github.com/dfroger/df-conda-recipe/tree/master/libinrimage
+.. _binstar dfroger channel: https://binstar.org/dfroger 
