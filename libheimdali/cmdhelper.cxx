@@ -4,27 +4,49 @@ using namespace std;
 
 namespace Heimdali {
 
+/* Note: This function is not part of the CmdReader class, as this class is
+ * templated of PixelType. We may want to know PixelType before using
+ * CmdReader. 
+ */
 itk::ImageIOBase::Pointer
-read_informations(string filename)
+open_from_stdin_or_file(const string inputFilename)
 {
-    itk::ImageIOBase::Pointer imageio;
+    itk::ImageIOBase::Pointer io;
 
-    if (filename == "" or filename == "-") {
-        typedef float PixelType;
-        const unsigned int Dimension = 3;
-        typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
-        typedef Heimdali::CmdReader<VectorImageType> CmdReaderType;
-        CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, filename);
-        cmdreader->next_iteration();
-        cmdreader->Update();
-        imageio = cmdreader->reader()->GetImageIO();
+    if (inputFilename == "" or inputFilename == "-") {
+
+        // If reading on stdin, we create a file virtual image that mimic the
+        // file on the disk.
+        // TODO: provide a C++ API in h5unixpipe to do in one line:
+        //     H5::H5File* fileimage = h5unixpipe::fileimage_from_stdin
+        H5::H5File* fileimage;
+        MTB_T* tb = MTB_new_tb();
+        int end_of_stdin;
+        hid_t fileimage_id = H5UPfileimage_from_stdin(&end_of_stdin, tb); MTB_S;
+        fileimage = h5unixpipe::fileid_to_h5file(fileimage_id);
+
+        // Create HDF5 Image IO
+        itk::HDF5ImageIO::Pointer HDF5io = itk::HDF5ImageIO::New();
+
+        // The normal ITK way is to open `filename` to obtain a `file descriptor`.
+        // When reading from stdin, we don't want ITK to try to open `ghost.h5`,
+        // but instead directly use `fileimage` as the `file descriptor`.
+        HDF5io->SetH5File(fileimage);
+
+        // Convert itkHDF5ImageIO to itkImageIOBase
+        itk::ImageIOBase* io_raw_pointer = dynamic_cast<itk::ImageIOBase*>(HDF5io.GetPointer());
+        io = io_raw_pointer;
+
     } else {
-        imageio = itk::ImageIOFactory::CreateImageIO( filename.c_str(), itk::ImageIOFactory::ReadMode);
-        imageio->SetFileName(filename);
+        // Create Image IO
+        io = itk::ImageIOFactory::CreateImageIO(inputFilename.c_str(),
+                                                itk::ImageIOFactory::ReadMode);
+        io->SetFileName(inputFilename);
     }
 
-    imageio->ReadImageInformation();
-    return imageio;
+    io->ReadImageInformation();
+
+    return io;
 }
 
 bool

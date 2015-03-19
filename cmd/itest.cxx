@@ -215,7 +215,7 @@ int main(int argc, char** argv)
         copy_map_keys(map_uintA, map_uintB);
         copy_map_keys(map_boolA, map_boolB);
         copy_map_keys(map_floatA, map_floatB);
-        io = Heimdali::read_informations(inputFilenameB);
+        io = Heimdali::open_from_stdin_or_file(inputFilenameB);
         read_image_info_from_file(inputFilenameB, map_uintB, io);
         read_image_info_from_file(inputFilenameB, map_boolB, io);
         read_image_info_from_file(inputFilenameB, map_floatB, io);
@@ -226,11 +226,11 @@ int main(int argc, char** argv)
         copy_map_keys(map_uintA, map_uintB);
         copy_map_keys(map_boolA, map_boolB);
         copy_map_keys(map_floatA, map_floatB);
-        io = Heimdali::read_informations(inputFilenameA);
+        io = Heimdali::open_from_stdin_or_file(inputFilenameA);
         read_image_info_from_file(inputFilenameA, map_uintA, io);
         read_image_info_from_file(inputFilenameA, map_boolA, io);
         read_image_info_from_file(inputFilenameA, map_floatA, io);
-        io = Heimdali::read_informations(inputFilenameB);
+        io = Heimdali::open_from_stdin_or_file(inputFilenameB);
         read_image_info_from_file(inputFilenameB, map_uintB, io);
         read_image_info_from_file(inputFilenameB, map_boolB, io);
         read_image_info_from_file(inputFilenameB, map_floatB, io);

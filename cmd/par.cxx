@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 
     // Print informations about images.
     for (unsigned int ifile=0 ; ifile < opt.inputFilenames.size() ; ifile++) {
-        ImageIOBase::Pointer imageio = Heimdali::read_informations(opt.inputFilenames[ifile]);
+        ImageIOBase::Pointer imageio = Heimdali::open_from_stdin_or_file(opt.inputFilenames[ifile]);
         print_informations(imageio,opt);
     }
 

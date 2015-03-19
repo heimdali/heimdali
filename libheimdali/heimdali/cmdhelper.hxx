@@ -11,7 +11,7 @@
 namespace Heimdali {
 
 itk::ImageIOBase::Pointer
-read_informations(std::string filename);
+open_from_stdin_or_file(const string inputFilename);
 
 bool
 is_floating_point_type(itk::ImageIOBase::Pointer io);

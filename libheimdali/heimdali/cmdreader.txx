@@ -102,7 +102,7 @@ int get_fixed_point_divider(itk::ImageIOBase::Pointer io)
 
 template <typename ImageType>
 void
-CmdReaderFromFile<ImageType>::next_iteration()
+CmdReaderFromFile<ImageType>::next_iteration(itk::HDF5ImageIO::Pointer HDF5io)
 {
 
     unsigned int ZD=2, YD=1;
@@ -177,7 +177,6 @@ CmdReaderFromStdin<ImageType>::CmdReaderFromStdin(
     this->m_convert_fixed_point_to_floating_point = false;
     this->m_convert_fixed_point_to_floating_point_required = false;
     this->m_nlines_per_loop = nlines_per_loop;
-    this->m_HDF5io = itk::HDF5ImageIO::New();
     this->m_is_complete = false;
     m_traceback = MTB_new_tb();
 
@@ -193,28 +192,33 @@ CmdReaderFromStdin<ImageType>::~CmdReaderFromStdin()
 
 template <typename ImageType>
 void
-CmdReaderFromStdin<ImageType>::next_iteration()
+CmdReaderFromStdin<ImageType>::next_iteration(itk::HDF5ImageIO::Pointer HDF5io)
 {
     unsigned int ZD=2, YD=1, XD=0;
 
-    int end_of_stdin=0;
-    this->m_fileimage_id = H5UPfileimage_from_stdin(&end_of_stdin, m_traceback);
-    if (end_of_stdin==1) {
-        this->m_is_complete = true;
-        return;
+    // Create HDF5 image io.
+    if (HDF5io.IsNull()) {
+        HDF5io = itk::HDF5ImageIO::New();
+        int end_of_stdin=0;
+        this->m_fileimage_id = H5UPfileimage_from_stdin(&end_of_stdin, m_traceback);
+        if (end_of_stdin==1) {
+            this->m_is_complete = true;
+            return;
+        }
+        H5::H5File* fileimage = h5unixpipe::fileid_to_h5file(this->m_fileimage_id);
+        HDF5io->SetH5File(fileimage);
     }
-    this->m_fileimage = h5unixpipe::fileid_to_h5file(this->m_fileimage_id);
-    this->m_HDF5io->SetH5File(this->m_fileimage);
+
     this->m_reader = typename CmdReader<ImageType>::ReaderType::Pointer();
     this->m_reader = CmdReader<ImageType>::ReaderType::New();
     this->m_reader->SetFileName("ghost.h5");
-    this->m_reader->SetImageIO(this->m_HDF5io);
+    this->m_reader->SetImageIO(HDF5io);
     this->m_reader->Update();
 
-    this->m_sz = m_HDF5io->GetDimensions(ZD);
-    this->m_sy = m_HDF5io->GetDimensions(YD);
-    this->m_sx = m_HDF5io->GetDimensions(XD);
-    this->m_sc = m_HDF5io->GetNumberOfComponents();
+    this->m_sz = HDF5io->GetDimensions(ZD);
+    this->m_sy = HDF5io->GetDimensions(YD);
+    this->m_sx = HDF5io->GetDimensions(XD);
+    this->m_sc = HDF5io->GetNumberOfComponents();
 
     int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
 
