@@ -49,8 +49,7 @@ test_value(string label, S value, T expected_value, ostringstream& msg)
  */
 template <typename T>
 void
-read_image_info_from_file(const string filename, map<string, T>& m,
-                          itk::ImageIOBase::Pointer io)
+read_image_info_from_file(map<string, T>& m, itk::ImageIOBase::Pointer io)
 {
 
     for (typename map<string, T>::iterator
@@ -216,9 +215,9 @@ int main(int argc, char** argv)
         copy_map_keys(map_boolA, map_boolB);
         copy_map_keys(map_floatA, map_floatB);
         io = Heimdali::open_from_stdin_or_file(inputFilenameB);
-        read_image_info_from_file(inputFilenameB, map_uintB, io);
-        read_image_info_from_file(inputFilenameB, map_boolB, io);
-        read_image_info_from_file(inputFilenameB, map_floatB, io);
+        read_image_info_from_file(map_uintB, io);
+        read_image_info_from_file(map_boolB, io);
+        read_image_info_from_file(map_floatB, io);
         break;
     case 2:
         parse_cli_two_filenames(tclap_argv, inputFilenameA, inputFilenameB,
@@ -227,13 +226,13 @@ int main(int argc, char** argv)
         copy_map_keys(map_boolA, map_boolB);
         copy_map_keys(map_floatA, map_floatB);
         io = Heimdali::open_from_stdin_or_file(inputFilenameA);
-        read_image_info_from_file(inputFilenameA, map_uintA, io);
-        read_image_info_from_file(inputFilenameA, map_boolA, io);
-        read_image_info_from_file(inputFilenameA, map_floatA, io);
+        read_image_info_from_file(map_uintA, io);
+        read_image_info_from_file(map_boolA, io);
+        read_image_info_from_file(map_floatA, io);
         io = Heimdali::open_from_stdin_or_file(inputFilenameB);
-        read_image_info_from_file(inputFilenameB, map_uintB, io);
-        read_image_info_from_file(inputFilenameB, map_boolB, io);
-        read_image_info_from_file(inputFilenameB, map_floatB, io);
+        read_image_info_from_file(map_uintB, io);
+        read_image_info_from_file(map_boolB, io);
+        read_image_info_from_file(map_floatB, io);
         break;
     default:
         error_msg << "ERROR: One or two fileanmes expected, but got: " 
