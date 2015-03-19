@@ -52,7 +52,7 @@ parse_command_line(vector<string> tclap_argv)
         
     TCLAP::CmdLine parser("List image formats", ' ', HEIMDALI_VERSION);
 
-    // -z -y -x
+    // -z -y -x -v
     TCLAP::SwitchArg zSwitch("z","planes", "Print number of planes", parser);
     TCLAP::SwitchArg ySwitch("y","rows", "Print number of rows", parser);
     TCLAP::SwitchArg xSwitch("x","columns", "Print number of columns", parser);

@@ -84,7 +84,8 @@ void
 read_write_image(unsigned int sz, unsigned int sy,
                  unsigned int sx, unsigned int sv,
                  unsigned int fixed_point_multiplier,
-                 string outputFilename)
+                 string outputFilename,
+                 bool is_interactive)
 {
     // Allocate image.
     const int Dimension = 3;
@@ -113,7 +114,7 @@ read_write_image(unsigned int sz, unsigned int sy,
     typedef itk::VariableLengthVector<PixelType> VariableVectorType;
     VariableVectorType variableLengthVector;
     variableLengthVector.SetSize(sv);
-    cout << "Enter pixel values:" << endl;
+    if (is_interactive) cout << "Enter pixel values:" << endl;
     for (unsigned int iz=0 ; iz < sz ; ++iz) { pixelIndex[2] = iz;
     for (unsigned int iy=0 ; iy < sy ; ++iy) { pixelIndex[1] = iy;
     for (unsigned int ix=0 ; ix < sx ; ++ix) { pixelIndex[0] = ix;
@@ -131,7 +132,7 @@ read_write_image(unsigned int sz, unsigned int sy,
     writer->SetInput(image);
     writer->Update();
 
-    cout << outputFilename << endl;
+    if (is_interactive) cout << outputFilename << endl;
 }
 
 int main(int argc, char** argv)
@@ -142,6 +143,22 @@ try {
 // Parse command line.
 TCLAP::CmdLine parser("Inputs ASCII value into image",
                       ' ', HEIMDALI_VERSION);
+
+// -z -y -x
+TCLAP::ValueArg<unsigned int> zArg("z","nplanes", "Number of planes",false,1,"NZ", parser);
+TCLAP::ValueArg<unsigned int> yArg("y","nrows", "Number of rows",false,1,"NY", parser);
+TCLAP::ValueArg<unsigned int> xArg("x","ncolumns", "Number of values",false,1,"NX", parser);
+TCLAP::ValueArg<unsigned int> vArg("v","ncomponents", "Number of pixel components",false,1,"NV", parser);
+
+// -o
+TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
+
+// -r
+TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", parser, false);
+
+// -f
+TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert to fixed point.", parser, false);
+
 TCLAP::UnlabeledValueArg<string> outputFilenameArg("IMAGE-OUT", 
     "Output image file name.",false,"","IMAGE-OUT", parser);
 vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
@@ -151,30 +168,42 @@ string outputFilename = outputFilenameArg.getValue();
 // Put our INRimage reader in the list of readers ITK knows.
 itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-// Read parameters on stdin.
+// Interactive command or not?
+bool is_interactive = (!( zArg.isSet() || yArg.isSet() || xArg.isSet() || vArg.isSet()
+  || oSwitch.isSet() || floatingSwitch.isSet() || fixedSwitch.isSet() ));
+
+// Set parameters.
 unsigned int sz, sy, sx, sv;
 itk::ImageIOBase::IOComponentType type;
-read_image_size(sz, sy, sx, sv);
-read_pixel_type(type);
+if (is_interactive) {
+    read_image_size(sz, sy, sx, sv);
+    read_pixel_type(type);
+} else {
+    sz = zArg.getValue();
+    sy = yArg.getValue();
+    sx = xArg.getValue();
+    sv = vArg.getValue();
+    type = itk::ImageIOBase::FLOAT; // TODO: make a reusable function in cmdreader
+}
 
 // Write image.
 ostringstream error_msg;
 switch (type)
 {
 case itk::ImageIOBase::FLOAT:
-    read_write_image<float>(sz,sy,sx,sv,1,outputFilename);
+    read_write_image<float>(sz,sy,sx,sv,1,outputFilename,is_interactive);
     break;
 case itk::ImageIOBase::DOUBLE:
-    read_write_image<double>(sz,sy,sx,sv,1,outputFilename);
+    read_write_image<double>(sz,sy,sx,sv,1,outputFilename,is_interactive);
     break;
 case itk::ImageIOBase::UCHAR:
-    read_write_image<unsigned char>(sz,sy,sx,sv,255,outputFilename);
+    read_write_image<unsigned char>(sz,sy,sx,sv,255,outputFilename,is_interactive);
     break;
 case itk::ImageIOBase::USHORT:
-    read_write_image<unsigned short>(sz,sy,sx,sv,65535,outputFilename);
+    read_write_image<unsigned short>(sz,sy,sx,sv,65535,outputFilename,is_interactive);
     break;
 case itk::ImageIOBase::UINT:
-    read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,outputFilename);
+    read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,outputFilename,is_interactive);
     break;
 default:
     error_msg

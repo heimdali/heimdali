@@ -21,10 +21,13 @@ Feature: cim
 
         Then I see in the interactive command standard output: <output>
         Then images <output> and $HEIMDALI_DATA_DIR/<output> are equal
-
     Examples:
       | output             | pixel_type | byte_size |
       | zero_to_one_r4.h5  | 1          | 4         |
       | zero_to_one_r4.inr | 1          | 4         |
       | zero_to_one_f2.h5  | 0          | 2         |
       | zero_to_one_f2.inr | 0          | 2         |
+
+    Scenario: Create a image from stdin
+        When I run the command: cat $HEIMDALI_DATA_DIR/zero_to_one.txt | cim -o 4 -r -x 3 -y 4 -z 5 -v 2 zero_to_one_r4_stdin.inr
+        The images zero_to_one_r4_stdin.inr and $HEIMDALI_DATA_DIR/zero_to_one_r4.inr are equal
