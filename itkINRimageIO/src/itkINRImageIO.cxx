@@ -92,10 +92,11 @@ INRImageIO::INRImageIO():
     strcpy(m_InrArgv[0], "INRImageIO");
 
     this->AddSupportedWriteExtension(".inr");
-    this->AddSupportedWriteExtension(".vel");
+    // DOM: pour moi, non.
+    // this->AddSupportedWriteExtension(".vel");
 
     this->AddSupportedReadExtension(".inr");
-    this->AddSupportedReadExtension(".vel");
+    this->AddSupportedReadExtension(".inr.gz");
 }
 
 INRImageIO::~INRImageIO()
@@ -124,9 +125,9 @@ bool INRImageIO ::CanWriteFile(const char *name) {
     return true; 
     }
 
-  std::string::size_type mhdPos = filename.rfind(".vel");
+  std::string::size_type mhdPos = filename.rfind(".inr.gz");
   if ( ( mhdPos != std::string::npos ) 
-       && ( mhdPos == filename.length() - 4 ) )
+       && ( mhdPos == filename.length() - 7 ) )
     {
     return true;
     }
@@ -178,6 +179,8 @@ void INRImageIO::Read(void *buffer)
   m_InrImage = c_image( (char*) m_FileName.c_str(), (char*) m_InrMode.c_str(), 
       (char*) m_InrVerif.c_str(), m_InrFmt);
 
+  int value_size = m_InrFmt[I_BSIZE] < 0 ? (7-m_InrFmt[I_BSIZE])/8 : m_InrFmt[I_BSIZE];
+  
   // Do we want to read just a part of the image?
   if ( largestRegion != m_IORegion ) {
 
@@ -195,7 +198,7 @@ void INRImageIO::Read(void *buffer)
       unsigned int NX = regionToRead.GetSize(0);
 
       // Size (in bytes) of one pixel.
-      unsigned int pixel_size = SV * m_InrFmt[I_BSIZE];
+      unsigned int pixel_size = SV * value_size; 
 
       // full row
       unsigned int full_row_size = SX * pixel_size;
@@ -222,6 +225,18 @@ void INRImageIO::Read(void *buffer)
           // Read 1 full row.
           c_lect(m_InrImage, 1, full_row_buffer);
 
+	  if( m_InrFmt[I_BSIZE] < 0 && value_size != 8*(-m_InrFmt[I_BSIZE])) {
+	    Fort_int icodi[2] = {m_InrFmt[I_BSIZE],FIXE}, icodo[2] = {value_size,FIXE};
+
+	    // If image is packed.
+	    if( m_InrFmt[I_TYPE] == PACKEE)
+	      c_unpkbt((unsigned char*)full_row_buffer, (unsigned char*)full_row_buffer, m_InrFmt[I_DIMX], -m_InrFmt[I_BSIZE]);
+	    
+	    // Convert to the new coding format.
+	    c_cnvtbg( (unsigned char *)full_row_buffer, (unsigned char *)full_row_buffer, m_InrFmt[I_DIMX], icodi, icodo, 0, 0);  // FIXME: fmt.EXP, fmt.EXP) is better ???;
+	  } 
+	 
+
           // Extract columns.
           memcpy(buffer_p, full_row_buffer + skipped_size, requested_row_size);
 
@@ -232,6 +247,17 @@ void INRImageIO::Read(void *buffer)
   // Or the whole image?
   } else {
       c_lect(m_InrImage,m_InrFmt[I_DIMY],buffer);
+
+      if( m_InrFmt[I_BSIZE] < 0 && value_size != 8*(-m_InrFmt[I_BSIZE])) {
+	Fort_int icodi[2] = {m_InrFmt[I_BSIZE],FIXE}, icodo[2] = {value_size,FIXE};
+
+	// If image is packed.
+	if( m_InrFmt[I_TYPE] == PACKEE)
+	  c_unpkbt( (unsigned char*)buffer, (unsigned char*)buffer, m_InrFmt[I_DIMX]*m_InrFmt[I_DIMY], -m_InrFmt[I_BSIZE]);
+
+	// Convert to the new coding format.
+	c_cnvtbg( (unsigned char*)buffer, (unsigned char*)buffer, m_InrFmt[I_DIMX]*m_InrFmt[I_DIMY], icodi, icodo, 0, 0);  // FIXME: fmt.EXP, fmt.EXP) is better ???;
+      } 
   }
 
   // Close image.
@@ -544,12 +570,9 @@ void itk::INRImageIO::ReadImageInformation()
         this->m_Origin[i] = 0;
       }
 
-    const int inr_integer = 0;
-    const int inr_real = 1;
-
     switch (m_InrFmt[I_TYPE]) {
 
-       case inr_real:
+       case REELLE:
            switch (m_InrFmt[I_BSIZE]) {
              case 4:
                this->m_ComponentType = FLOAT;
@@ -563,8 +586,10 @@ void itk::INRImageIO::ReadImageInformation()
            }
            break;
 
-       case inr_integer:
-           switch (m_InrFmt[I_BSIZE]) {
+       case FIXE:
+       case PACKEE:
+	 int valsize = m_InrFmt[I_BSIZE] < 0 ? (7-m_InrFmt[I_BSIZE])/8 : m_InrFmt[I_BSIZE];
+           switch (valsize) {
              case 1:
                this->m_ComponentType = UCHAR;
                break;
@@ -576,7 +601,7 @@ void itk::INRImageIO::ReadImageInformation()
                break;
              default:
                 itkExceptionMacro(<< "Expected integer pixel component byte size to be 1, 2 or 4"
-                                  << "but, got " << m_InrFmt[I_BSIZE]);
+                                  << "but, got " << valsize);
            }
            break;
     }
