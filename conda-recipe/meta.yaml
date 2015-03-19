@@ -8,7 +8,7 @@ source:
   #url: https://github.com/dfroger/heimdali/archive/0.7.0.tar.gz
 
 build:
-  number: 0
+  number: 1
   binary_relocation: true
 
 requirements:
@@ -17,12 +17,12 @@ requirements:
     - tclap
     - itk-heimdali ==4.7.0.1
     - h5unixpipe
-    - libinrimage
+    - libinrimage ==4.6.6
   run:
     - tclap
     - itk-heimdali ==4.7.0.1
     - h5unixpipe
-    - libinrimage
+    - libinrimage ==4.6.6
 
 test:
   commands:
