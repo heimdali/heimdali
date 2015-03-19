@@ -1,11 +1,14 @@
 Build Heimdali in development mode
 ====================================
 
-Development mode is usefull for developer. It consist in iterating in the cycle:
+Development mode means build Heimdali from its source code, typically the
+`develop` branch of heimdali_ Git repository.
 
-  - modify source code
-  - build
-  - run the test
+Working in development mode consists in iterating in the cycle:
+
+  - Modify source code.
+  - Build.
+  - Run the test.
 
 without having to run the `make install` step.
 
@@ -18,6 +21,12 @@ Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
 
     conda config --add channels http://conda.binstar.org/dfroger
     conda create -n heimdali-dev h5unixpipe itk-heimdali-dbg libinrimage tclap cmake pip pexpect
+
+.. warning::
+
+    Do not install the `heimdali` package in the `heimdali-dev` environment,
+    as it would conflicts with sources files (from your heimdali git
+    repository) you are building.
 
 For the rest of the section, we need to activate the conda environment, and
 set the CONDA_ENV_PATH environment variable:
@@ -117,7 +126,7 @@ Install Sphinx_ and Doxygen_:
 .. code-block:: bash
 
     sudo apt-get install doxygen
-    conda create -n heimdali-doc sphinx
+    conda create -n heimdali-doc python=2 sphinx
     source activate heimdali-doc
 
 Build the documentation:
