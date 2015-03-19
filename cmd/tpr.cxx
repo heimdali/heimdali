@@ -16,6 +16,7 @@
 #include "heimdali/version.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/cmdreader.hxx"
+#include "heimdali/cmdhelper.hxx"
 
 using namespace std;
 
@@ -81,11 +82,14 @@ int main(int argc, char** argv)
     typedef itk::VectorImage<PixelType, Dimension> ImageType;
     ImageType::Pointer image;
 
+    // Image information.
+    itk::ImageIOBase::Pointer io = Heimdali::open_from_stdin_or_file(inputFilename);
+
     // Readers
     typedef Heimdali::CmdReader<ImageType> CmdReaderType;
     CmdReaderType* reader = CmdReaderType::make_cmd_reader(0, inputFilename);
     reader->convert_fixed_point_to_floating_point_on();
-    reader->next_iteration();
+    reader->next_iteration(io);
     reader->Update();
 
     // Region

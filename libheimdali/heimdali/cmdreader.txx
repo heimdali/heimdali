@@ -102,7 +102,7 @@ int get_fixed_point_divider(itk::ImageIOBase::Pointer io)
 
 template <typename ImageType>
 void
-CmdReaderFromFile<ImageType>::next_iteration(itk::HDF5ImageIO::Pointer HDF5io)
+CmdReaderFromFile<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
 {
 
     unsigned int ZD=2, YD=1;
@@ -192,12 +192,14 @@ CmdReaderFromStdin<ImageType>::~CmdReaderFromStdin()
 
 template <typename ImageType>
 void
-CmdReaderFromStdin<ImageType>::next_iteration(itk::HDF5ImageIO::Pointer HDF5io)
+CmdReaderFromStdin<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
 {
     unsigned int ZD=2, YD=1, XD=0;
 
+    itk::HDF5ImageIO::Pointer HDF5io;
+
     // Create HDF5 image io.
-    if (HDF5io.IsNull()) {
+    if (io.IsNull()) {
         HDF5io = itk::HDF5ImageIO::New();
         int end_of_stdin=0;
         this->m_fileimage_id = H5UPfileimage_from_stdin(&end_of_stdin, m_traceback);
@@ -207,6 +209,9 @@ CmdReaderFromStdin<ImageType>::next_iteration(itk::HDF5ImageIO::Pointer HDF5io)
         }
         H5::H5File* fileimage = h5unixpipe::fileid_to_h5file(this->m_fileimage_id);
         HDF5io->SetH5File(fileimage);
+    } else {
+        itk::HDF5ImageIO* hdf5_io_raw_pointer = dynamic_cast<itk::HDF5ImageIO*>(io.GetPointer());
+        HDF5io = hdf5_io_raw_pointer;
     }
 
     this->m_reader = typename CmdReader<ImageType>::ReaderType::Pointer();

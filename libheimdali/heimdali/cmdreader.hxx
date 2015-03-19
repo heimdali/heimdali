@@ -38,7 +38,7 @@ class ITK_ABI_EXPORT CmdReader
         static CmdReader* make_cmd_reader(
             unsigned int nlines_per_loop, std::string filename);
         typename ReaderType::Pointer reader();
-        virtual void next_iteration(itk::HDF5ImageIO::Pointer HDF5io=NULL) = 0;
+        virtual void next_iteration(itk::ImageIOBase::Pointer io=NULL) = 0;
         virtual typename ImageType::Pointer GetOutput() = 0;
         virtual void Update() = 0;
         bool is_complete(){return m_is_complete;};
@@ -67,7 +67,7 @@ class ITK_ABI_EXPORT CmdReaderFromFile: public CmdReader<ImageType>
         CmdReaderFromFile(){};
         CmdReaderFromFile(unsigned int nlines_per_loop, std::string filename);
         ~CmdReaderFromFile();
-        void next_iteration(itk::HDF5ImageIO::Pointer HDF5io=NULL);
+        void next_iteration(itk::ImageIOBase::Pointer io=NULL);
         typename ImageType::Pointer GetOutput();
         void Update();
     private:
@@ -88,7 +88,7 @@ class ITK_ABI_EXPORT CmdReaderFromStdin: public CmdReader<ImageType>
         {};
         CmdReaderFromStdin(unsigned int nlines_per_loop);
         ~CmdReaderFromStdin();
-        void next_iteration(itk::HDF5ImageIO::Pointer HDF5io=NULL);
+        void next_iteration(itk::ImageIOBase::Pointer io=NULL);
         typename ImageType::Pointer GetOutput();
         void Update(){};
     private:
