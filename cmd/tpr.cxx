@@ -82,13 +82,18 @@ int main(int argc, char** argv)
     typedef itk::VectorImage<PixelType, Dimension> ImageType;
     ImageType::Pointer image;
 
-    // Image information.
+    // Read mage information.
     itk::ImageIOBase::Pointer io = Heimdali::open_from_stdin_or_file(inputFilename);
+    bool is_uchar = (io->GetComponentType() == itk::ImageIOBase::UCHAR);
+
+    // Set output format.
+    string fmt = is_uchar && ! fArg.isSet() ? "%d" : fArg.getValue();
 
     // Readers
     typedef Heimdali::CmdReader<ImageType> CmdReaderType;
     CmdReaderType* reader = CmdReaderType::make_cmd_reader(0, inputFilename);
-    reader->convert_fixed_point_to_floating_point_on();
+    if (fmt != "%d")
+        reader->convert_fixed_point_to_floating_point_on();
     reader->next_iteration(io);
     reader->Update();
 
@@ -160,6 +165,8 @@ int main(int argc, char** argv)
     // Read image.
     image = reader->GetOutput();
 
+    bool cast_to_int = (fmt=="%d" && is_uchar);
+
     // Print values.
     typedef itk::VariableLengthVector<PixelType> VariableVectorType;
     VariableVectorType value;
@@ -169,8 +176,8 @@ int main(int argc, char** argv)
     if (nprinted_by_console_line == 0)
         nprinted_by_console_line = SX*SC;
     unsigned int iv;
-    string fmt_space = fArg.getValue() + " ";
-    string fmt_newline = fArg.getValue() + "\n";
+    string fmt_space = fmt + " ";
+    string fmt_newline = fmt + "\n";
     for (unsigned int iz=IZ ; iz<IZ+NZ; iz++) { 
         ImageIndex[2] = iz;
         if (czSwitch.getValue())
@@ -190,10 +197,16 @@ int main(int argc, char** argv)
                     nprinted++;
                     if (nprinted == nprinted_by_console_line || 
                             (iv==IV+NV-1) ) {
-                        printf(fmt_newline.c_str(), value[ic]);
+                        if (cast_to_int)
+                            printf(fmt_newline.c_str(), (int) value[ic]);
+                        else
+                            printf(fmt_newline.c_str(), value[ic]);
                         nprinted = 0;
                     } else {
-                        printf(fmt_space.c_str(), value[ic]);
+                        if (cast_to_int)
+                            printf(fmt_space.c_str(), (int) value[ic]);
+                        else
+                            printf(fmt_space.c_str(), value[ic]);
                     }
                 }
             }
