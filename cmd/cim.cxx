@@ -60,7 +60,8 @@ read_write_image(unsigned int sz, unsigned int sy,
                  unsigned int sx, unsigned int sv,
                  unsigned int fixed_point_multiplier,
                  string outputFilename,
-                 bool is_interactive)
+                 bool is_interactive,
+                 string format)
 {
     // Allocate image.
     const int Dimension = 3;
@@ -89,13 +90,18 @@ read_write_image(unsigned int sz, unsigned int sy,
     typedef itk::VariableLengthVector<PixelType> VariableVectorType;
     VariableVectorType variableLengthVector;
     variableLengthVector.SetSize(sv);
+    int nvalues;
     if (is_interactive) cout << "Enter pixel values:" << endl;
     for (unsigned int iz=0 ; iz < sz ; ++iz) { pixelIndex[2] = iz;
     for (unsigned int iy=0 ; iy < sy ; ++iy) { pixelIndex[1] = iy;
     for (unsigned int ix=0 ; ix < sx ; ++ix) { pixelIndex[0] = ix;
         for (unsigned int iv=0 ; iv < sv ; ++iv) {
-            cin >> value;
-            variableLengthVector[iv] = (PixelType) (value * fixed_point_multiplier + cast_to_near_int);
+            nvalues = scanf(format.c_str(), &value);
+            if (nvalues == 1) {
+                variableLengthVector[iv] = (PixelType) (value * fixed_point_multiplier + cast_to_near_int);
+            } else {
+                throw(Heimdali::IOError("Failed to read input value"));
+            }
         }
         image->SetPixel(pixelIndex, variableLengthVector);
     }}}
@@ -133,6 +139,8 @@ TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", pa
 
 // -f
 TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert to fixed point.", parser, false);
+
+TCLAP::ValueArg<string> formatArg("","format", "scan format to read values",false,"%g","FORMAT", parser);
 
 TCLAP::UnlabeledValueArg<string> outputFilenameArg("IMAGE-OUT", 
     "Output image file name.",false,"","IMAGE-OUT", parser);
@@ -174,23 +182,30 @@ if (is_interactive) {
                                                oArg.getValue());
 }
 
+string format;
+if (formatArg.isSet()) {
+    format = formatArg.getValue();
+} else {
+    format = (type == itk::ImageIOBase::UCHAR) ? "%d" : "%g";
+}
+
 // Write image.
 switch (type)
 {
 case itk::ImageIOBase::FLOAT:
-    read_write_image<float>(sz,sy,sx,sv,1,outputFilename,is_interactive);
+    read_write_image<float>(sz,sy,sx,sv,1,outputFilename,is_interactive,format);
     break;
 case itk::ImageIOBase::DOUBLE:
-    read_write_image<double>(sz,sy,sx,sv,1,outputFilename,is_interactive);
+    read_write_image<double>(sz,sy,sx,sv,1,outputFilename,is_interactive,format);
     break;
 case itk::ImageIOBase::UCHAR:
-    read_write_image<unsigned char>(sz,sy,sx,sv,255,outputFilename,is_interactive);
+    read_write_image<unsigned char>(sz,sy,sx,sv,255,outputFilename,is_interactive,format);
     break;
 case itk::ImageIOBase::USHORT:
-    read_write_image<unsigned short>(sz,sy,sx,sv,65535,outputFilename,is_interactive);
+    read_write_image<unsigned short>(sz,sy,sx,sv,65535,outputFilename,is_interactive,format);
     break;
 case itk::ImageIOBase::UINT:
-    read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,outputFilename,is_interactive);
+    read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,outputFilename,is_interactive,format);
     break;
 default:
     error_msg
