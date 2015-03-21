@@ -8,6 +8,7 @@
 #include "heimdali/cli.hxx"
 #include "heimdali/error.hxx"
 #include "heimdali/cmdhelper.hxx"
+#include "heimdali/cmdwriter.hxx"
 
 using namespace std;
 
@@ -117,11 +118,10 @@ read_write_image(unsigned int sz, unsigned int sy,
     }}}
 
     // Write image.
-    typedef itk::ImageFileWriter<ImageType>  WriterType;
-    typename WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(outputFilename);
-    writer->SetInput(image);
-    writer->Update();
+    typedef Heimdali::CmdWriter<ImageType> WriterType;
+    WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
+    cmdwriter->Write(image);
+    cmdwriter->Update();
 
     if (is_interactive) cout << outputFilename << endl;
 
