@@ -24,60 +24,34 @@ read_image_size(unsigned int& sz, unsigned int& sy,
 void
 read_pixel_type(itk::ImageIOBase::IOComponentType& type)
 {
+    ostringstream error_msg;
+
+    // Fixed point or floating point?
     cout << "Enter pixel type (0: fixed point, 1: floating point): ";
     const unsigned int FIXED_POINT=0, FLOATING_POINT=1;
-    unsigned int representation_type;
-    cin >> representation_type;
-
-    ostringstream error_msg;
-    unsigned int byte_size;
-    switch (representation_type)
+    unsigned int point_type;
+    cin >> point_type;
+    bool is_floating_point_type;
+    switch (point_type)
     {
-    case (FIXED_POINT):
-        cout << "Enter byte size (1: unsigned char, 2: unsigned short, 4 unsigned int)";
-        cin >> byte_size;
-        switch (byte_size)
-        {
-        case (1):
-            type = itk::ImageIOBase::UCHAR;
-            break;
-        case (2):
-            type = itk::ImageIOBase::USHORT;
-            break;
-        case (4):
-            type = itk::ImageIOBase::UINT;
-            break;
-        default:
-            error_msg << "Expected fixed point byte size to be 1 (uchar) "
-                      << "2 (ushort) or 4 (uint) but got: " << byte_size;
-            throw(Heimdali::ValueError(error_msg.str()));
-            break;
-        }
+    case FLOATING_POINT:
+        is_floating_point_type = true;
         break;
-    case (FLOATING_POINT):
-        cout << "Enter byte size (4: float, 8: double): ";
-        cin >> byte_size;
-        switch (byte_size)
-        {
-        case (4):
-            type = itk::ImageIOBase::FLOAT;
-            break;
-        case (8):
-            type = itk::ImageIOBase::DOUBLE;
-            break;
-        default:
-            error_msg << "Expected floating point byte size to be 4 (float) "
-                      << "or 8 (double) but got: " << byte_size;
-            throw(Heimdali::ValueError(error_msg.str()));
-            break;
-        }
+    case FIXED_POINT:
+        is_floating_point_type = false;
         break;
     default:
         error_msg << "Pixel must be 0 (fixed point) or 1 (floating point) "
-                  << "but got: " << representation_type;
+                  << "but got: " << point_type;
         throw(Heimdali::ValueError(error_msg.str()));
         break;
     }
+
+    cout << "Enter byte size (1: unsigned char, 2: unsigned short, 4 unsigned int)";
+    unsigned int byte_size;
+    cin >> byte_size;
+
+    type = Heimdali::map_to_itk_component_type(is_floating_point_type, byte_size);
 }
 
 template<typename PixelType>
