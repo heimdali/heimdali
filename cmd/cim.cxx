@@ -7,6 +7,7 @@
 #include "heimdali/version.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/error.hxx"
+#include "heimdali/cmdhelper.hxx"
 
 using namespace std;
 
@@ -151,7 +152,7 @@ TCLAP::ValueArg<unsigned int> xArg("x","ncolumns", "Number of values",false,1,"N
 TCLAP::ValueArg<unsigned int> vArg("v","ncomponents", "Number of pixel components",false,1,"NV", parser);
 
 // -o
-TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
+TCLAP::ValueArg<int> oArg("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
 
 // -r
 TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", parser, false);
@@ -170,7 +171,19 @@ itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() );
 
 // Interactive command or not?
 bool is_interactive = (!( zArg.isSet() || yArg.isSet() || xArg.isSet() || vArg.isSet()
-  || oSwitch.isSet() || floatingSwitch.isSet() || fixedSwitch.isSet() ));
+  || oArg.isSet() || floatingSwitch.isSet() || fixedSwitch.isSet() ));
+
+ostringstream error_msg;
+
+// Fixed point or floating point
+bool is_floating_point_type;
+if (fixedSwitch.isSet()) {
+    if (floatingSwitch.isSet()) 
+        throw(TCLAP::ArgException("-r and -f flags are incompatible"));
+    is_floating_point_type = false;
+} else {
+    is_floating_point_type = true;
+}
 
 // Set parameters.
 unsigned int sz, sy, sx, sv;
@@ -183,11 +196,11 @@ if (is_interactive) {
     sy = yArg.getValue();
     sx = xArg.getValue();
     sv = vArg.getValue();
-    type = itk::ImageIOBase::FLOAT; // TODO: make a reusable function in cmdreader
+    type = Heimdali::map_to_itk_component_type(is_floating_point_type,
+                                               oArg.getValue());
 }
 
 // Write image.
-ostringstream error_msg;
 switch (type)
 {
 case itk::ImageIOBase::FLOAT:

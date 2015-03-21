@@ -25,6 +25,10 @@ read_information(itk::ImageIOBase::Pointer io, string name, float& value);
 void
 read_information(itk::ImageIOBase::Pointer io, string name, bool& value);
 
+itk::ImageIOBase::IOComponentType 
+map_to_itk_component_type(bool is_floating_point_type,
+                          unsigned int component_size);
+
 }
 
 #endif

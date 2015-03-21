@@ -149,4 +149,50 @@ read_information(itk::ImageIOBase::Pointer io, string name, bool& value)
     }
 }
 
+
+itk::ImageIOBase::IOComponentType 
+map_to_itk_component_type(bool is_floating_point_type,
+                          unsigned int component_size)
+{
+    ostringstream error_msg;
+
+    if (is_floating_point_type) {
+        switch(component_size)
+        {
+        case 4:
+            return itk::ImageIOBase::FLOAT;
+            break;
+        case 8:
+            return itk::ImageIOBase::DOUBLE;
+            break;
+        default:
+            error_msg 
+                << "Expected floating point component size to be 4 or 8, "
+                << "but got: " << component_size;
+            throw(Heimdali::ValueError(error_msg.str()));
+            break;
+        }
+
+    } else {
+        switch(component_size)
+        {
+        case 1:
+            return itk::ImageIOBase::UCHAR;
+            break;
+        case 2:
+            return itk::ImageIOBase::USHORT;
+            break;
+        case 4:
+            return itk::ImageIOBase::UINT;
+            break;
+        default:
+            error_msg 
+                << "Expected fixed point component size to be 1, 2 or 4, "
+                << "but got: " << component_size;
+            throw(Heimdali::ValueError(error_msg.str()));
+            break;
+        }
+    }
+}
+
 }
