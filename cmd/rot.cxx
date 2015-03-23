@@ -194,23 +194,7 @@ main(int argc, char** argv)
     writer->SetInput(composer->GetOutput());
     writer->Update();
 
-
     } // End of 'try' block.
 
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "rot: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-
-    catch (Heimdali::IOError &e) {
-        cerr << "rot: ERROR: " << e.getMessage() << endl;
-    }
-
-    catch (Heimdali::ValueError &e) {
-        cerr << "rot: ERROR: " << e.getMessage() << endl;
-    }
-
-    catch (Heimdali::NotImplementedError &e) {
-        cerr << "rot: ERROR: " << e.getMessage() << endl;
-    }
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

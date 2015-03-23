@@ -205,7 +205,7 @@ InrImage<PixelType>::write(unsigned int offsetz, unsigned int nz)
         std::ostringstream msg;
         msg << "Trying to write " << nz << " planes, but there are only "
             << this->m_realz << " planes in memory";
-        throw(ValueError(msg.str()));
+        throw(Heimdali::Exception(msg.str()));
     }
 
     typename InrImage<PixelType>::ImageType::IndexType index;

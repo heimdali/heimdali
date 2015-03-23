@@ -13,60 +13,62 @@ using namespace std;
 
 int main(int argc, char** argv)
 { 
+    try {
 
-TCLAP::CmdLine parser("Subtract two images", ' ', HEIMDALI_VERSION);
+    TCLAP::CmdLine parser("Subtract two images", ' ', HEIMDALI_VERSION);
 
-// -streaming N
-TCLAP::ValueArg<int> streaming("s","streaming", "Number of lines to stream",
-    false, 0,"NUMBER_OF_LINES", parser);
-HEIMDALI_TCLAP_IMAGE_IN_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
+    // -streaming N
+    TCLAP::ValueArg<int> streaming("s","streaming", "Number of lines to stream",
+        false, 0,"NUMBER_OF_LINES", parser);
+    HEIMDALI_TCLAP_IMAGE_IN_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-parser.parse(argc,argv);
-string inputFilename0;
-string inputFilename1;
-string outputFilename;
-Heimdali::parse_tclap_image_in_image_in_image_out(filenamesArg, inputFilename0,
-                                                  inputFilename1, outputFilename);
+    parser.parse(argc,argv);
+    string inputFilename0;
+    string inputFilename1;
+    string outputFilename;
+    Heimdali::parse_tclap_image_in_image_in_image_out(filenamesArg, inputFilename0,
+                                                      inputFilename1, outputFilename);
 
-// Put our INRimage reader in the list of readers ITK knows.
-itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-// Image type.
-typedef float PixelType;
-const unsigned int Dimension = 3;
-typedef itk::VectorImage<PixelType, Dimension> ImageType;
+    // Image type.
+    typedef float PixelType;
+    const unsigned int Dimension = 3;
+    typedef itk::VectorImage<PixelType, Dimension> ImageType;
 
-// Command line tool readers.
-typedef Heimdali::CmdReader<ImageType> ReaderType;
-ReaderType* reader1 = ReaderType::make_cmd_reader( streaming.getValue(),
-                                                   inputFilename0);
+    // Command line tool readers.
+    typedef Heimdali::CmdReader<ImageType> ReaderType;
+    ReaderType* reader1 = ReaderType::make_cmd_reader( streaming.getValue(),
+                                                       inputFilename0);
 
-ReaderType* reader2 = ReaderType::make_cmd_reader(streaming.getValue(),
-                                                  inputFilename1);
-// Command line tool writer.
-typedef Heimdali::CmdWriter<ImageType> WriterType;
-WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
+    ReaderType* reader2 = ReaderType::make_cmd_reader(streaming.getValue(),
+                                                      inputFilename1);
+    // Command line tool writer.
+    typedef Heimdali::CmdWriter<ImageType> WriterType;
+    WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
 
-// Subtract filter.
-typedef itk::SubtractImageFilter <ImageType,ImageType> SubtractImageFilterType;
-SubtractImageFilterType::Pointer subtracter = SubtractImageFilterType::New ();
+    // Subtract filter.
+    typedef itk::SubtractImageFilter <ImageType,ImageType> SubtractImageFilterType;
+    SubtractImageFilterType::Pointer subtracter = SubtractImageFilterType::New ();
 
-unsigned int iregionmax = 1E+06;
-for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
-    // Read input.
-    reader1->next_iteration();
-    reader2->next_iteration();
-    if (reader1->is_complete()) break;
+    unsigned int iregionmax = 1E+06;
+    for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
+        // Read input.
+        reader1->next_iteration();
+        reader2->next_iteration();
+        if (reader1->is_complete()) break;
 
-    // Subtract images.
-    subtracter->SetInput1( reader1->GetOutput() );
-    subtracter->SetInput2( reader2->GetOutput() );
+        // Subtract images.
+        subtracter->SetInput1( reader1->GetOutput() );
+        subtracter->SetInput2( reader2->GetOutput() );
 
-    // Write output.
-    cmdwriter->Write( subtracter->GetOutput() );
-    cmdwriter->Update();
-}
+        // Write output.
+        cmdwriter->Write( subtracter->GetOutput() );
+        cmdwriter->Update();
+    }
 
-return 0;
+    } // End of 'try' block.
 
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

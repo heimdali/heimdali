@@ -126,113 +126,97 @@ int main(int argc, char** argv)
 
 try {
 
-TCLAP::CmdLine parser("Boolean operation on image",
-                      ' ', HEIMDALI_VERSION);
+    TCLAP::CmdLine parser("Boolean operation on image",
+                          ' ', HEIMDALI_VERSION);
 
-TCLAP::UnlabeledMultiArg<string> filenamesArg("filenames", "Input and ouput images",false,"IMAGES",parser);
+    TCLAP::UnlabeledMultiArg<string> filenamesArg("filenames", "Input and ouput images",false,"IMAGES",parser);
 
-TCLAP::SwitchArg ANDSwitch("","et", "Boolean and", parser, false);
-TCLAP::SwitchArg ORSwitch("","ou", "Boolean or", parser, false);
-TCLAP::SwitchArg XORSwitch("","xou", "Boolean xor", parser, false);
-TCLAP::ValueArg<int> MAArg("","ma","And with hexadecimal constant HH",false,0,"HH",parser);
-TCLAP::ValueArg<int> FOArg("","fo","Or with hexadecimal constant HH",false,0,"HH",parser);
-TCLAP::ValueArg<int> COArg("","co","Xor with hexadecimal constant HH",false,0,"HH",parser);
-TCLAP::SwitchArg INVSwitch("","inv", "inv", parser, false);
+    TCLAP::SwitchArg ANDSwitch("","et", "Boolean and", parser, false);
+    TCLAP::SwitchArg ORSwitch("","ou", "Boolean or", parser, false);
+    TCLAP::SwitchArg XORSwitch("","xou", "Boolean xor", parser, false);
+    TCLAP::ValueArg<int> MAArg("","ma","And with hexadecimal constant HH",false,0,"HH",parser);
+    TCLAP::ValueArg<int> FOArg("","fo","Or with hexadecimal constant HH",false,0,"HH",parser);
+    TCLAP::ValueArg<int> COArg("","co","Xor with hexadecimal constant HH",false,0,"HH",parser);
+    TCLAP::SwitchArg INVSwitch("","inv", "inv", parser, false);
 
-vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
-parser.parse(tclap_argv);
+    vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
+    parser.parse(tclap_argv);
 
-// Set nflags and operation.
-enum Operation {AND, OR, XOR, MA, FO, CO, INV} operation;
-int nflags = 0;
-GET_SWITCH(AND);
-GET_SWITCH(OR);
-GET_SWITCH(XOR);
-GET_ARG(MA);
-GET_ARG(FO);
-GET_ARG(CO);
-GET_SWITCH(INV);
+    // Set nflags and operation.
+    enum Operation {AND, OR, XOR, MA, FO, CO, INV} operation;
+    int nflags = 0;
+    GET_SWITCH(AND);
+    GET_SWITCH(OR);
+    GET_SWITCH(XOR);
+    GET_ARG(MA);
+    GET_ARG(FO);
+    GET_ARG(CO);
+    GET_SWITCH(INV);
 
-// One and only one flag is allowed.
-ostringstream error_msg;
-if (nflags != 1) {
-    error_msg
-        << "Expected one and only one flag -et, -ou, "
-        << "-xou, -ma, -fo, -co or -inv, but got: "
-        << nflags;
-    throw(TCLAP::ArgException(error_msg.str()));
-}
+    // One and only one flag is allowed.
+    ostringstream error_msg;
+    if (nflags != 1) {
+        error_msg
+            << "Expected one and only one flag -et, -ou, "
+            << "-xou, -ma, -fo, -co or -inv, but got: "
+            << nflags;
+        throw(TCLAP::ArgException(error_msg.str()));
+    }
 
-// Get filenames
-string inputFilename0;
-string inputFilename1;
-string outputFilename;
-vector<string> filenames = filenamesArg.getValue();
-if (operation==AND || operation==OR || operation==XOR) {
-    Heimdali::parse_tclap_image_in_image_in_image_out(
-        filenamesArg, inputFilename0, inputFilename1, outputFilename);
+    // Get filenames
+    string inputFilename0;
+    string inputFilename1;
+    string outputFilename;
+    vector<string> filenames = filenamesArg.getValue();
+    if (operation==AND || operation==OR || operation==XOR) {
+        Heimdali::parse_tclap_image_in_image_in_image_out(
+            filenamesArg, inputFilename0, inputFilename1, outputFilename);
 
-} else if (operation==MA || operation==FO || operation==CO || operation==INV) {
-    Heimdali::parse_tclap_image_in_image_out(
-        filenamesArg, inputFilename0, outputFilename);
+    } else if (operation==MA || operation==FO || operation==CO || operation==INV) {
+        Heimdali::parse_tclap_image_in_image_out(
+            filenamesArg, inputFilename0, outputFilename);
 
-} else {
-    error_msg
-        << "Expected AND, OR, XOR, MA, FO, CO, INV, but got " << operation;
-    throw(TCLAP::ArgException(error_msg.str()));
-}
+    } else {
+        error_msg
+            << "Expected AND, OR, XOR, MA, FO, CO, INV, but got " << operation;
+        throw(TCLAP::ArgException(error_msg.str()));
+    }
 
-// Put our INRimage reader in the list of readers ITK knows.
-itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-switch (operation)
-{
-case (AND):
-    compute_and_or_xor<AndFilterType>(inputFilename0, inputFilename1, outputFilename);
-    break;
+    switch (operation)
+    {
+    case (AND):
+        compute_and_or_xor<AndFilterType>(inputFilename0, inputFilename1, outputFilename);
+        break;
 
-case (OR):
-    compute_and_or_xor<OrFilterType>(inputFilename0, inputFilename1, outputFilename);
-    break;
+    case (OR):
+        compute_and_or_xor<OrFilterType>(inputFilename0, inputFilename1, outputFilename);
+        break;
 
-case (XOR):
-    compute_and_or_xor<XorFilterType>(inputFilename0, inputFilename1, outputFilename);
-    break;
+    case (XOR):
+        compute_and_or_xor<XorFilterType>(inputFilename0, inputFilename1, outputFilename);
+        break;
 
-case (INV):
-    throw(Heimdali::NotImplementedError("INV not yet implemented"));
-    break;
+    case (INV):
+        throw(Heimdali::Exception("INV not yet implemented"));
+        break;
 
-case (MA):
-    throw(Heimdali::NotImplementedError("MA not yet implemented"));
-    break;
+    case (MA):
+        throw(Heimdali::Exception("MA not yet implemented"));
+        break;
 
-case (FO):
-    throw(Heimdali::NotImplementedError("FO not yet implemented"));
-    break;
+    case (FO):
+        throw(Heimdali::Exception("FO not yet implemented"));
+        break;
 
-case (CO):
-    throw(Heimdali::NotImplementedError("CO not yet implemented"));
-    break;
-}
+    case (CO):
+        throw(Heimdali::Exception("CO not yet implemented"));
+        break;
+    }
 
-} // End of 'try' block.
+    } // End of 'try' block.
 
-
-// Command line parser.
-catch (TCLAP::ArgException &e) { 
-    cerr << "logic: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-}
-
-// Input/output.
-catch (Heimdali::IOError &e) {
-    cerr << "logic: ERROR: " << e.getMessage() << endl;
-}
-
-catch (Heimdali::NotImplementedError &e) {
-    cerr << "logic: ERROR: " << e.getMessage() << endl;
-}
-
-return 0;
-
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

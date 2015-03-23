@@ -56,7 +56,7 @@ is_floating_point_type(itk::ImageIOBase::Pointer io)
     switch (io->GetComponentType()) {
         case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
             error_msg << "Pixel component type is unknown";
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
         case itk::ImageIOBase::FLOAT:
             return true;
@@ -78,7 +78,7 @@ is_floating_point_type(itk::ImageIOBase::Pointer io)
                 << "Expected pixel component type to be "
                 << "FLOAT, DOUBLE, UCHAR, USHORT or UINT"
                 << "but, got " << io->GetComponentTypeAsString(io->GetComponentType());
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
     }
 }
@@ -108,7 +108,7 @@ read_information(itk::ImageIOBase::Pointer io, string name, unsigned int& value)
         error_msg << "Exected name to be nplanes, nrows, ncolumns, "
                   << "ncomponents or componentsize, but got: "
                   << name;
-        throw(Heimdali::ValueError(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
     }
 }
 
@@ -128,7 +128,7 @@ read_information(itk::ImageIOBase::Pointer io, string name, float& value)
     else {
         ostringstream error_msg;
         error_msg << "Exected name to be z0, y0 or x0, but got: " << name;
-        throw(Heimdali::ValueError(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
     }
 }
 
@@ -145,7 +145,7 @@ read_information(itk::ImageIOBase::Pointer io, string name, bool& value)
         ostringstream error_msg;
         error_msg << "Exected name to be floating-point or fixed-point, "
                   << "but got: " << name;
-        throw(Heimdali::ValueError(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
     }
 }
 
@@ -169,7 +169,7 @@ map_to_itk_component_type(bool is_floating_point_type,
             error_msg 
                 << "Expected floating point component size to be 4 or 8, "
                 << "but got: " << component_size;
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
         }
 
@@ -189,7 +189,7 @@ map_to_itk_component_type(bool is_floating_point_type,
             error_msg 
                 << "Expected fixed point component size to be 1, 2 or 4, "
                 << "but got: " << component_size;
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
         }
     }

@@ -20,70 +20,75 @@ using namespace std;
 int main(int argc, char** argv)
 { 
 
-TCLAP::CmdLine parser("Direct FFT on complex image", ' ', HEIMDALI_VERSION);
+    try {
 
-HEIMDALI_TCLAP_IMAGE_IN_IMAGE_IN_IMAGE_OUT_IMAGE_OUT(filenamesArg,parser)
+    TCLAP::CmdLine parser("Direct FFT on complex image", ' ', HEIMDALI_VERSION);
 
-parser.parse(argc,argv);
-string inputFilename_re;
-string inputFilename_im;
-string outputFilename_re;
-string outputFilename_im;
-Heimdali::parse_tclap_image_in_image_in_image_out_image_out(filenamesArg,
-                                                   inputFilename_re, inputFilename_im,
-                                                   outputFilename_re, outputFilename_im);
+    HEIMDALI_TCLAP_IMAGE_IN_IMAGE_IN_IMAGE_OUT_IMAGE_OUT(filenamesArg,parser)
 
-// Put our INRimage reader in the list of readers ITK knows.
-itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+    parser.parse(argc,argv);
+    string inputFilename_re;
+    string inputFilename_im;
+    string outputFilename_re;
+    string outputFilename_im;
+    Heimdali::parse_tclap_image_in_image_in_image_out_image_out(filenamesArg,
+                                                       inputFilename_re, inputFilename_im,
+                                                       outputFilename_re, outputFilename_im);
 
-// Image type.
-typedef float PixelType;
-const unsigned int Dimension = 3;
-typedef itk::Image<PixelType, Dimension> VectorImageType;
-typedef itk::Image<std::complex<float>, Dimension> ComplexVectorImageType;
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-// Readers
-typedef itk::ImageFileReader<VectorImageType> ReaderType;
-ReaderType::Pointer reader_re = ReaderType::New();
-ReaderType::Pointer reader_im = ReaderType::New();
-reader_re->SetFileName(inputFilename_re);
-reader_im->SetFileName(inputFilename_im);
-reader_re->Update();
-reader_im->Update();
+    // Image type.
+    typedef float PixelType;
+    const unsigned int Dimension = 3;
+    typedef itk::Image<PixelType, Dimension> VectorImageType;
+    typedef itk::Image<std::complex<float>, Dimension> ComplexVectorImageType;
 
-// complexer
-typedef itk::ComposeImageFilter<VectorImageType,ComplexVectorImageType> ComplexerType;
-ComplexerType::Pointer complexer = ComplexerType::New();
-complexer->SetInput1(reader_re->GetOutput());
-complexer->SetInput2(reader_im->GetOutput());
-complexer->Update();
+    // Readers
+    typedef itk::ImageFileReader<VectorImageType> ReaderType;
+    ReaderType::Pointer reader_re = ReaderType::New();
+    ReaderType::Pointer reader_im = ReaderType::New();
+    reader_re->SetFileName(inputFilename_re);
+    reader_im->SetFileName(inputFilename_im);
+    reader_re->Update();
+    reader_im->Update();
 
-// FFT
-typedef itk::VnlComplexToComplexFFTImageFilter<ComplexVectorImageType> FFTType;
-FFTType::Pointer fftFilter = FFTType::New();
-fftFilter->SetInput(complexer->GetOutput());
+    // complexer
+    typedef itk::ComposeImageFilter<VectorImageType,ComplexVectorImageType> ComplexerType;
+    ComplexerType::Pointer complexer = ComplexerType::New();
+    complexer->SetInput1(reader_re->GetOutput());
+    complexer->SetInput2(reader_im->GetOutput());
+    complexer->Update();
 
-// Extract the real part
-typedef itk::ComplexToRealImageFilter<ComplexVectorImageType, VectorImageType> RealFilterType;
-RealFilterType::Pointer refilter = RealFilterType::New();
-refilter->SetInput(fftFilter->GetOutput());
-refilter->Update();
+    // FFT
+    typedef itk::VnlComplexToComplexFFTImageFilter<ComplexVectorImageType> FFTType;
+    FFTType::Pointer fftFilter = FFTType::New();
+    fftFilter->SetInput(complexer->GetOutput());
 
-// Extract the imaginary part
-typedef itk::ComplexToImaginaryImageFilter<ComplexVectorImageType, VectorImageType> ImaginaryFilterType;
-ImaginaryFilterType::Pointer imfilter = ImaginaryFilterType::New();
-imfilter->SetInput(fftFilter->GetOutput());
-imfilter->Update();
+    // Extract the real part
+    typedef itk::ComplexToRealImageFilter<ComplexVectorImageType, VectorImageType> RealFilterType;
+    RealFilterType::Pointer refilter = RealFilterType::New();
+    refilter->SetInput(fftFilter->GetOutput());
+    refilter->Update();
 
-// Writers
-typedef itk::ImageFileWriter<VectorImageType> WriterType;
-WriterType::Pointer writer_re = WriterType::New();
-WriterType::Pointer writer_im = WriterType::New();
-writer_re->SetFileName(outputFilename_re);
-writer_im->SetFileName(outputFilename_im);
-writer_re->SetInput(refilter->GetOutput());
-writer_im->SetInput(imfilter->GetOutput());
-writer_re->Update();
-writer_im->Update();
+    // Extract the imaginary part
+    typedef itk::ComplexToImaginaryImageFilter<ComplexVectorImageType, VectorImageType> ImaginaryFilterType;
+    ImaginaryFilterType::Pointer imfilter = ImaginaryFilterType::New();
+    imfilter->SetInput(fftFilter->GetOutput());
+    imfilter->Update();
 
+    // Writers
+    typedef itk::ImageFileWriter<VectorImageType> WriterType;
+    WriterType::Pointer writer_re = WriterType::New();
+    WriterType::Pointer writer_im = WriterType::New();
+    writer_re->SetFileName(outputFilename_re);
+    writer_im->SetFileName(outputFilename_im);
+    writer_re->SetInput(refilter->GetOutput());
+    writer_im->SetInput(imfilter->GetOutput());
+    writer_re->Update();
+    writer_im->Update();
+
+    } // End of 'try' block.
+
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

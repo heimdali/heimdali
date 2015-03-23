@@ -213,23 +213,7 @@ int main(int argc, char** argv)
         }
     }
 
+    } // End of 'try' block.
 
-    //////////////////////////////////////////////////////////////////////////
-    // End of 'try' block.
-    //////////////////////////////////////////////////////////////////////////
-
-    } 
-
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "tpr: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-
-
-    // Input/output.
-    catch (Heimdali::IOError &e) {
-        cerr << "tpr: ERROR: " << e.getMessage() << endl;
-    }
-
-    return 0;
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

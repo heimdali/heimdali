@@ -92,7 +92,7 @@ int main( int argc, char ** argv )
     {
         case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
             error_msg << "Component type is unknown";
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
         case itk::ImageIOBase::UCHAR:
             convert<unsigned char>(inputFilename, outputFilename);
@@ -115,23 +115,11 @@ int main( int argc, char ** argv )
              << "FLOAT, DOUBLE, UCHAR, USHORT or UINT "
              << "but, got "
              << itk::ImageIOBase::GetComponentTypeAsString(type);
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
     }
-    }
-    
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "heimdali-convert: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
 
-    // Heimdali
-    catch (Heimdali::IOError &e) {
-        cerr << "cco: ERROR: " << e.getMessage() << endl;
-    }
-    catch (Heimdali::ValueError &e) {
-        cerr << "cco: ERROR: " << e.getMessage() << endl;
-    }
-    
-    return 0;
+    } // End of 'try' block.
+
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

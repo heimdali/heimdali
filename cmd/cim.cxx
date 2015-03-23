@@ -44,7 +44,7 @@ read_pixel_type(itk::ImageIOBase::IOComponentType& type)
     default:
         error_msg << "Pixel must be 0 (fixed point) or 1 (floating point) "
                   << "but got: " << point_type;
-        throw(Heimdali::ValueError(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
         break;
     }
 
@@ -111,7 +111,7 @@ read_write_image(unsigned int sz, unsigned int sy,
             if (nvalues == 1) {
                 variableLengthVector[iv] = (PixelType) (value * fixed_point_multiplier + cast_to_near_int);
             } else {
-                throw(Heimdali::IOError("Failed to read input value"));
+                throw(Heimdali::Exception("Failed to read input value"));
             }
         }
         image->SetPixel(pixelIndex, variableLengthVector);
@@ -132,129 +132,110 @@ read_write_image(unsigned int sz, unsigned int sy,
 int main(int argc, char** argv)
 { 
 
-try {
+    try {
 
-// Parse command line.
-TCLAP::CmdLine parser("Inputs ASCII value into image",
-                      ' ', HEIMDALI_VERSION);
+    // Parse command line.
+    TCLAP::CmdLine parser("Inputs ASCII value into image",
+                          ' ', HEIMDALI_VERSION);
 
-// -z -y -x
-TCLAP::ValueArg<unsigned int> zArg("z","nplanes", "Number of planes",false,1,"NZ", parser);
-TCLAP::ValueArg<unsigned int> yArg("y","nrows", "Number of rows",false,1,"NY", parser);
-TCLAP::ValueArg<unsigned int> xArg("x","ncolumns", "Number of values",false,1,"NX", parser);
-TCLAP::ValueArg<unsigned int> vArg("v","ncomponents", "Number of pixel components",false,1,"NV", parser);
+    // -z -y -x
+    TCLAP::ValueArg<unsigned int> zArg("z","nplanes", "Number of planes",false,1,"NZ", parser);
+    TCLAP::ValueArg<unsigned int> yArg("y","nrows", "Number of rows",false,1,"NY", parser);
+    TCLAP::ValueArg<unsigned int> xArg("x","ncolumns", "Number of values",false,1,"NX", parser);
+    TCLAP::ValueArg<unsigned int> vArg("v","ncomponents", "Number of pixel components",false,1,"NV", parser);
 
-// -o
-TCLAP::ValueArg<int> oArg("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
+    // -o
+    TCLAP::ValueArg<int> oArg("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
 
-// -r
-TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", parser, false);
+    // -r
+    TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", parser, false);
 
-// -f
-TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert to fixed point.", parser, false);
+    // -f
+    TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert to fixed point.", parser, false);
 
-// --format
-TCLAP::ValueArg<string> formatArg("","format", "scan format to read values",false,"%g","FORMAT", parser);
+    // --format
+    TCLAP::ValueArg<string> formatArg("","format", "scan format to read values",false,"%g","FORMAT", parser);
 
-// 
-TCLAP::ValueArg<string> rdArg("","rd", "Input file",false,"","FILENAME", parser);
+    // 
+    TCLAP::ValueArg<string> rdArg("","rd", "Input file",false,"","FILENAME", parser);
 
-TCLAP::UnlabeledValueArg<string> outputFilenameArg("IMAGE-OUT", 
-    "Output image file name.",false,"","IMAGE-OUT", parser);
-vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
-parser.parse(tclap_argv);
-string outputFilename = outputFilenameArg.getValue();
+    TCLAP::UnlabeledValueArg<string> outputFilenameArg("IMAGE-OUT", 
+        "Output image file name.",false,"","IMAGE-OUT", parser);
+    vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
+    parser.parse(tclap_argv);
+    string outputFilename = outputFilenameArg.getValue();
 
-// Put our INRimage reader in the list of readers ITK knows.
-itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-// Interactive command or not?
-bool is_interactive = (!( zArg.isSet() || yArg.isSet() || xArg.isSet() || vArg.isSet()
-  || oArg.isSet() || floatingSwitch.isSet() || fixedSwitch.isSet() ));
+    // Interactive command or not?
+    bool is_interactive = (!( zArg.isSet() || yArg.isSet() || xArg.isSet() || vArg.isSet()
+      || oArg.isSet() || floatingSwitch.isSet() || fixedSwitch.isSet() ));
 
-ostringstream error_msg;
+    ostringstream error_msg;
 
-// Fixed point or floating point
-bool is_floating_point_type;
-if (fixedSwitch.isSet()) {
-    if (floatingSwitch.isSet()) 
-        throw(TCLAP::ArgException("-r and -f flags are incompatible"));
-    is_floating_point_type = false;
-} else {
-    is_floating_point_type = true;
-}
+    // Fixed point or floating point
+    bool is_floating_point_type;
+    if (fixedSwitch.isSet()) {
+        if (floatingSwitch.isSet()) 
+            throw(TCLAP::ArgException("-r and -f flags are incompatible"));
+        is_floating_point_type = false;
+    } else {
+        is_floating_point_type = true;
+    }
 
-// Set parameters.
-unsigned int sz, sy, sx, sv;
-itk::ImageIOBase::IOComponentType type;
-if (is_interactive) {
-    read_image_size(sz, sy, sx, sv);
-    read_pixel_type(type);
-} else {
-    sz = zArg.getValue();
-    sy = yArg.getValue();
-    sx = xArg.getValue();
-    sv = vArg.getValue();
-    type = Heimdali::map_to_itk_component_type(is_floating_point_type,
-                                               oArg.getValue());
-}
+    // Set parameters.
+    unsigned int sz, sy, sx, sv;
+    itk::ImageIOBase::IOComponentType type;
+    if (is_interactive) {
+        read_image_size(sz, sy, sx, sv);
+        read_pixel_type(type);
+    } else {
+        sz = zArg.getValue();
+        sy = yArg.getValue();
+        sx = xArg.getValue();
+        sv = vArg.getValue();
+        type = Heimdali::map_to_itk_component_type(is_floating_point_type,
+                                                   oArg.getValue());
+    }
 
-string format;
-if (formatArg.isSet()) {
-    format = formatArg.getValue();
-} else {
-    format = (type == itk::ImageIOBase::UCHAR) ? "%d" : "%g";
-}
+    string format;
+    if (formatArg.isSet()) {
+        format = formatArg.getValue();
+    } else {
+        format = (type == itk::ImageIOBase::UCHAR) ? "%d" : "%g";
+    }
 
-string inputFilename = rdArg.getValue();
+    string inputFilename = rdArg.getValue();
 
-// Write image.
-switch (type)
-{
-case itk::ImageIOBase::FLOAT:
-    read_write_image<float>(sz,sy,sx,sv,1,inputFilename,outputFilename,is_interactive,format);
-    break;
-case itk::ImageIOBase::DOUBLE:
-    read_write_image<double>(sz,sy,sx,sv,1,inputFilename,outputFilename,is_interactive,format);
-    break;
-case itk::ImageIOBase::UCHAR:
-    read_write_image<unsigned char>(sz,sy,sx,sv,255,inputFilename,outputFilename,is_interactive,format);
-    break;
-case itk::ImageIOBase::USHORT:
-    read_write_image<unsigned short>(sz,sy,sx,sv,65535,inputFilename,outputFilename,is_interactive,format);
-    break;
-case itk::ImageIOBase::UINT:
-    read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,inputFilename,outputFilename,is_interactive,format);
-    break;
-default:
-    error_msg
-      << "Expected pixel component type to be"
-      << "FLOAT, DOUBLE, UCHAR, USHORT or UINT"
-      << "but, got " << itk::ImageIOBase::GetComponentTypeAsString(type);
-    throw(Heimdali::ValueError(error_msg.str()));
-    break;
-}
+    // Write image.
+    switch (type)
+    {
+    case itk::ImageIOBase::FLOAT:
+        read_write_image<float>(sz,sy,sx,sv,1,inputFilename,outputFilename,is_interactive,format);
+        break;
+    case itk::ImageIOBase::DOUBLE:
+        read_write_image<double>(sz,sy,sx,sv,1,inputFilename,outputFilename,is_interactive,format);
+        break;
+    case itk::ImageIOBase::UCHAR:
+        read_write_image<unsigned char>(sz,sy,sx,sv,255,inputFilename,outputFilename,is_interactive,format);
+        break;
+    case itk::ImageIOBase::USHORT:
+        read_write_image<unsigned short>(sz,sy,sx,sv,65535,inputFilename,outputFilename,is_interactive,format);
+        break;
+    case itk::ImageIOBase::UINT:
+        read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,inputFilename,outputFilename,is_interactive,format);
+        break;
+    default:
+        error_msg
+          << "Expected pixel component type to be"
+          << "FLOAT, DOUBLE, UCHAR, USHORT or UINT"
+          << "but, got " << itk::ImageIOBase::GetComponentTypeAsString(type);
+        throw(Heimdali::Exception(error_msg.str()));
+        break;
+    }
 
-} // End of 'try' block.
-
-
-// Command line parser.
-catch (TCLAP::ArgException &e) { 
-    cerr << "cim: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-}
-
-catch (Heimdali::IOError &e) {
-    cerr << "cim: ERROR: " << e.getMessage() << endl;
-}
-
-catch (Heimdali::ValueError &e) {
-    cerr << "cim: ERROR: " << e.getMessage() << endl;
-}
-
-catch (Heimdali::NotImplementedError &e) {
-    cerr << "cim: ERROR: " << e.getMessage() << endl;
-}
-
-return 0;
-
+    } // End of 'try' block.
+    
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

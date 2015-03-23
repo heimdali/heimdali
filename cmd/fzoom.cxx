@@ -68,16 +68,7 @@ int main(int argc, char** argv)
         cmdwriter->Update();
     }
 
-    }
+    } // End of 'try' block.
 
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "izoom: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-
-
-    // Input/output.
-    catch (Heimdali::IOError &e) {
-        cerr << "izoom: ERROR: " << e.getMessage() << endl;
-    }
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

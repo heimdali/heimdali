@@ -15,7 +15,6 @@ int main(int argc, char** argv)
 
     try {
 
-
     //////////////////////////////////////////////////////////////////////////
     // Parse comamnd line options and arguments.
     //////////////////////////////////////////////////////////////////////////
@@ -168,18 +167,8 @@ int main(int argc, char** argv)
         vectorImage->Initialize();
     }
 
+    } // End of 'try' block.
 
-    } 
-
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "ical: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-    // Input/output.
-    catch (Heimdali::IOError &e) {
-        cerr << "ical: ERROR: " << e.getMessage() << endl;
-    }
-
-    return 0;
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }
 

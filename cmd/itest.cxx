@@ -241,7 +241,7 @@ int main(int argc, char** argv)
                   << "    itest A --help" << endl
                   << "To get help on usage with two filename, use: " << endl
                   << "    itest A B --help";
-        throw(Heimdali::ValueError(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
         break;
     }
 
@@ -262,16 +262,5 @@ int main(int argc, char** argv)
 
     } // End of 'try' block.
 
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "itest: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-
-    catch (Heimdali::IOError &e) {
-        cerr << "itest: ERROR: " << e.getMessage() << endl;
-    }
-
-    catch (Heimdali::ValueError &e) {
-        cerr << "itest: ERROR: " << e.getMessage() << endl;
-    }
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

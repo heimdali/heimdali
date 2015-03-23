@@ -74,7 +74,7 @@ int get_fixed_point_divider(itk::ImageIOBase::Pointer io)
     {
         case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
             error_msg << "Component type is unknown";
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
         case itk::ImageIOBase::FLOAT:
             return 0;
@@ -95,7 +95,7 @@ int get_fixed_point_divider(itk::ImageIOBase::Pointer io)
             error_msg << "Expected pixel component type to be"
                       << "FLOAT, DOUBLE, UCHAR, USHORT or UINT"
                       << "but, got " << io->GetComponentTypeAsString(io->GetComponentType());
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
     }
 }

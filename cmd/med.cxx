@@ -20,100 +20,84 @@ const unsigned int ZD=2, YD=1, XD=0;
 
 int main(int argc, char** argv)
 { 
+    try {
 
-try {
+    TCLAP::CmdLine parser("Median filter", ' ', HEIMDALI_VERSION);
 
-TCLAP::CmdLine parser("Median filter", ' ', HEIMDALI_VERSION);
+    TCLAP::ValueArg<unsigned int> yArg("y","row-size", "Window size",false,3,"Y", parser);
+    TCLAP::ValueArg<unsigned int> xArg("x","column-size", "Window size",false,3,"X", parser);
 
-TCLAP::ValueArg<unsigned int> yArg("y","row-size", "Window size",false,3,"Y", parser);
-TCLAP::ValueArg<unsigned int> xArg("x","column-size", "Window size",false,3,"X", parser);
+    HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
+    vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
+    parser.parse(tclap_argv);
+    string inputFilename;
+    string outputFilename;
+    Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
 
-vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
-parser.parse(tclap_argv);
-string inputFilename;
-string outputFilename;
-Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-// Put our INRimage reader in the list of readers ITK knows.
-itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+    // Image type.
+    typedef itk::Image<PixelType, ImageDimension> ScalarImageType;
+    typedef itk::VectorImage<PixelType, ImageDimension> VectorImageType;
 
-// Image type.
-typedef itk::Image<PixelType, ImageDimension> ScalarImageType;
-typedef itk::VectorImage<PixelType, ImageDimension> VectorImageType;
+    // Reader
+    typedef itk::ImageFileReader<VectorImageType> ReaderType;
+    ReaderType::Pointer reader = ReaderType::New();
+    reader->SetFileName(inputFilename);
 
-// Reader
-typedef itk::ImageFileReader<VectorImageType> ReaderType;
-ReaderType::Pointer reader = ReaderType::New();
-reader->SetFileName(inputFilename);
+    // indexer
+    typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
+    IndexerType::Pointer indexer = IndexerType::New();
 
-// indexer
-typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
-IndexerType::Pointer indexer = IndexerType::New();
+    // Median filter
+    typedef itk::MedianImageFilter<ScalarImageType, ScalarImageType> MedianerType;
+    MedianerType::Pointer medianer = MedianerType::New();
+    MedianerType::InputSizeType radius;
+    radius[XD] = xArg.getValue();
+    radius[YD] = yArg.getValue();
+    radius[ZD] = 1;
+    medianer->SetRadius(radius);
 
-// Median filter
-typedef itk::MedianImageFilter<ScalarImageType, ScalarImageType> MedianerType;
-MedianerType::Pointer medianer = MedianerType::New();
-MedianerType::InputSizeType radius;
-radius[XD] = xArg.getValue();
-radius[YD] = yArg.getValue();
-radius[ZD] = 1;
-medianer->SetRadius(radius);
+    // duplicator
+    typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
+    DuplicatorType::Pointer duplicator = DuplicatorType::New();
 
-// duplicator
-typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
-DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    // composer
+    typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
+    ComposerType::Pointer composer = ComposerType::New();
 
-// composer
-typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
-ComposerType::Pointer composer = ComposerType::New();
+    // Writer
+    typedef itk::ImageFileWriter<VectorImageType> WriterType;
+    WriterType::Pointer writer = WriterType::New();
+    writer->SetFileName(outputFilename);
 
-// Writer
-typedef itk::ImageFileWriter<VectorImageType> WriterType;
-WriterType::Pointer writer = WriterType::New();
-writer->SetFileName(outputFilename);
+    reader->UpdateOutputInformation();
 
-reader->UpdateOutputInformation();
+    indexer->SetInput(reader->GetOutput());
 
-indexer->SetInput(reader->GetOutput());
+    for (unsigned int componentIndex = 0 ;
+                      componentIndex < reader->GetImageIO()->GetNumberOfComponents() ;
+                      componentIndex++)
+    {
+        indexer->SetIndex(componentIndex);
 
-for (unsigned int componentIndex = 0 ;
-                  componentIndex < reader->GetImageIO()->GetNumberOfComponents() ;
-                  componentIndex++)
-{
-    indexer->SetIndex(componentIndex);
+        medianer->SetInput( indexer->GetOutput() );
+        medianer->Update();
 
-    medianer->SetInput( indexer->GetOutput() );
-    medianer->Update();
+        duplicator->SetInputImage(medianer->GetOutput());
+        duplicator->Update();
 
-    duplicator->SetInputImage(medianer->GetOutput());
-    duplicator->Update();
+        composer->SetInput(componentIndex, duplicator->GetOutput());
+    }
+    composer->Update();
 
-    composer->SetInput(componentIndex, duplicator->GetOutput());
-}
-composer->Update();
+    // Write output.
+    writer->SetInput( composer->GetOutput() );
+    writer->Update();
 
-// Write output.
-writer->SetInput( composer->GetOutput() );
-writer->Update();
+    } // End of 'try' block.
 
-} // End of 'try' block.
-
-// Command line parser.
-catch (TCLAP::ArgException &e) { 
-    cerr << "logic: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-}
-
-// Input/output.
-catch (Heimdali::IOError &e) {
-    cerr << "logic: ERROR: " << e.getMessage() << endl;
-}
-
-catch (Heimdali::NotImplementedError &e) {
-    cerr << "logic: ERROR: " << e.getMessage() << endl;
-}
-
-return 0;
-
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

@@ -85,7 +85,7 @@ main(int argc, char** argv)
         ostringstream error_msg;
         error_msg << "Input file must have one plane, but first file has "
                   << NZ << " planes.";
-        throw(Heimdali::ValueError(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
     }
 
     // Check that others files all have the same size.
@@ -99,7 +99,7 @@ main(int argc, char** argv)
                       << NZ << ", " << SY << ", " << SX << ", " << SC << "), "
                       << "but " << ifile << "-st file has dimensions: ("
                       << nz << ", " << sy << ", " << sx << ", " << sc << ").";
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
         }
     }
 
@@ -184,20 +184,5 @@ main(int argc, char** argv)
 
     } // End of 'try' block.
 
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "asm: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-
-    catch (Heimdali::IOError &e) {
-        cerr << "asm: ERROR: " << e.getMessage() << endl;
-    }
-
-    catch (Heimdali::ValueError &e) {
-        cerr << "asm: ERROR: " << e.getMessage() << endl;
-    }
-
-    catch (Heimdali::NotImplementedError &e) {
-        cerr << "asm: ERROR: " << e.getMessage() << endl;
-    }
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

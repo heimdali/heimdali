@@ -2,6 +2,7 @@
 
 #include "heimdali/version.hxx"
 #include "heimdali/cli.hxx"
+#include "heimdali/error.hxx"
 
 #include <itkINRImageIOFactory.h>
 #include <itkImageFileReader.h>
@@ -18,79 +19,83 @@ unsigned int XD=0, YD=1;
 int main(int argc, char** argv)
 { 
 
-TCLAP::CmdLine parser("Convolution of image by mean filter", ' ', HEIMDALI_VERSION);
+    try {
 
-TCLAP::ValueArg<unsigned int> yArg("y","row-size", "Window size",false,3,"Y", parser);
-TCLAP::ValueArg<unsigned int> xArg("x","column-size", "Window size",false,3,"X", parser);
+    TCLAP::CmdLine parser("Convolution of image by mean filter", ' ', HEIMDALI_VERSION);
 
-HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
+    TCLAP::ValueArg<unsigned int> yArg("y","row-size", "Window size",false,3,"Y", parser);
+    TCLAP::ValueArg<unsigned int> xArg("x","column-size", "Window size",false,3,"X", parser);
 
-parser.parse(argc,argv);
+    HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-string inputFilename;
-string outputFilename;
-Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
+    parser.parse(argc,argv);
 
-// Put our INRimage reader in the list of readers ITK knows.
-itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+    string inputFilename;
+    string outputFilename;
+    Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
 
-// Image type.
-typedef float PixelType;
-const unsigned int Dimension = 3;
-typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
-typedef itk::Image<PixelType, Dimension> ScalarImageType;
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-// Readers
-typedef itk::ImageFileReader<VectorImageType> ReaderType;
-ReaderType::Pointer reader = ReaderType::New();
-reader->SetFileName(inputFilename);
-reader->Update();
+    // Image type.
+    typedef float PixelType;
+    const unsigned int Dimension = 3;
+    typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
+    typedef itk::Image<PixelType, Dimension> ScalarImageType;
 
-// indexer
-typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
-IndexerType::Pointer indexer = IndexerType::New();
+    // Readers
+    typedef itk::ImageFileReader<VectorImageType> ReaderType;
+    ReaderType::Pointer reader = ReaderType::New();
+    reader->SetFileName(inputFilename);
+    reader->Update();
 
-// convolutioner
-typedef itk::MeanImageFilter<ScalarImageType,ScalarImageType> MeanType;
-MeanType::Pointer mean = MeanType::New();
-MeanType::RadiusType radius;
-radius[XD] = xArg.getValue();
-radius[YD] = yArg.getValue();
-mean->SetRadius(radius);
+    // indexer
+    typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
+    IndexerType::Pointer indexer = IndexerType::New();
 
-// duplicator
-typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
-DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    // convolutioner
+    typedef itk::MeanImageFilter<ScalarImageType,ScalarImageType> MeanType;
+    MeanType::Pointer mean = MeanType::New();
+    MeanType::RadiusType radius;
+    radius[XD] = xArg.getValue();
+    radius[YD] = yArg.getValue();
+    mean->SetRadius(radius);
 
-// composer
-typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
-ComposerType::Pointer composer = ComposerType::New();
+    // duplicator
+    typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
+    DuplicatorType::Pointer duplicator = DuplicatorType::New();
 
-indexer->SetInput(reader->GetOutput());
+    // composer
+    typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
+    ComposerType::Pointer composer = ComposerType::New();
 
-for (unsigned int componentIndex = 0 ;
-                  componentIndex < reader->GetImageIO()->GetNumberOfComponents() ;
-                  componentIndex++)
-{
-    indexer->SetIndex(componentIndex);
+    indexer->SetInput(reader->GetOutput());
 
-    mean->SetInput(indexer->GetOutput());
-    mean->Update();
-    mean->Modified();
+    for (unsigned int componentIndex = 0 ;
+                      componentIndex < reader->GetImageIO()->GetNumberOfComponents() ;
+                      componentIndex++)
+    {
+        indexer->SetIndex(componentIndex);
 
-    duplicator->SetInputImage(mean->GetOutput());
-    duplicator->Update();
+        mean->SetInput(indexer->GetOutput());
+        mean->Update();
+        mean->Modified();
 
-    composer->SetInput(componentIndex, duplicator->GetOutput());
-}
-composer->Update();
+        duplicator->SetInputImage(mean->GetOutput());
+        duplicator->Update();
 
-// Writer
-typedef itk::ImageFileWriter<VectorImageType> WriterType;
-WriterType::Pointer writer = WriterType::New();
-writer->SetFileName(outputFilename);
-writer->SetInput(composer->GetOutput());
-writer->Update();
+        composer->SetInput(componentIndex, duplicator->GetOutput());
+    }
+    composer->Update();
 
-return 0;
+    // Writer
+    typedef itk::ImageFileWriter<VectorImageType> WriterType;
+    WriterType::Pointer writer = WriterType::New();
+    writer->SetFileName(outputFilename);
+    writer->SetInput(composer->GetOutput());
+    writer->Update();
+
+    } // End of 'try' block.
+
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

@@ -118,21 +118,8 @@ int main(int argc, char** argv)
     writer->SetInput(image);
     writer->Update();
 
-    }
+    } // End of 'try' block.
 
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "raz: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-
-    // Input/output.
-    catch (Heimdali::IOError &e) {
-        cerr << "raz: ERROR: " << e.getMessage() << endl;
-    }
-
-    // Value.
-    catch (Heimdali::ValueError &e) {
-        cerr << "raz: ERROR: " << e.getMessage() << endl;
-    }
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }
 

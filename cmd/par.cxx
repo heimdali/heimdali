@@ -151,7 +151,7 @@ print_informations(ImageIOBase::Pointer io, Options opt)
         switch (io->GetComponentType()) {
             case ImageIOBase::UNKNOWNCOMPONENTTYPE:
                 error_msg << "Component type is unknown";
-                throw(Heimdali::ValueError(error_msg.str()));
+                throw(Heimdali::Exception(error_msg.str()));
                 break;
             case ImageIOBase::FLOAT:
                 smsg << "-r\t";
@@ -176,7 +176,6 @@ print_informations(ImageIOBase::Pointer io, Options opt)
 
 int main(int argc, char** argv)
 {
-
     try {
 
     // Parse command line.
@@ -204,17 +203,5 @@ int main(int argc, char** argv)
 
     } // End of 'try' block.
     
-
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "par: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-
-
-    // Input/output.
-    catch (Heimdali::IOError &e) {
-        cerr << "par: ERROR: " << e.getMessage() << endl;
-    }
-
-    return 0;
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

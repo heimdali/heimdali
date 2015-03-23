@@ -18,114 +18,97 @@ using namespace std;
 
 int main(int argc, char** argv)
 { 
+    try {
 
-try {
+    TCLAP::CmdLine parser("Set image values to 1 if below THRESHOLD and 0 if above",
+                          ' ', HEIMDALI_VERSION);
+    // -n
+    TCLAP::ValueArg<float> numberArg("n","number", "Threshold",true,
+                                     1,"THRESHOLD", parser);
 
-TCLAP::CmdLine parser("Set image values to 1 if below THRESHOLD and 0 if above",
-                      ' ', HEIMDALI_VERSION);
-// -n
-TCLAP::ValueArg<float> numberArg("n","number", "Threshold",true,
-                                 1,"THRESHOLD", parser);
+    HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
+    parser.parse(argc,argv);
+    string inputFilename;
+    string outputFilename;
+    Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
 
-parser.parse(argc,argv);
-string inputFilename;
-string outputFilename;
-Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-// Put our INRimage reader in the list of readers ITK knows.
-itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+    // Image type.
+    typedef itk::Image<Heimdali::PixelFloat, Heimdali::ImageDimension> ScalarImageType;
+    typedef itk::VectorImage<Heimdali::PixelFloat, Heimdali::ImageDimension> FloatVectorImageType;
+    typedef itk::VectorImage<unsigned char, Heimdali::ImageDimension> BinaryVectorImageType;
 
-// Image type.
-typedef itk::Image<Heimdali::PixelFloat, Heimdali::ImageDimension> ScalarImageType;
-typedef itk::VectorImage<Heimdali::PixelFloat, Heimdali::ImageDimension> FloatVectorImageType;
-typedef itk::VectorImage<unsigned char, Heimdali::ImageDimension> BinaryVectorImageType;
+    // Command line tool readers.
+    typedef Heimdali::CmdReader<FloatVectorImageType> ReaderType;
+    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename);
+    cmdreader->convert_fixed_point_to_floating_point_on();
 
-// Command line tool readers.
-typedef Heimdali::CmdReader<FloatVectorImageType> ReaderType;
-ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename);
-cmdreader->convert_fixed_point_to_floating_point_on();
+    // indexer
+    typedef itk::VectorIndexSelectionCastImageFilter<FloatVectorImageType, ScalarImageType> IndexerType;
+    IndexerType::Pointer indexer = IndexerType::New();
 
-// indexer
-typedef itk::VectorIndexSelectionCastImageFilter<FloatVectorImageType, ScalarImageType> IndexerType;
-IndexerType::Pointer indexer = IndexerType::New();
+    // binary_thresholder
+    typedef itk::BinaryThresholdImageFilter<ScalarImageType, ScalarImageType> 
+        BinaryThresholderType;
+    BinaryThresholderType::Pointer binary_thresholder = BinaryThresholderType::New();
 
-// binary_thresholder
-typedef itk::BinaryThresholdImageFilter<ScalarImageType, ScalarImageType> 
-    BinaryThresholderType;
-BinaryThresholderType::Pointer binary_thresholder = BinaryThresholderType::New();
+    // duplicator
+    typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
+    DuplicatorType::Pointer duplicator = DuplicatorType::New();
 
-// duplicator
-typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
-DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    // composer
+    typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
+    ComposerType::Pointer composer = ComposerType::New();
 
-// composer
-typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
-ComposerType::Pointer composer = ComposerType::New();
+    // caster
+    typedef itk::CastImageFilter<FloatVectorImageType, BinaryVectorImageType > CasterType;
+    CasterType::Pointer caster = CasterType::New();
 
-// caster
-typedef itk::CastImageFilter<FloatVectorImageType, BinaryVectorImageType > CasterType;
-CasterType::Pointer caster = CasterType::New();
+    // Command line tool writer.
+    typedef Heimdali::CmdWriter<BinaryVectorImageType> WriterType;
+    WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
 
-// Command line tool writer.
-typedef Heimdali::CmdWriter<BinaryVectorImageType> WriterType;
-WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
+    unsigned int iregionmax = 1E+06;
+    for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
+        // Read input.
+        cmdreader->next_iteration();
+        if (cmdreader->is_complete()) break;
+        cmdreader->reader()->Update();
 
-unsigned int iregionmax = 1E+06;
-for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
-    // Read input.
-    cmdreader->next_iteration();
-    if (cmdreader->is_complete()) break;
-    cmdreader->reader()->Update();
+        indexer->SetInput(cmdreader->GetOutput());
 
-    indexer->SetInput(cmdreader->GetOutput());
+        for (unsigned int componentIndex = 0 ;
+                          componentIndex < cmdreader->get_sc() ;
+                          componentIndex++)
+        {
+            indexer->SetIndex(componentIndex);
 
-    for (unsigned int componentIndex = 0 ;
-                      componentIndex < cmdreader->get_sc() ;
-                      componentIndex++)
-    {
-        indexer->SetIndex(componentIndex);
+            binary_thresholder->SetInput(indexer->GetOutput());
+            binary_thresholder->SetLowerThreshold( numberArg.getValue() );
+            binary_thresholder->SetInsideValue(0);
+            binary_thresholder->SetOutsideValue(255);
+            binary_thresholder->Update();
+            binary_thresholder->Modified();
 
-        binary_thresholder->SetInput(indexer->GetOutput());
-        binary_thresholder->SetLowerThreshold( numberArg.getValue() );
-        binary_thresholder->SetInsideValue(0);
-        binary_thresholder->SetOutsideValue(255);
-        binary_thresholder->Update();
-        binary_thresholder->Modified();
+            duplicator->SetInputImage(binary_thresholder->GetOutput());
+            duplicator->Update();
 
-        duplicator->SetInputImage(binary_thresholder->GetOutput());
-        duplicator->Update();
+            composer->SetInput(componentIndex, duplicator->GetOutput());
+        }
+        composer->Update();
 
-        composer->SetInput(componentIndex, duplicator->GetOutput());
+        caster->SetInput(composer->GetOutput());
+        caster->Update();
+
+        // Write output.
+        cmdwriter->Write( caster->GetOutput() );
+        cmdwriter->Update();
     }
-    composer->Update();
 
-    caster->SetInput(composer->GetOutput());
-    caster->Update();
+    } // End of 'try' block.
 
-    // Write output.
-    cmdwriter->Write( caster->GetOutput() );
-    cmdwriter->Update();
-}
-
-} // End of 'try' block.
-
-
-// Command line parser.
-catch (TCLAP::ArgException &e) { 
-    cerr << "mb: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-}
-
-// Input/output.
-catch (Heimdali::IOError &e) {
-    cerr << "mb: ERROR: " << e.getMessage() << endl;
-}
-
-catch (Heimdali::NotImplementedError &e) {
-    cerr << "mb: ERROR: " << e.getMessage() << endl;
-}
-
-return 0;
-
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

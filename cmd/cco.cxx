@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
             error_msg << "Pixel component size must to be 1, 2 or 4 "
                       << "for fixed point number, but got "
                       << nbytes;
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
         }
 
@@ -227,27 +227,14 @@ int main(int argc, char *argv[])
             error_msg << "Pixel component size must to be 4 or 8 "
                       << "for floating point number, but got "
                       << nbytes;
-            throw(Heimdali::ValueError(error_msg.str()));
+            throw(Heimdali::Exception(error_msg.str()));
             break;
         }
     } else if (binary) {
         write_output<unsigned char>(reader, outputFilename, 255, true);
     }
 
-    }
+    } // End of 'try' block.
 
-    // Command line parser.
-    catch (TCLAP::ArgException &e) { 
-        cerr << "cco: ERROR: " << e.error() << " for arg " << e.argId() << endl;
-    }
-
-    // Heimdali
-    catch (Heimdali::IOError &e) {
-        cerr << "cco: ERROR: " << e.getMessage() << endl;
-    }
-    catch (Heimdali::ValueError &e) {
-        cerr << "cco: ERROR: " << e.getMessage() << endl;
-    }
-
-  return 0;
+    HEIMDALI_CATCH_EXCEPTIONS(argv[0]);
 }

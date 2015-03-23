@@ -40,7 +40,7 @@ RedirectStdout::RedirectStdout(string filename, bool force):
             ostringstream msg;
             msg << "Refuse to erase existing file: '" << outputFilename << "'. "
                 << "You may want to use --force option.";
-            throw(IOError(msg.str()));
+            throw(Heimdali::Exception(msg.str()));
         }
 
         // Write to file.
@@ -48,7 +48,7 @@ RedirectStdout::RedirectStdout(string filename, bool force):
         if (! m_file.is_open()) {
             ostringstream msg;
             msg << "Unable to open file: '" << outputFilename << "'. ";
-            throw(IOError(msg.str()));
+            throw(Heimdali::Exception(msg.str()));
         }
 
         cout.rdbuf( m_file.rdbuf());
