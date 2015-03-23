@@ -20,7 +20,7 @@ Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
 .. code-block:: bash
 
     conda config --add channels http://conda.binstar.org/dfroger
-    conda create -n heimdali-dev h5unixpipe itk-heimdali-dbg libinrimage tclap cmake pip pexpect
+    conda create -n heimdali-dev h5unixpipe itk-heimdali-dbg libinrimage-dev tclap cmake pip pexpect
 
 .. warning::
 
