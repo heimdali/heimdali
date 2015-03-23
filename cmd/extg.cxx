@@ -75,14 +75,6 @@ int main(int argc, char** argv)
     typedef itk::ImageFileReader< ImageType >  ReaderType;
     ReaderType::Pointer reader = ReaderType::New();
 
-    // Region
-    typedef itk::ImageRegion<Dimension> RegionType;
-    RegionType requestedRegion;
-    itk::ImageIORegion ioRegion(Dimension);
-    ImageType::IndexType ImageIndex;
-    ImageType::SizeType ImageSize;
-
-
     //////////////////////////////////////////////////////////////////////////
     // Read file.
     //////////////////////////////////////////////////////////////////////////
@@ -106,27 +98,24 @@ int main(int argc, char** argv)
     NY = yValue.getValue()==0 ? SY-IY : yValue.getValue();
     NX = xValue.getValue()==0 ? SX-IX : xValue.getValue();
 
-    // Create region to read
-    ImageIndex[2] = IZ;
-    ImageIndex[1] = IY;
-    ImageIndex[0] = IX;
-    ImageSize[2] = NZ;
-    ImageSize[1] = NY;
-    ImageSize[0] = NX;
-    requestedRegion.SetIndex(ImageIndex);
-    requestedRegion.SetSize(ImageSize);
-
-    ioRegion.SetIndex(2,IZ);
-    ioRegion.SetIndex(1,IY);
-    ioRegion.SetIndex(0,IX);
-    ioRegion.SetSize(2,NZ);
-    ioRegion.SetSize(1,NY);
-    ioRegion.SetSize(0,NX);
+    // Create requested region.
+    ImageType::IndexType index;
+    index[2] = IZ;
+    index[1] = IY;
+    index[0] = IX;
+    ImageType::SizeType size;
+    size[2] = NZ;
+    size[1] = NY;
+    size[0] = NX;
+    typedef itk::ImageRegion<Dimension> RegionType;
+    RegionType region;
+    region.SetIndex(index);
+    region.SetSize(size);
 
     typedef itk::ExtractImageFilter< ImageType, ImageType > ExtractFilterType;
     ExtractFilterType::Pointer extract = ExtractFilterType::New();
     extract->SetInput( reader->GetOutput() );
-    extract->SetExtractionRegion( requestedRegion );
+    extract->SetExtractionRegion( region );
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -138,8 +127,6 @@ int main(int argc, char** argv)
     WriterType::Pointer writer = WriterType::New();
     writer->SetFileName(outputFilenameArg.getValue());
     writer->SetInput(extract->GetOutput());
-    reader->UpdateOutputInformation();
-    writer->UpdateOutputInformation();
     writer->Update();
 
     } // End of 'try' block.
