@@ -4,6 +4,7 @@
 
 #include "heimdali/cli.hxx"
 #include "heimdali/util.hxx"
+#include "heimdali/error.hxx"
 
 using namespace std;
 
@@ -80,7 +81,7 @@ parse_tclap_image_in_image_out(TCLAP::UnlabeledMultiArg<string>& filenamesArg,
         break;
     default:
         error_msg << "Expected two, one, on zero file names, but got " << filenames.size();
-        throw(TCLAP::ArgException(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
     }
 }
 
@@ -112,7 +113,7 @@ parse_tclap_image_in_image_in_image_out(TCLAP::UnlabeledMultiArg<string>& filena
         break;
     default:
         error_msg << "Expected two, one, on zero file names, but got " << filenames.size();
-        throw(TCLAP::ArgException(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
     }
 }
 
@@ -135,7 +136,7 @@ parse_tclap_image_in_image_out_image_out(TCLAP::UnlabeledMultiArg<string>& filen
         break;
     default:
         error_msg << "Expected three file names, but got " << filenames.size();
-        throw(TCLAP::ArgException(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
     }
 }
 
@@ -158,7 +159,7 @@ parse_tclap_image_in_image_in_image_out_image_out(
         break;
     default:
         error_msg << "Expected four file names, but got " << filenames.size();
-        throw(TCLAP::ArgException(error_msg.str()));
+        throw(Heimdali::Exception(error_msg.str()));
     }
 }
 
