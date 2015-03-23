@@ -6,12 +6,10 @@
 
 #include <itkImage.h>
 #include <itkArray.h>
-#include <itkImageFileReader.h>
 #include <itkINRImageIOFactory.h>
 #include <itkStatisticsImageFilter.h>
 #include <itkINRImageIO.h>
 #include <itkHDF5ImageIO.h>
-#include "itkImageFileWriter.h"
 #include <itkVectorIndexSelectionCastImageFilter.h>
 #include <itkImageDuplicator.h>
 #include <itkComposeImageFilter.h>
@@ -21,50 +19,48 @@
 #include "heimdali/error.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cmdreader.hxx"
+#include "heimdali/cmdwriter.hxx"
+#include "heimdali/cmdhelper.hxx"
 
 using namespace std;
 
-unsigned int ZD=2, YD=1, XD=1;
+unsigned int ZD=2, YD=1, XD=0;
 
 int main(int argc, char** argv)
 {
     try {
 
-    //////////////////////////////////////////////////////////////////////////
     // Parse comamnd line options and arguments.
-    //////////////////////////////////////////////////////////////////////////
-
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
         
-    TCLAP::CmdLine cmd("Extract image subregion",' ', HEIMDALI_VERSION);
+    TCLAP::CmdLine parser("Extract image subregion",' ', HEIMDALI_VERSION);
 
     // -iz -iy -ix
-    TCLAP::ValueArg<unsigned int> ixValue("","iz", "First column",false,0,"IZ",cmd);
-    TCLAP::ValueArg<unsigned int> iyValue("","iy", "First rows",false,0,"IY",cmd);
-    TCLAP::ValueArg<unsigned int> izValue("","ix", "First plane",false,0,"IX",cmd);
-    TCLAP::ValueArg<unsigned int> ivValue("","iv", "First component",false,0,"IV",cmd);
+    TCLAP::ValueArg<unsigned int> ixValue("","iz", "First column",false,0,"IZ",parser);
+    TCLAP::ValueArg<unsigned int> iyValue("","iy", "First rows",false,0,"IY",parser);
+    TCLAP::ValueArg<unsigned int> izValue("","ix", "First plane",false,0,"IX",parser);
+    TCLAP::ValueArg<unsigned int> ivValue("","iv", "First component",false,0,"IV",parser);
 
     // -z -y -x
-    TCLAP::ValueArg<unsigned int> zValue("z","nplanes", "Number of planes",false,0,"NZ", cmd);
-    TCLAP::ValueArg<unsigned int> yValue("y","nrows", "Number of rows",false,0,"NY", cmd);
-    TCLAP::ValueArg<unsigned int> xValue("x","ncolumns", "Number of columns",false,0,"NX", cmd);
-    TCLAP::ValueArg<unsigned int> vValue("v","ncomponent", "Number of components",false,0,"NV", cmd);
+    TCLAP::ValueArg<unsigned int> zValue("z","nplanes", "Number of planes",false,0,"NZ", parser);
+    TCLAP::ValueArg<unsigned int> yValue("y","nrows", "Number of rows",false,0,"NY", parser);
+    TCLAP::ValueArg<unsigned int> xValue("x","ncolumns", "Number of columns",false,0,"NX", parser);
+    TCLAP::ValueArg<unsigned int> vValue("v","ncomponent", "Number of components",false,0,"NV", parser);
 
-    // input.h5
-    TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
-        "Input image file name.",true,"input.h5","FILE-IN");
-    cmd.add(inputFilenameArg);
+    HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-    // output.h5
-    TCLAP::UnlabeledValueArg<string> outputFilenameArg("outputFilename", 
-        "Output image file name.",true,"output.h5","FILE-OUT");
-    cmd.add(outputFilenameArg);
+    parser.parse(tclap_argv);
 
-    cmd.parse(tclap_argv);
+    string inputFilename;
+    string outputFilename;
+    Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
 
-    //////////////////////////////////////////////////////////////////////////
-    // Types and instances.
-    //////////////////////////////////////////////////////////////////////////
+    cout << "input: " << inputFilename << endl;
+    cout << "output: " << outputFilename << endl;
+
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
     // Image type
     typedef float PixelType;
@@ -73,24 +69,14 @@ int main(int argc, char** argv)
     typedef itk::VectorImage<PixelType, Dimension> VectorImageType;
     VectorImageType::Pointer image;
 
-    // Readers
-    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
-    typedef itk::ImageFileReader< VectorImageType >  ReaderType;
-    ReaderType::Pointer reader = ReaderType::New();
+    // Read image size
+    itk::ImageIOBase::Pointer io = Heimdali::open_from_stdin_or_file(inputFilename);
+    unsigned int SZ = io->GetDimensions(ZD);
+    unsigned int SY = io->GetDimensions(YD);
+    unsigned int SX = io->GetDimensions(XD);
+    unsigned int SV = io->GetNumberOfComponents();
 
-    //////////////////////////////////////////////////////////////////////////
-    // Read file.
-    //////////////////////////////////////////////////////////////////////////
-
-    // Read image size only.
-    reader->SetFileName( inputFilenameArg.getValue() );
-    reader->Update();
-
-    // Total size.
-    unsigned int SZ = reader->GetImageIO()->GetDimensions(ZD);
-    unsigned int SY = reader->GetImageIO()->GetDimensions(YD);
-    unsigned int SX = reader->GetImageIO()->GetDimensions(XD);
-    unsigned int SV = reader->GetImageIO()->GetNumberOfComponents();
+    cout << SZ << " " << SY << " " << SX << " " << SV << endl;
 
     // First index to read.
     unsigned int IZ = izValue.getValue();
@@ -103,6 +89,12 @@ int main(int argc, char** argv)
     unsigned int NY = yValue.getValue()==0 ? SY-IY : yValue.getValue();
     unsigned int NX = xValue.getValue()==0 ? SX-IX : xValue.getValue();
     unsigned int NV = vValue.getValue()==0 ? SV-IV : vValue.getValue();
+
+    // Readers
+    typedef Heimdali::CmdReader<VectorImageType> ReaderType;
+    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename);
+    cmdreader->next_iteration(io);
+    cmdreader->Update();
 
     // Create requested region.
     VectorImageType::IndexType index;
@@ -118,14 +110,11 @@ int main(int argc, char** argv)
     region.SetIndex(index);
     region.SetSize(size);
 
+    // Extract region
     typedef itk::ExtractImageFilter< VectorImageType, VectorImageType > ExtractFilterType;
     ExtractFilterType::Pointer extract = ExtractFilterType::New();
-    extract->SetInput( reader->GetOutput() );
+    extract->SetInput( cmdreader->GetOutput() );
     extract->SetExtractionRegion( region );
-
-    //////////////////////////////////////////////////////////////////////////
-    // Extract components
-    //////////////////////////////////////////////////////////////////////////
 
     // indexer
     typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
@@ -154,14 +143,10 @@ int main(int argc, char** argv)
         composer->Update();
     }
 
-    //////////////////////////////////////////////////////////////////////////
-    // Write image.
-    //////////////////////////////////////////////////////////////////////////
-
     // Writer.
     typedef itk::ImageFileWriter<VectorImageType>  WriterType;
     WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(outputFilenameArg.getValue());
+    writer->SetFileName(outputFilename);
     writer->SetInput(composer->GetOutput());
     writer->Update();
 
