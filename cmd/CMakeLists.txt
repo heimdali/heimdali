@@ -12,6 +12,7 @@ set(CMD_LIST hconv
              cim asm rot
              detc
              med rdf ddf idf ri ma conv fmoy ce
+             regionreader
              )
 foreach(cmd ${CMD_LIST})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
