@@ -5,10 +5,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "hdf5.h"
-#include "H5Cpp.h"
-#include "H5LTpublic.h"
-
 namespace Heimdali {
 
 class RegionReader

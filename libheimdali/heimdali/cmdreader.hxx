@@ -36,7 +36,9 @@ class ITK_ABI_EXPORT CmdReader
         typedef itk::DivideImageFilter<ImageType, ScalarImageType, ImageType> DivideImageFilterType;
     public:
         static CmdReader* make_cmd_reader(
-            unsigned int nlines_per_loop, std::string filename);
+            unsigned int nlines_per_loop, std::string filename,
+            unsigned int nz=0, unsigned int ny=0,
+            unsigned int iz=0, unsigned int iy=0);
         typename ReaderType::Pointer reader();
         virtual void next_iteration(itk::ImageIOBase::Pointer io=NULL) = 0;
         virtual typename ImageType::Pointer GetOutput() = 0;
@@ -58,14 +60,19 @@ class ITK_ABI_EXPORT CmdReader
         bool m_convert_fixed_point_to_floating_point;
         bool m_convert_fixed_point_to_floating_point_required;
         typename DivideImageFilterType::Pointer m_divider;
+        unsigned int m_NZ, m_NY, m_IZ, m_IY;
+        typename ImageType::IndexType m_index;
+        typename ImageType::SizeType m_size;
+        typename CmdReader<ImageType>::RegionType m_requestedRegion;
 };
 
 template <typename ImageType>
 class ITK_ABI_EXPORT CmdReaderFromFile: public CmdReader<ImageType>
 {
     public:
-        CmdReaderFromFile(){};
-        CmdReaderFromFile(unsigned int nlines_per_loop, std::string filename);
+        CmdReaderFromFile(unsigned int nlines_per_loop, std::string filename,
+                          unsigned int nz, unsigned int ny,
+                          unsigned int iz, unsigned int iy);
         ~CmdReaderFromFile();
         void next_iteration(itk::ImageIOBase::Pointer io=NULL);
         typename ImageType::Pointer GetOutput();
@@ -73,9 +80,6 @@ class ITK_ABI_EXPORT CmdReaderFromFile: public CmdReader<ImageType>
     private:
         std::string m_filename;
         RegionReader* m_region_reader;
-        typename CmdReader<ImageType>::RegionType m_requestedRegion;
-        typename ImageType::IndexType m_index;
-        typename ImageType::SizeType m_size;
 };
 
 template <typename ImageType>
@@ -83,10 +87,9 @@ class ITK_ABI_EXPORT CmdReaderFromStdin: public CmdReader<ImageType>
 {
     public:
         typedef itk::ChangeRegionImageFilter<ImageType> ChangeRegionType;
-        CmdReaderFromStdin():
-            m_is_streamed_subregion(false)
-        {};
-        CmdReaderFromStdin(unsigned int nlines_per_loop);
+        CmdReaderFromStdin(unsigned int nlines_per_loop,
+                           unsigned int nz, unsigned int ny,
+                           unsigned int iz, unsigned int iy);
         ~CmdReaderFromStdin();
         void next_iteration(itk::ImageIOBase::Pointer io=NULL);
         typename ImageType::Pointer GetOutput();

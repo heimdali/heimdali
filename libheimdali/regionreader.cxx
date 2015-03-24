@@ -1,21 +1,3 @@
-/* Glossary.
- *
- * h5file
- *    Classical HDF5 file stored on an hard disk.
- *
- * fileimage
- *    Like an h5image, but instead of being stored on an hard disk, is stored
- *    in allocated memory of our C++ program. It suppot the same write/read
- *    operator than a h5image, all of them being performed in the memory of
- *    our running C++ program, never on the hard disk.
- *
- * fileimagebuffer
- *    The full content of the fileimage, ie all of the data and metadata. It can be
- *    binary written to a file to produce a valid h5image. Symetrically, it
- *    can be binary read from a h5image to a buffer to procude a valid
- *    fileiamgebuffer.
- */
-
 #include "heimdali/regionreader.hxx"
 
 namespace Heimdali {

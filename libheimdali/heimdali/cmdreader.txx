@@ -8,12 +8,14 @@ namespace Heimdali {
 template <typename ImageType>
 CmdReader<ImageType>*
 CmdReader<ImageType>::make_cmd_reader(
-    unsigned int nlines_per_loop, string filename)
+    unsigned int nlines_per_loop, string filename,
+    unsigned int nz, unsigned int ny,
+    unsigned int iz, unsigned int iy)
 {
     if (filename == "" || filename == "-") {
-        return new CmdReaderFromStdin<ImageType>(nlines_per_loop);
+        return new CmdReaderFromStdin<ImageType>(nlines_per_loop,nz,ny,iz,iy);
     } else {
-        return new CmdReaderFromFile<ImageType>(nlines_per_loop,filename);
+        return new CmdReaderFromFile<ImageType>(nlines_per_loop,filename,nz,ny,iz,iy);
     }
 }
 
@@ -30,7 +32,9 @@ CmdReader<ImageType>::reader()
 
 template <typename ImageType>
 CmdReaderFromFile<ImageType>::CmdReaderFromFile(
-    unsigned int nlines_per_loop, string filename)
+    unsigned int nlines_per_loop, string filename,
+    unsigned int nz, unsigned int ny,
+    unsigned int iz, unsigned int iy)
 {
     unsigned int ZD=2, YD=1, XD=0;
 
@@ -48,16 +52,20 @@ CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     this->m_sy = this->m_reader->GetImageIO()->GetDimensions(YD);
     this->m_sx = this->m_reader->GetImageIO()->GetDimensions(XD);
     this->m_sc = this->m_reader->GetImageIO()->GetNumberOfComponents();
+
+    // subregion to read.
+    this->m_NZ = nz==0 ? this->m_sz : nz;
+    this->m_NY = ny==0 ? this->m_sy : ny;
+    this->m_IZ = iz;
+    this->m_IY = iy;
+
+    // region reader
     this->m_region_reader = RegionReader::make_region_reader(
-        this->m_sz,this->m_sy,nlines_per_loop);
+        this->m_NZ,this->m_NY,nlines_per_loop);
 
     // Always read a full line.
     this->m_ix = 0;
     this->m_nx = this->m_sx;
-
-    // Region to read.
-    this->m_index[XD] = this->m_ix;
-    this->m_size[XD] = this->m_nx;
 
     // DivideImageFilter.
     this->m_divider = CmdReader<ImageType>::DivideImageFilterType::New();
@@ -105,7 +113,7 @@ void
 CmdReaderFromFile<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
 {
 
-    unsigned int ZD=2, YD=1;
+    unsigned int ZD=2, YD=1, XD=0;
 
     // Compute next region to region.
     this->m_region_reader->next_iteration();
@@ -116,12 +124,14 @@ CmdReaderFromFile<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
     this->m_region_reader->values(this->m_iz,this->m_iy,this->m_nz,this->m_ny);
 
     // Set requested region.
-    this->m_index[ZD] = this->m_iz;
-    this->m_index[YD] = this->m_iy;
-    this->m_size[ZD] = this->m_nz;
-    this->m_size[YD] = this->m_ny;
-    this->m_requestedRegion.SetIndex(this->m_index);
+    this->m_size[ZD] = this->m_NZ;
+    this->m_size[YD] = this->m_NY;
+    this->m_size[XD] = this->m_sx;
     this->m_requestedRegion.SetSize(this->m_size);
+    this->m_index[ZD] = this->m_IZ + this->m_iz;
+    this->m_index[YD] = this->m_IY + this->m_iy;
+    this->m_index[XD] = 0;
+    this->m_requestedRegion.SetIndex(this->m_index);
     this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
 
     int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
@@ -172,7 +182,9 @@ CmdReaderFromFile<ImageType>::Update()
 
 template <typename ImageType>
 CmdReaderFromStdin<ImageType>::CmdReaderFromStdin(
-    unsigned int nlines_per_loop)
+    unsigned int nlines_per_loop,
+    unsigned int nz, unsigned int ny,
+    unsigned int iz, unsigned int iy)
 {
     this->m_convert_fixed_point_to_floating_point = false;
     this->m_convert_fixed_point_to_floating_point_required = false;
@@ -182,6 +194,13 @@ CmdReaderFromStdin<ImageType>::CmdReaderFromStdin(
 
     // DivideImageFilter.
     this->m_divider = CmdReader<ImageType>::DivideImageFilterType::New();
+
+    // subregion to read (finalized in next->iteration, because we don't know
+    // image size for now).
+    this->m_NZ = nz;
+    this->m_NY = ny;
+    this->m_IZ = iz;
+    this->m_IY = iy;
 }
 
 template <typename ImageType>
@@ -214,16 +233,34 @@ CmdReaderFromStdin<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
         HDF5io = hdf5_io_raw_pointer;
     }
 
-    this->m_reader = typename CmdReader<ImageType>::ReaderType::Pointer();
-    this->m_reader = CmdReader<ImageType>::ReaderType::New();
-    this->m_reader->SetFileName("ghost.h5");
-    this->m_reader->SetImageIO(HDF5io);
-    this->m_reader->Update();
-
+    // Read size only.
+    HDF5io->ReadImageInformation();
     this->m_sz = HDF5io->GetDimensions(ZD);
     this->m_sy = HDF5io->GetDimensions(YD);
     this->m_sx = HDF5io->GetDimensions(XD);
     this->m_sc = HDF5io->GetNumberOfComponents();
+
+    // Finalize subregion.
+    this->m_NZ = this->m_NZ==0 ? this->m_sz : this->m_NZ;
+    this->m_NY = this->m_NZ==0 ? this->m_sy : this->m_NY;
+
+    // Set requested region.
+    this->m_size[ZD] = this->m_NZ;
+    this->m_size[YD] = this->m_NY;
+    this->m_size[XD] = this->m_sx;
+    this->m_requestedRegion.SetSize(this->m_size);
+    this->m_index[ZD] = this->m_IZ;
+    this->m_index[YD] = this->m_IY;
+    this->m_index[XD] = 0;
+    this->m_requestedRegion.SetIndex(this->m_index);
+
+    // Read subregion.
+    this->m_reader = typename CmdReader<ImageType>::ReaderType::Pointer();
+    this->m_reader = CmdReader<ImageType>::ReaderType::New();
+    this->m_reader->SetFileName("ghost.h5");
+    this->m_reader->SetImageIO(HDF5io);
+    this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
+    this->m_reader->Update();
 
     int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
 

@@ -87,7 +87,7 @@ int main(int argc, char** argv)
 
     // Readers
     typedef Heimdali::CmdReader<VectorImageType> ReaderType;
-    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename);
+    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename, IZ,IY,NZ,NY);
     cmdreader->next_iteration(io);
     cmdreader->Update();
 
