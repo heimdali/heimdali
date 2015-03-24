@@ -56,9 +56,6 @@ int main(int argc, char** argv)
     string outputFilename;
     Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
 
-    cout << "input: " << inputFilename << endl;
-    cout << "output: " << outputFilename << endl;
-
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
@@ -75,8 +72,6 @@ int main(int argc, char** argv)
     unsigned int SY = io->GetDimensions(YD);
     unsigned int SX = io->GetDimensions(XD);
     unsigned int SV = io->GetNumberOfComponents();
-
-    cout << SZ << " " << SY << " " << SX << " " << SV << endl;
 
     // First index to read.
     unsigned int IZ = izValue.getValue();
@@ -143,12 +138,11 @@ int main(int argc, char** argv)
         composer->Update();
     }
 
-    // Writer.
-    typedef itk::ImageFileWriter<VectorImageType>  WriterType;
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(outputFilename);
-    writer->SetInput(composer->GetOutput());
-    writer->Update();
+    // Command line tool writer.
+    typedef Heimdali::CmdWriter<VectorImageType> WriterType;
+    WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
+    cmdwriter->Write(composer->GetOutput());
+    cmdwriter->Update();
 
     } // End of 'try' block.
 
