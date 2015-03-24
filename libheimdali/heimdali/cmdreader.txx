@@ -278,7 +278,9 @@ CmdReaderFromStdin<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
     itk::Array<unsigned int> sz_sy_iz_iy(4);
     dictionary = this->m_reader->GetMetaDataDictionary();
     string key = "sz_sy_iz_iy";
-    if (dictionary.HasKey(key)) {
+    bool requested_region_on_full_image = (this->m_NZ != this->m_sz || this->m_NY != this->m_sy);
+    bool iteration_on_subregion = (! requested_region_on_full_image);
+    if (dictionary.HasKey(key) && iteration_on_subregion) {
       this->m_is_streamed_subregion = true;
       itk::ExposeMetaData< itk::Array<unsigned int> >(dictionary,key,sz_sy_iz_iy);
       unsigned int sz = sz_sy_iz_iy[0];

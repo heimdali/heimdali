@@ -1,12 +1,13 @@
 #include <tclap/CmdLine.h>
 
-#include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkRegionOfInterestImageFilter.h"
 #include "itkHDF5ImageIO.h"
 #include "itkChangeRegionImageFilter.h"
 #include <itkHDF5ImageIO.h>
+#include "itkExtractImageFilter.h"
 
+#include "heimdali/cmdreader.hxx"
 #include "heimdali/itkhelper.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/error.hxx"
@@ -14,10 +15,11 @@
 
 using namespace std;
 
+unsigned int ZD=2, YD=1, XD=0;
+
 Heimdali::ImageFloat::SizeType
 read_image_out_size(string outputFilename)
 {
-    int ZD=2, YD=1, XD=0;
 
     // Create reader.
     typedef itk::ImageFileReader< Heimdali::ImageFloat>  ReaderType;
@@ -77,35 +79,43 @@ int main(int argc, char** argv)
         "Output image file name.",true,"output.h5","IMAGE-OUT");
     cmd.add(outputFilenameArg);
 
+    // Put our INRimage reader in the list of readers ITK knows.
+    itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
+
     cmd.parse(tclap_argv);
 
-    int ZD=2, YD=1, XD=0;
-
-    // Create reader
-    typedef itk::ImageFileReader<Heimdali::ImageFloat>  ReaderType;
-    ReaderType::Pointer reader;
-    reader = ReaderType::New();
-    reader->SetFileName(inputFilenameArg.getValue());
 
     // Set requested region.
+    unsigned int NZ = idzValue.getValue();
+    unsigned int NY = idyValue.getValue();
+    unsigned int IZ = iziValue.getValue();
+    unsigned int IY = iyiValue.getValue();
     Heimdali::ImageFloat::IndexType index;
     Heimdali::ImageFloat::SizeType size;
-    index[ZD] = iziValue.getValue();
-    index[YD] = iyiValue.getValue();
+    index[ZD] = IZ;
+    index[YD] = IY;
     index[XD] = ixiValue.getValue();
-    size[ZD] = idzValue.getValue();
-    size[YD] = idyValue.getValue();
+    size[ZD] = NZ;
+    size[YD] = NY;
     size[XD] = idxValue.getValue();
     typedef itk::ImageRegion<Heimdali::ImageDimension> RegionType;
-    RegionType requestedRegion;
-    requestedRegion.SetIndex(index);
-    requestedRegion.SetSize(size);
-    reader->GetOutput()->SetRequestedRegion(requestedRegion);
+    RegionType region;
+    region.SetIndex(index);
+    region.SetSize(size);
 
-    reader->Update();
-    index[0] = 1;
-    index[1] = 1;
-    index[2] = 1;
+    // Create reader
+    typedef Heimdali::CmdReader<Heimdali::ImageFloat> ReaderType;
+    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilenameArg.getValue(), IZ,IY,NZ,NY);
+    cmdreader->next_iteration();
+    cmdreader->Update();
+
+
+    // Extract region
+    typedef itk::ExtractImageFilter<Heimdali::ImageFloat,Heimdali::ImageFloat > ExtractFilterType;
+    ExtractFilterType::Pointer extract = ExtractFilterType::New();
+    extract->SetInput( cmdreader->GetOutput() );
+    extract->SetExtractionRegion( region );
+    extract->Update();
 
     // IMAGE-OUT largest possible region.
     index[ZD] = 0;
@@ -139,7 +149,7 @@ int main(int argc, char** argv)
     changeRegion->SetLargestPossibleRegion(lregion);
     changeRegion->SetBufferedRegion(bregion);
     changeRegion->SetOrigin(origin);
-    changeRegion->SetInput( reader->GetOutput() );
+    changeRegion->SetInput( extract->GetOutput() );
 
     // writer.
     itk::HDF5ImageIO::Pointer HDF5io = itk::HDF5ImageIO::New();
