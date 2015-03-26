@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 import sys
-
-sys.path.append("../../tests/features")
-import terrain
-
 from subprocess import check_call
 import os
 from numpy import *
+
+here = os.path.abspath(os.path.dirname(__file__))
+features_dir = os.path.join(here,'..','..','tests','features')
+sys.path.append(features_dir)
+import terrain
 
 k = 1000
 nv = 3

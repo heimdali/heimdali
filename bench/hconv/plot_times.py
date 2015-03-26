@@ -24,29 +24,41 @@ def extract_times(line):
     d = re.search(regexp, line.strip()).groupdict()
     return [float(d[name]) for name in "real user sys".split()]
 
-# Read result file.
-lines = open("time.txt").readlines()
-cmd_lines = lines[::2]
-time_lines = lines[1::2]
+symbols = ['o', 'x']
 
-# Extract image sizes.
-sizes = []
-for line in cmd_lines:
-    nz,ny,nx,nc = extract_dims_from_cmd(line)
-    size = nz*ny*nx
-    sizes.append(size)
+for cmd,symbol in zip(['h52inr', 'hconv'], symbols):
 
-# Extract times
-reals, users, syss = [], [], []
-for line in time_lines:
-    real,user,sys = extract_times(line)
-    reals.append(real)
-    users.append(user)
-    syss.append(sys)
+    filename = "%s_h5_inr.txt" % cmd
 
-# Plot real time
-plot(sizes, reals, 'bo', label ='real')
+    # Read result file.
+    lines = open(filename).readlines()
+    cmd_lines = lines[::2]
+    time_lines = lines[1::2]
+
+    # Extract image sizes.
+    sizes = []
+    for line in cmd_lines:
+        nz,ny,nx,nc = extract_dims_from_cmd(line)
+        size = nz*ny*nx
+        sizes.append(size)
+
+    # Extract times
+    reals, users, syss = [], [], []
+    for line in time_lines:
+        real,user,sys = extract_times(line)
+        reals.append(real)
+        users.append(user)
+        syss.append(sys)
+
+    # Plot real time
+    plot(sizes, reals, 'b'+symbol, label = cmd + ' real')
+    plot(sizes, users, 'g'+symbol, label = cmd + ' user')
+    plot(sizes, syss, 'r'+symbol, label = cmd + ' sys')
+    print "plot"
+
 xlabel('Number of pixels (each has 3 components)')
-ylabel('Clock time in seconds')
+ylabel('Time in seconds')
+legend()
+
 savefig("time.png")
 print 'time.png'
