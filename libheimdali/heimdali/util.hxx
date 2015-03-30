@@ -11,5 +11,7 @@ is_float(std::string str);
 
 };
 
+bool file_exists(const std::string filename);
+
 #endif
 

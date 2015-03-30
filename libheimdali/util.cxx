@@ -1,5 +1,7 @@
 #include "heimdali/util.hxx"
 
+#include <fstream>
+
 using namespace std;
 
 namespace Heimdali {
@@ -15,6 +17,13 @@ is_float(string str)
     // Check the entire string was consumed and if either
     // failbit or badbit is set.
     return iss.eof() && !iss.fail(); 
+}
+
+bool file_exists(const std::string filename) {
+    ifstream f(filename.c_str());
+    bool answer = f.good();
+    f.close();
+    return answer;
 }
 
 }
