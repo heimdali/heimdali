@@ -3,7 +3,6 @@
 
 #include <itkImageFileWriter.h>
 #include <itkHDF5ImageIO.h>
-#include "itkChangeRegionImageFilter.h"
 #include "itkRegionOfInterestImageFilter.h"
 #include <itkMetaDataDictionary.h>
 #include <itkMetaDataObject.h>
