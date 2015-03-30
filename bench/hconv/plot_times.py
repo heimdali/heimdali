@@ -24,41 +24,48 @@ def extract_times(line):
     d = re.search(regexp, line.strip()).groupdict()
     return [float(d[name]) for name in "real user sys".split()]
 
-symbols = ['o', 'x']
+def plot_files(in_, out, symbols=['o', 'x']):
 
-for cmd,symbol in zip(['h52inr', 'hconv'], symbols):
+    cmdref = '%s2%s' % (in_, out) # h52inr or inr2h5
 
-    filename = "%s_h5_inr.txt" % cmd
+    for cmd,symbol in zip(['hconv', cmdref], symbols):
 
-    # Read result file.
-    lines = open(filename).readlines()
-    cmd_lines = lines[::2]
-    time_lines = lines[1::2]
+        filename = '%s_%s_%s.txt' % (cmd, in_, out)
 
-    # Extract image sizes.
-    sizes = []
-    for line in cmd_lines:
-        nz,ny,nx,nc = extract_dims_from_cmd(line)
-        size = nz*ny*nx
-        sizes.append(size)
+        # Read result file.
+        lines = open(filename).readlines()
+        cmd_lines = lines[::2]
+        time_lines = lines[1::2]
 
-    # Extract times
-    reals, users, syss = [], [], []
-    for line in time_lines:
-        real,user,sys = extract_times(line)
-        reals.append(real)
-        users.append(user)
-        syss.append(sys)
+        # Extract image sizes.
+        sizes = []
+        for line in cmd_lines:
+            nz,ny,nx,nc = extract_dims_from_cmd(line)
+            size = nz*ny*nx
+            sizes.append(size)
 
-    # Plot real time
-    plot(sizes, reals, 'b'+symbol, label = cmd + ' real')
-    plot(sizes, users, 'g'+symbol, label = cmd + ' user')
-    plot(sizes, syss, 'r'+symbol, label = cmd + ' sys')
-    print "plot"
+        # Extract times
+        reals, users, syss = [], [], []
+        for line in time_lines:
+            real,user,sys = extract_times(line)
+            reals.append(real)
+            users.append(user)
+            syss.append(sys)
 
-xlabel('Number of pixels (each has 3 components)')
-ylabel('Time in seconds')
-legend()
+        # Plot real time
+        plot(sizes, reals, 'b'+symbol, label = cmd + ' real')
+        plot(sizes, users, 'g'+symbol, label = cmd + ' user')
+        plot(sizes, syss, 'r'+symbol, label = cmd + ' sys')
 
-savefig("time.png")
-print 'time.png'
+    xlabel('Number of pixels (each has 3 components)')
+    ylabel('Time in seconds')
+    legend()
+    grid()
+
+    filename = 'hconv_vs_%s.png' % cmdref
+    savefig(filename)
+    print filename
+
+plot_files('h5', 'inr')
+clf()
+plot_files('inr', 'h5')
