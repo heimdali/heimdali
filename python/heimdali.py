@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-from os import getenv
+from os import getenv, mkdir
 from os.path import dirname, realpath, join, expanduser, isdir, isfile, \
     normpath, basename
 from subprocess import check_output
+import shutil
 import json
 
 def get_active_conda_env_path():
@@ -100,3 +101,8 @@ def get_example_dir():
     heimdali_root = get_heimdali_root()
     return realpath(join(heimdali_root, 'example'))
 
+def setup_clean_directory(directory):
+    """Create a directory, removing it before if existing"""
+    if isdir(directory):
+        shutil.rmtree(directory)
+    mkdir(directory)

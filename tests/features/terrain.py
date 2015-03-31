@@ -4,7 +4,6 @@ import sys
 from os import mkdir, chdir
 from os.path import join, isdir, isfile, realpath, dirname
 from subprocess import check_call
-import shutil
 import platform
 
 here = dirname(__file__)
@@ -55,9 +54,7 @@ def setup_root_workdir():
     """Clean and/or create root workdir for all tests"""
     heimdali_workdir = heimdali.get_workdir()
     root_workdir = join(heimdali_workdir, 'lettuce')
-    if isdir(root_workdir):
-        shutil.rmtree(root_workdir)
-    mkdir(root_workdir)
+    heimdali.setup_clean_directory(root_workdir)
     world.root_workdir = root_workdir
 
 @before.each_scenario
