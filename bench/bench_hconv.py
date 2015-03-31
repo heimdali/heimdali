@@ -7,7 +7,6 @@ import sys
 import argparse
 import subprocess
 import glob
-import shlex
 
 here = dirname(__file__)
 heimdali_python = join(here, '..', 'python')
@@ -174,7 +173,7 @@ def plot(workdir, args):
 
     plt.xlabel('Number of pixels (each has 3 components)')
     plt.ylabel('Time in seconds')
-    plt.legend()
+    plt.legend(loc='upper left')
     plt.grid()
 
     filename = '%s_VS_%s.png' % (exe_heimdali, exe_inrimage)

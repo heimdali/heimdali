@@ -1,0 +1,15 @@
+python bench_hconv.py init
+
+python bench_hconv.py bench
+python bench_hconv.py bench --with-inrimage --inrimage-path=~/repo/heimdali-test/inr2h5/
+python bench_hconv.py plot
+
+python bench_hconv.py bench --inr-to-h5
+python bench_hconv.py bench --inr-to-h5 --with-inrimage --inrimage-path=~/repo/heimdali-test/inr2h5/
+python bench_hconv.py plot --inr-to-h5
+
+python bench_hconv.py clean
+
+NOTE:
+    heimdali-test can be download at https://github.com/bereziat/heimdali-test
+    hconv (heimdali command) is expected to be in PATH
