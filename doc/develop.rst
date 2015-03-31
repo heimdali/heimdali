@@ -110,6 +110,13 @@ Add path to the built executables:
     cd heimdali
     export PATH=$PWD/build/cmd:$PATH
 
+Specifiy a directory where test files will be created:
+
+.. code-block:: bash
+
+    export HEIMDALI_WORK_DIR=/path/to/heimdali/work/dir
+
+
 Run the functional tests:
 
 .. code-block:: bash
