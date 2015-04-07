@@ -1,7 +1,7 @@
-0.0.0:
+0.0.0 (2015-01-26)
   initial version with `par` for HDF5
 
-0.1.0:
+0.1.0 (2015-02-02)
   use patched ITK with:
     - changeRegion filter 
     - HDF5 pasting support
@@ -13,30 +13,30 @@
   new inrtoh5 command
   new libinrimage package
 
-0.2.0:
+0.2.0 (2015-02-05)
   add ical command
   fix #1:  par with flags shoud not print file name
 
-0.3.0:
+0.3.0 (2015-02-06)
   fix missing Heimdali namespace
   mv helper functions/classes in libheimdali
   new helper functions AssertImageSize, CreateImage, OpenAndReadImage,
     OpenAndWriteImage
 
-0.4.0:
+0.4.0 (2015-02-10)
   add bi and sc commands
   add ITK helper functions CreateRegion and CreateIndex
   add ITK helper macros GetP and SetP
 
-0.5.0:
+0.5.0 (2015-02-13)
   add commands: extg, tpr, raz, cco, melg, fzoom, ad, di, mu, min, max, sd,
   lo, ra, car, exp
 
-0.5.1:
+0.5.1 (2015-02-13)
   fix #2: On OSX, can't write .inr image
   fix #3: Piped commands don't work on OS X
 
-0.6.0:
+0.6.0 (2015-02-18)
   Started InrImage class, compatible with Inr++
     - add example for the 3 read methods
     - add example for the 1 of the 3 write methods
@@ -47,13 +47,13 @@
   DOC: started itkhelper documentation
   FT: fix number of cores used on travis
 
-0.6.1:
+0.6.1 (2015-02-19)
   InrImage:
     - implement write() method
     - implement write(int offsetz, int nz) method
     - example/inrimage_read.cxx works for .h5 and .inr
 
-0.6.2:
+0.6.2 (2015-03-02)
     - Fix #19: par output format
     - Replace h5toinr and inrtoh5 with heimdali-convert
     - cmdreader support fixed point to floating point conversion
@@ -66,7 +66,7 @@
     - FT: support testing Inrimage equality
     - Fix compiler warnings
 
-0.6.3:
+0.6.3 (2015-03-05)
    - par,ical,car,bi,sc,sd,lo,exp,ra can read/write to/from stdin/stout
     (this fix #11, #13, #14)
    - Fix so,ad,mu,min,max command line interface (this fix #10)
@@ -77,6 +77,6 @@
    - new itk-heimdali-dbg package
    - fix #27: Urgent and various issues on tpr
 
-0.7.0:
+0.7.0 (2015-03-17)
   - Add commands: sba sha vb vh mb mh mo carflot fixflo flofix logic cim med
     rdf asm rot ddf ri ma conv fmoy izoom muls norma ce input detc
