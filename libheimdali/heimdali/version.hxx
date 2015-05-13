@@ -1,1 +1,1 @@
-const char * HEIMDALI_VERSION = "0.6.1";
+const char * HEIMDALI_VERSION = "0.7.0";

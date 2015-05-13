@@ -13,6 +13,7 @@ set(CMD_LIST hconv
              detc
              med rdf ddf idf ri ma conv fmoy ce
              regionreader
+             heiminfo inrinfo
              )
 foreach(cmd ${CMD_LIST})
   ADD_EXECUTABLE(${cmd} ${cmd}.cxx)
