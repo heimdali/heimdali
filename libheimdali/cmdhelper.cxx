@@ -1,3 +1,5 @@
+#include "itksys/SystemTools.hxx"
+
 #include "heimdali/cmdhelper.hxx"
 
 using namespace std;
@@ -12,6 +14,7 @@ itk::ImageIOBase::Pointer
 open_from_stdin_or_file(const string inputFilename)
 {
     itk::ImageIOBase::Pointer io;
+    ostringstream error_msg;
 
     if (inputFilename == "" or inputFilename == "-") {
 
@@ -38,9 +41,21 @@ open_from_stdin_or_file(const string inputFilename)
         io = io_raw_pointer;
 
     } else {
-        // Create Image IO
+        // Check file exists.
+        if ( ! itksys::SystemTools::FileExists(inputFilename) ) {
+            error_msg << "No such file to read: " << inputFilename;
+            throw(Heimdali::Exception(error_msg.str()));
+        }
+
+        // Create Image IO.
         io = itk::ImageIOFactory::CreateImageIO(inputFilename.c_str(),
                                                 itk::ImageIOFactory::ReadMode);
+        // Check a ImageIO has been found.
+        if (io.IsNull()) {
+            error_msg << "No driver can read file: " << inputFilename;
+            throw(Heimdali::Exception(error_msg.str()));
+        }
+
         io->SetFileName(inputFilename);
     }
 

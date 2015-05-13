@@ -11,6 +11,7 @@
 #include "heimdali/error.hxx"
 #include "heimdali/cli.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cmdhelper.hxx"
 
 using namespace std;
 
@@ -22,12 +23,7 @@ read_image_size(
     unsigned int& nz, unsigned int& sy,  
     unsigned int& sx, unsigned int& sc)
 {
-    itk::ImageIOBase::Pointer io = itk::ImageIOFactory::CreateImageIO(
-        inputFilename.c_str(), itk::ImageIOFactory::ReadMode);
-
-    io->SetFileName(inputFilename);
-    io->ReadImageInformation();
-
+    itk::ImageIOBase::Pointer io = Heimdali::open_from_stdin_or_file(inputFilename);
     nz = io->GetDimensions(ZD);
     sy = io->GetDimensions(YD);
     sx = io->GetDimensions(XD);

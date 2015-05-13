@@ -13,6 +13,7 @@
 #include "heimdali/version.hxx"
 #include "heimdali/error.hxx"
 #include "heimdali/itkhelper.hxx"
+#include "heimdali/cmdhelper.hxx"
 
 using namespace std;
 
@@ -21,11 +22,7 @@ typedef unsigned char PixelType;
 itk::ImageIOBase::IOComponentType
 read_component_type(string inputFilename)
 {
-    itk::ImageIOBase::Pointer io = 
-        itk::ImageIOFactory::CreateImageIO(inputFilename.c_str(),
-                                      itk::ImageIOFactory::ReadMode);
-    io->SetFileName(inputFilename.c_str());
-    io->ReadImageInformation();
+    itk::ImageIOBase::Pointer io = Heimdali::open_from_stdin_or_file(inputFilename);
     return io->GetComponentType();
 }
 

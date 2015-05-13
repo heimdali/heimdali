@@ -88,8 +88,8 @@ INRImageIO::INRImageIO():
     m_InrArgc = 1;
     m_InrArgv = new char*[m_InrArgc]();
 
-    m_InrArgv[0] = new char[ strlen("INRImageIO") + 1];
-    strcpy(m_InrArgv[0], "INRImageIO");
+    m_InrArgv[0] = new char[ strlen("libinrimage") + 1];
+    strcpy(m_InrArgv[0], "libinrimage");
 
     this->AddSupportedWriteExtension(".inr");
     // DOM: pour moi, non.

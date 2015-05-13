@@ -1,12 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 #include <tclap/CmdLine.h>
 
 #include <itkImage.h>
 #include <itkINRImageIOFactory.h>
 #include <itkImageFileReader.h>
+#include "itksys/SystemTools.hxx"
 
 #include "heimdali/error.hxx"
 #include "heimdali/cli.hxx"
@@ -189,10 +191,28 @@ int main(int argc, char** argv)
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
+    vector<string> bad_filenames;
+
     // Print informations about images.
     for (unsigned int ifile=0 ; ifile < opt.inputFilenames.size() ; ifile++) {
-        ImageIOBase::Pointer imageio = Heimdali::open_from_stdin_or_file(opt.inputFilenames[ifile]);
-        print_informations(imageio,opt);
+        string inputFilename = opt.inputFilenames[ifile];
+        if ( inputFilename == "" || inputFilename == "-" || 
+             itksys::SystemTools::FileExists(inputFilename) ) {
+            ImageIOBase::Pointer imageio = Heimdali::open_from_stdin_or_file(inputFilename);
+            print_informations(imageio,opt);
+        } else {
+            bad_filenames.push_back(inputFilename);
+        }
+    }
+
+    int nbads = bad_filenames.size();
+    if (nbads > 0) {
+        ostringstream error_msg;
+        error_msg << "Can't open file(s) for read: ";
+        for (int ifile = 0 ; ifile < nbads-1 ; ifile++)
+            error_msg << "<" << bad_filenames[ifile] << ">, ";
+        error_msg << "<" << bad_filenames[nbads-1] << ">.";
+        throw(Heimdali::Exception(error_msg.str()));
     }
 
 

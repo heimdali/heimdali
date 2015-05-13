@@ -3,6 +3,7 @@
 #include <itkImageFileReader.h>
 #include <itkStatisticsImageFilter.h>
 #include <itkINRImageIOFactory.h>
+#include "itksys/SystemTools.hxx"
 
 #include "heimdali/cmdreader.hxx"
 #include "heimdali/error.hxx"
@@ -98,8 +99,13 @@ int main(int argc, char** argv)
     typedef Heimdali::CmdReader<VectorImageType> CmdReaderType;
 
     for (unsigned int ifile=0 ; ifile<inputFilenames.size() ; ifile++) {
+        string inputFilename = inputFilenames[ifile];
 
-        CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, inputFilenames[ifile]);
+        if ( inputFilename != "" && inputFilename != "-" && 
+             ! itksys::SystemTools::FileExists(inputFilename) )
+            continue;
+
+        CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, inputFilename);
         cmdreader->convert_fixed_point_to_floating_point_on();
         cmdreader->next_iteration();
         cmdreader->Update();

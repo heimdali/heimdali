@@ -17,7 +17,7 @@ namespace Heimdali {
         return 1; \
     } \
     catch( itk::ExceptionObject & err ) { \
-        cerr << name << ": ERROR: " << err << endl; \
+        cerr << name << ": ERROR: " << err.what() << endl; \
         return 1; \
     } \
     return 0;

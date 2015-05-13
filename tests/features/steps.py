@@ -19,7 +19,8 @@ def truncate_long_output(output):
     return output
 
 def check_command(returncode=0):
-    if world.returncode != int(returncode) or world.stderr != '':
+    if world.returncode != int(returncode) or \
+       (world.returncode == 0 and world.stderr != ''):
         raise AssertionError, \
             "returncode is: %i, stdout is:\n%s\n, stderr is:\n%s\n" % (
                 world.returncode,
@@ -31,6 +32,13 @@ def check_stdout(actual, expected):
         diff = ndiff(actual.splitlines(True), expected.splitlines(True))
         diff = '\n' + ''.join(diff)
         raise AssertionError, "stdout is not as expected " \
+            "(- actual, + expected): %s" % (diff,)
+
+def check_stderr(actual, expected):
+    if actual != expected:
+        diff = ndiff(actual.splitlines(True), expected.splitlines(True))
+        diff = '\n' + ''.join(diff)
+        raise AssertionError, "stderr is not as expected " \
             "(- actual, + expected): %s" % (diff,)
 
 def invoke_from(cmd_string, path):
@@ -81,6 +89,11 @@ def i_see_the_line(step,line):
 def i_see_the_standard_output(step):
     expected_stdout = expand_env_var(step.multiline)
     check_stdout(world.stdout, expected_stdout)
+
+@step('I see on standard error:')
+def i_see_the_standard_output(step):
+    expected_stderr = expand_env_var(step.multiline)
+    check_stderr(world.stderr, expected_stderr)
 
 @step('I see as standard output the content of the file (.*)')
 def i_see_as_standard_output_file_content(step,filename):

@@ -94,3 +94,16 @@ Feature: par
       | ext |
       | h5  |
       | inr |
+
+    Scenario: Try read read inexistant files
+        When I run the command (with return code 1): par no_such_0 $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.inr no_such_1
+        Then I see the standard output:
+            """
+            $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.inr -x 3	-y 4	-z 5	-v 2	-o 4	-r
+            ""
+            """
+        Then I see on standard error:
+            """
+            par: ERROR: Can't open file(s) for read: <no_such_0>, <no_such_1>.
+            ""
+            """
