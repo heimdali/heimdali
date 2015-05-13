@@ -4,13 +4,13 @@
 
 #include <itkImage.h>
 #include <itkImageFileReader.h>
-#include "itkImageFileWriter.h"
 #include <itkINRImageIOFactory.h>
 #include <itkINRImageIO.h>
 #include <itkSubtractImageFilter.h>
 
 #include "heimdali/error.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cmdwriter.hxx"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 
     // image.h5
     TCLAP::UnlabeledValueArg<string> imageArg("image", 
-        "First image.",true,"","IMAGE",cmd);
+        "First image.",false,"","IMAGE",cmd);
 
     // -z -y -x -v
     TCLAP::ValueArg<int> nzArg("z","nplanes", "Number of planes",false,1,"NZ", cmd);
@@ -111,12 +111,10 @@ int main(int argc, char** argv)
     // Write output.
     //////////////////////////////////////////////////////////////////////////
 
-
-    typedef itk::ImageFileWriter<ImageType>  WriterType;
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(imageArg.getValue());
-    writer->SetInput(image);
-    writer->Update();
+    typedef Heimdali::CmdWriter<ImageType> WriterType;
+    WriterType* cmdwriter = WriterType::make_cmd_writer(imageArg.getValue());
+    cmdwriter->Write(image);
+    cmdwriter->Update();
 
     } // End of 'try' block.
 
