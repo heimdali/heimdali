@@ -44,7 +44,10 @@ parse_tclap_image_in_image_in_image_out_image_out(
        TCLAP::UnlabeledMultiArg<std::string>& filenamesArg,
        std::string& inputFilename0, std::string& inputFilename1,
        std::string& outputFilename0, std::string& outputFilename1);
-};
 
+bool
+is_floating_point_type(bool floatingSwitchIsSet, bool fixedSwitchIsSet);
+
+};
 
 #endif

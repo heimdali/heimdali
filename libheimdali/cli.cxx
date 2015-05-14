@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "tclap/ArgException.h"
+
 #include "heimdali/cli.hxx"
 #include "heimdali/util.hxx"
 #include "heimdali/error.hxx"
@@ -160,6 +162,18 @@ parse_tclap_image_in_image_in_image_out_image_out(
     default:
         error_msg << "Expected four file names, but got " << filenames.size();
         throw(Heimdali::Exception(error_msg.str()));
+    }
+}
+
+bool
+is_floating_point_type(bool floatingSwitchIsSet, bool fixedSwitchIsSet) 
+{
+    if (fixedSwitchIsSet) {
+        if (floatingSwitchIsSet) 
+            throw(TCLAP::ArgException("-r and -f flags are incompatible"));
+        return false;
+    } else {
+        return true;
     }
 }
 

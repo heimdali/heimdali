@@ -175,14 +175,8 @@ int main(int argc, char** argv)
     ostringstream error_msg;
 
     // Fixed point or floating point
-    bool is_floating_point_type;
-    if (fixedSwitch.isSet()) {
-        if (floatingSwitch.isSet()) 
-            throw(TCLAP::ArgException("-r and -f flags are incompatible"));
-        is_floating_point_type = false;
-    } else {
-        is_floating_point_type = true;
-    }
+    bool is_floating = Heimdali::is_floating_point_type(floatingSwitch.isSet(),
+                                                        fixedSwitch.isSet());
 
     // Set parameters.
     unsigned int sz, sy, sx, sv;
@@ -195,7 +189,7 @@ int main(int argc, char** argv)
         sy = yArg.getValue();
         sx = xArg.getValue();
         sv = vArg.getValue();
-        type = Heimdali::map_to_itk_component_type(is_floating_point_type,
+        type = Heimdali::map_to_itk_component_type(is_floating,
                                                    oArg.getValue());
     }
 
