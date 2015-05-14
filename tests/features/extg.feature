@@ -41,3 +41,22 @@ Feature: extg
         | h5  |
         | inr |
 
+    Scenario: Extract with sample steps.
+        When I run the command: extg -iz 5 -z 3 -zpas 2 -iy 4 -y 2 -ypas 3 -ix 3 -x 3 -xpas 3 -iv 1 -v 2 -vpas 5  $HEIMDALI_DATA_DIR/imtest_z15_y14_x13_c12.h5 | tpr -l 6
+        Then I see the standard output:
+            """
+            plane 0, line 0
+            5431 5436 5461 5466 5491 5496
+            plane 0, line 1
+            5731 5736 5761 5766 5791 5796
+            plane 1, line 0
+            7431 7436 7461 7466 7491 7496
+            plane 1, line 1
+            7731 7736 7761 7766 7791 7796
+            plane 2, line 0
+            9431 9436 9461 9466 9491 9496
+            plane 2, line 1
+            9731 9736 9761 9766 9791 9796
+            ""
+            """
+

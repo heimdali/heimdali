@@ -32,7 +32,8 @@ void
 templated_main(string inputFilename, string outputFilename,
                itk::ImageIOBase::Pointer io,
                unsigned int IZ, unsigned int IY, unsigned IX, unsigned IV,
-               unsigned int NZ0, unsigned int NY0, unsigned NX0, unsigned NV0)
+               unsigned int NZ0, unsigned int NY0, unsigned NX0, unsigned NV0,
+               unsigned int DZ, unsigned int DY, unsigned DX, unsigned DV)
 {
     // Image type
     const unsigned int Dimension = 3;
@@ -46,71 +47,73 @@ templated_main(string inputFilename, string outputFilename,
     unsigned int SX = io->GetDimensions(XD);
     unsigned int SV = io->GetNumberOfComponents();
 
-    // Number of plane/column/row read.
+    // Number of plane/column/row.
     unsigned int NZ = NZ0==0 ? SZ-IZ : NZ0;
     unsigned int NY = NY0==0 ? SY-IY : NY0;
     unsigned int NX = NX0==0 ? SX-IX : NX0;
     unsigned int NV = NV0==0 ? SV-IV : NV0;
 
+    // Buffer to read.
+    unsigned int BZ = NZ + (NZ-1)*(DZ-1);
+    unsigned int BY = NY + (NY-1)*(DY-1);
+
     // Readers
+    // The full raw is read and pixel components are read, and extracted
+    // later.
     typedef Heimdali::CmdReader<VectorImageType> ReaderType;
-    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename, NZ,NY,IZ,IY);
+    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename, BZ,BY,IZ,IY);
     cmdreader->next_iteration(io);
     cmdreader->Update();
 
-    // Create requested region.
-    typename VectorImageType::IndexType index;
-    index[ZD] = IZ;
-    index[YD] = IY;
-    index[XD] = IX;
+    PixelType* p = cmdreader->GetOutput()->GetBufferPointer();
+
+    // Allocate output image.
     typename VectorImageType::SizeType size;
     size[ZD] = NZ;
     size[YD] = NY;
     size[XD] = NX;
-    typedef itk::ImageRegion<Dimension> RegionType;
-    RegionType region;
+    typename VectorImageType::IndexType index;
+    index.Fill(0);
+    typename VectorImageType::RegionType region;
     region.SetIndex(index);
     region.SetSize(size);
+    typename VectorImageType::Pointer image_out;
+    image_out = VectorImageType::New();
+    image_out->SetRegions(region);
+    image_out->SetVectorLength(NV);
+    image_out->Allocate();
+    PixelType* p_out = image_out->GetBufferPointer();
 
-    // Extract region
-    typedef itk::ExtractImageFilter< VectorImageType, VectorImageType > ExtractFilterType;
-    typename ExtractFilterType::Pointer extract = ExtractFilterType::New();
-    extract->SetInput( cmdreader->GetOutput() );
-    extract->SetExtractionRegion( region );
+    // Set output image origin.
+    typename VectorImageType::PointType origin;
+    origin[ZD] = IZ;
+    origin[YD] = IY;
+    origin[XD] = IX;
+    image_out->SetOrigin(origin);
 
-    // indexer
-    typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
-    typename IndexerType::Pointer indexer = IndexerType::New();
+    PixelType* p_in = cmdreader->GetOutput()->GetBufferPointer();
 
-    // duplicator
-    typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
-    typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
-
-    // composer
-    typedef itk::ComposeImageFilter<ScalarImageType> ComposerType;
-    typename ComposerType::Pointer composer = ComposerType::New();
-
-    extract->Update();
-    indexer->SetInput(extract->GetOutput());
-
-    for (unsigned int iv = IV ; iv < IV+NV ; ++iv) {
-        indexer->SetIndex(iv);
-        indexer->Update();
-
-        duplicator->SetInputImage(indexer->GetOutput());
-        duplicator->Update();
-
-        composer->SetInput(iv-IV, duplicator->GetOutput());
-        composer->Modified();
-        composer->Update();
+    // Fill output image
+    for (unsigned int iz = 0 ; iz < NZ ; iz++) {
+        unsigned int ibz = iz*DZ;
+        for (unsigned int iy = 0 ; iy < NY ; iy++) {
+            unsigned int iby = iy*DY;
+            for (unsigned int ix = 0 ; ix < NX ; ix++) {
+                unsigned int ibx = IX + ix*DX;
+                for (unsigned int iv = 0 ; iv < NV ; iv++) {
+                    unsigned int ibv = IV + iv*DV;
+                    *(p_out++) = p_in[ibz*BY*SX*SV + iby*SX*SV + ibx*SV + ibv];
+                }
+            }
+        }
     }
+
 
     // Command line tool writer.
     typedef Heimdali::CmdWriter<VectorImageType> WriterType;
     WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
-    cmdwriter->Write(composer->GetOutput());
+    cmdwriter->Write(image_out);
     cmdwriter->Update();
-
 }
 
 int main(int argc, char** argv)
@@ -122,11 +125,17 @@ int main(int argc, char** argv)
         
     TCLAP::CmdLine parser("Extract image subregion",' ', HEIMDALI_VERSION);
 
-    // -iz -iy -ix
-    TCLAP::ValueArg<unsigned int> ixValue("","iz", "First column",false,0,"IZ",parser);
+    // -iz -iy -ix -iv
+    TCLAP::ValueArg<unsigned int> izValue("","iz", "First column",false,0,"IZ",parser);
     TCLAP::ValueArg<unsigned int> iyValue("","iy", "First rows",false,0,"IY",parser);
-    TCLAP::ValueArg<unsigned int> izValue("","ix", "First plane",false,0,"IX",parser);
+    TCLAP::ValueArg<unsigned int> ixValue("","ix", "First plane",false,0,"IX",parser);
     TCLAP::ValueArg<unsigned int> ivValue("","iv", "First component",false,0,"IV",parser);
+
+    // -zpas -ypas -xpas -vpas
+    TCLAP::ValueArg<unsigned int> zpasValue("","zpas", "Column sample step",false,1,"ZPAS",parser);
+    TCLAP::ValueArg<unsigned int> ypasValue("","ypas", "Rows sample step",false,1,"YPAS",parser);
+    TCLAP::ValueArg<unsigned int> xpasValue("","xpas", "Plane sample step",false,1,"XPAS",parser);
+    TCLAP::ValueArg<unsigned int> vpasValue("","vpas", "Component sample step",false,1,"VPAS",parser);
 
     // -z -y -x
     TCLAP::ValueArg<unsigned int> zValue("z","nplanes", "Number of planes",false,0,"NZ", parser);
@@ -154,6 +163,12 @@ int main(int argc, char** argv)
     unsigned int NX0 = xValue.getValue();
     unsigned int NV0 = vValue.getValue();
 
+    // Sampling step in each direction
+    unsigned int DZ = zpasValue.getValue();
+    unsigned int DY = ypasValue.getValue();
+    unsigned int DX = xpasValue.getValue();
+    unsigned int DV = vpasValue.getValue();
+
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
@@ -169,24 +184,29 @@ int main(int argc, char** argv)
             throw(Heimdali::Exception(error_msg.str()));
             break;
         case itk::ImageIOBase::UCHAR:
-            templated_main<unsigned char>(inputFilename, outputFilename,
-                                  io,IZ,IY,IX,IV,NZ0,NY0,NX0,NV0);
+            templated_main<unsigned char>(inputFilename, outputFilename, io,
+                                          IZ,IY,IX,IV, NZ0,NY0,NX0,NV0,
+                                          DZ,DY,DX,DV);
             break;
         case itk::ImageIOBase::USHORT:
-            templated_main<unsigned short>(inputFilename, outputFilename,
-                                  io,IZ,IY,IX,IV,NZ0,NY0,NX0,NV0);
+            templated_main<unsigned short>(inputFilename, outputFilename, io,
+                                           IZ,IY,IX,IV, NZ0,NY0,NX0,NV0,
+                                           DZ,DY,DX,DV);
             break;
         case itk::ImageIOBase::UINT:
-            templated_main<unsigned int>(inputFilename, outputFilename,
-                                  io,IZ,IY,IX,IV,NZ0,NY0,NX0,NV0);
+            templated_main<unsigned int>(inputFilename, outputFilename, io,
+                                         IZ,IY,IX,IV, NZ0,NY0,NX0,NV0,
+                                           DZ,DY,DX,DV);
             break;
         case itk::ImageIOBase::FLOAT:
-            templated_main<float>(inputFilename, outputFilename,
-                                  io,IZ,IY,IX,IV,NZ0,NY0,NX0,NV0);
+            templated_main<float>(inputFilename, outputFilename, io,
+                                  IZ,IY,IX,IV, NZ0,NY0,NX0,NV0,
+                                  DZ,DY,DX,DV);
             break;
         case itk::ImageIOBase::DOUBLE:
-            templated_main<double>(inputFilename, outputFilename,
-                                  io,IZ,IY,IX,IV,NZ0,NY0,NX0,NV0);
+            templated_main<double>(inputFilename, outputFilename, io,
+                                  IZ,IY,IX,IV, NZ0,NY0,NX0,NV0,
+                                  DZ,DY,DX,DV);
             break;
         default:
              error_msg 
