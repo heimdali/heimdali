@@ -12,6 +12,7 @@ fi
 
 # CMake detect ITK_DIR as $PREFIX/lib/cmake/ITK-4.7
 cmake \
+  -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=$PREFIX \
   -DCMAKE_PREFIX_PATH=$PREFIX \
   ..

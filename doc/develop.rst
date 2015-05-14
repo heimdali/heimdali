@@ -68,7 +68,7 @@ On Mac OS X your will need to install `/Developer/SDKs/MacOSX10.5`, and use it:
 
     cd heimdali
     mkdir build; cd build
-    cmake -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH ..
+    cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH ..
     make
 
 Configure examples
@@ -86,6 +86,7 @@ specified all paths to CMake.
     cd example
     mkdir build; cd build
     cmake \
+        -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
         -DHEIMDALI_INCLUDE=$HEIMDALI_ROOT/libheimdali \
         -DITKINRIMAGEIO_INCLUDE=$HEIMDALI_ROOT/itkINRimageIO/include \
