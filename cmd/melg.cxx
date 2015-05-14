@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 
     // Create reader
     typedef Heimdali::CmdReader<Heimdali::ImageFloat> ReaderType;
-    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilenameArg.getValue(), IZ,IY,NZ,NY);
+    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilenameArg.getValue(), NZ,NY,IZ,IY);
     cmdreader->next_iteration();
     cmdreader->Update();
 
