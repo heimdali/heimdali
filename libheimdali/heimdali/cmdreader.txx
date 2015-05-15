@@ -257,7 +257,7 @@ CmdReaderFromStdin<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
     // Read subregion.
     this->m_reader = typename CmdReader<ImageType>::ReaderType::Pointer();
     this->m_reader = CmdReader<ImageType>::ReaderType::New();
-    this->m_reader->SetFileName("ghost.h5");
+    this->m_reader->SetFileName("<");
     this->m_reader->SetImageIO(HDF5io);
     this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
     this->m_reader->Update();

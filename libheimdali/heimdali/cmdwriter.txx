@@ -94,7 +94,7 @@ void CmdWriterToStdout<ImageType>::Write(typename ImageType::Pointer image)
     m_HDF5io->SetH5File(this->m_fileimage);
     this->m_writer = CmdWriter<ImageType>::WriterType::New();
     this->m_writer->SetImageIO(m_HDF5io);
-    this->m_writer->SetFileName("ghost.h5");
+    this->m_writer->SetFileName("<");
 
     if (image->GetLargestPossibleRegion() != image->GetBufferedRegion()) {
         typename ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();

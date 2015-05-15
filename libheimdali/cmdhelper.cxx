@@ -32,9 +32,10 @@ open_from_stdin_or_file(const string inputFilename)
         itk::HDF5ImageIO::Pointer HDF5io = itk::HDF5ImageIO::New();
 
         // The normal ITK way is to open `filename` to obtain a `file descriptor`.
-        // When reading from stdin, we don't want ITK to try to open `ghost.h5`,
+        // When reading from stdin, we don't want ITK to try to open file `<`,
         // but instead directly use `fileimage` as the `file descriptor`.
         HDF5io->SetH5File(fileimage);
+        HDF5io->SetFileName("<");
 
         // Convert itkHDF5ImageIO to itkImageIOBase
         itk::ImageIOBase* io_raw_pointer = dynamic_cast<itk::ImageIOBase*>(HDF5io.GetPointer());

@@ -30,7 +30,7 @@ static int ZD = 2, YD = 1, XD = 0;
 struct Options
 {
     vector<string> inputFilenames;
-    bool filename;
+    bool print_filename;
     bool z,y,x,v;
     bool z0,y0,x0;
     bool o,F,r,f;
@@ -110,9 +110,9 @@ void
 postprocess_options(Options& opt)
 {
     if (opt.has_switch)
-        opt.filename = false;
+        opt.print_filename = false;
     else {
-        opt.filename = true;
+        opt.print_filename = true;
         opt.z = true;
         opt.y = true;
         opt.x = true;
@@ -170,9 +170,9 @@ print_informations(ImageIOBase::Pointer io, Options opt)
     string msg = smsg.str();
     msg = msg.substr(0, msg.size()-1); // Remove trailing tabluation.
 
-    if (opt.filename) cout << io->GetFileName();
+    if (opt.print_filename) cout << io->GetFileName();
     cout << " " << msg;
-    if (opt.filename) cout << endl;
+    if (opt.print_filename) cout << endl;
 }
 
 

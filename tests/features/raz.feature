@@ -31,7 +31,7 @@ Feature: raz
         When I run the command: raz -x 2 -y 3 -z 4  | par
         Then I see the standard output:
             """
-            " -x 2	-y 3	-z 4	-o 4	-r"
+            "< -x 2	-y 3	-z 4	-o 4	-r"
             ""
             """
 
@@ -39,6 +39,6 @@ Feature: raz
         When I run the command: raz -x 2 -y 3 -z 4 -f | par
         Then I see the standard output:
             """
-            " -x 2	-y 3	-z 4	-o 4	-f"
+            "< -x 2	-y 3	-z 4	-o 4	-f"
             ""
             """
