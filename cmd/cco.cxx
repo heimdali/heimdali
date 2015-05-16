@@ -42,12 +42,18 @@ bool is_hdf5_or_inrimage(string filename)
     return false;
 }
 
+bool write_hdf5_to_stdout(string filename)
+{
+    return filename == "-" || filename == "";
+}
+
 template<typename OutputPixelType>
 void
 write_output(ReaderType* reader, string outputFilename, double fixed_point_divider, bool binary=false)
 {
-    bool convert_floating_to_fixed_point = is_hdf5_or_inrimage(outputFilename) 
-                                        && fixed_point_divider != 0;
+    bool convert_floating_to_fixed_point = 
+        (is_hdf5_or_inrimage(outputFilename) || write_hdf5_to_stdout(outputFilename)) &&
+        fixed_point_divider != 0;
 
     // MultiplyImageFilter.
     typedef itk::MultiplyImageFilter<VectorInputImageType, ScalarInputImageType,
@@ -170,7 +176,7 @@ int main(int argc, char *argv[])
     TCLAP::ValueArg<int> binarySwitch("b","binary","Convert to binary",false,0,"NBITS",cmd);
 
     // -o
-    TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",cmd);
+    TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",cmd);
 
     // Parse command line.
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
