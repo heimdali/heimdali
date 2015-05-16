@@ -156,33 +156,30 @@ int main(int argc, char *argv[])
 {
 
     try {
-    TCLAP::CmdLine cmd("Change pixel type of image",' ', HEIMDALI_VERSION);
-
-    // input.h5
-    TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
-        "Input image file name.",true,"","FILE-IN", cmd);
-
-    // output.h5
-    TCLAP::UnlabeledValueArg<string> outputFilenameArg("outputFilename", 
-        "Output image file name.",false,"","FILE-OUT", cmd);
+    TCLAP::CmdLine parser("Change pixel type of image",' ', HEIMDALI_VERSION);
 
     // -r
-    TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", cmd, false);
+    TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", parser, false);
 
     // -f
-    TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert to fixed point.", cmd, false);
+    TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert to fixed point.", parser, false);
 
     // -b
-    TCLAP::ValueArg<int> binarySwitch("b","binary","Convert to binary",false,0,"NBITS",cmd);
+    TCLAP::ValueArg<int> binarySwitch("b","binary","Convert to binary",false,0,"NBITS",parser);
 
     // -o
-    TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",cmd);
+    TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",parser);
+
+    HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
     // Parse command line.
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
-    cmd.parse(tclap_argv);
-    string inputFilename = inputFilenameArg.getValue();
-    string outputFilename = outputFilenameArg.getValue();
+    parser.parse(tclap_argv);
+   
+    string inputFilename;
+    string outputFilename;
+    Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
+
     int nbytes = oSwitch.getValue();
     bool fixed_point = fixedSwitch.getValue();
     bool floating_point = floatingSwitch.getValue();

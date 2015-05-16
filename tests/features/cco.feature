@@ -52,6 +52,19 @@ Feature: cco
     | lena_f2.inr       |  lena_b1_f1.inr       |
     | lena_f2.h5        |  lena_b1_f1.h5        |
 
-    Scenario: Write to standard output
+    Scenario: Write fixed point to standard output
         When I run the command: cco -f $HEIMDALI_DATA_DIR/lena_r4.h5 lena_f1.h5
         Then images lena_f1.h5 and $HEIMDALI_DATA_DIR/lena_f1.h5 are equal
+
+    Scenario: Read from standard input
+        When I run the command: cat $HEIMDALI_DATA_DIR/lena_r4.h5 | cco -f <input> | par
+        Then I see the standard output:
+            """
+            < -x 256	-y 256	-o 1	-f
+            ""
+            """
+        Examples:
+        | input |
+        |       |
+        | -     |
+
