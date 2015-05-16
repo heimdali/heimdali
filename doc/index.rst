@@ -19,17 +19,17 @@ Command line tools
 
    install
    options
-   h5toinr
-   inrtoh5
-   par
-   tpr
+   cmd/h5toinr
+   cmd/inrtoh5
+   cmd/par
+   cmd/tpr
    arithmetic.rst
    local_arithmetic.rst
-   cco
-   extg
-   raz
-   melg
-   fzoom
+   cmd/cco
+   cmd/extg
+   cmd/raz
+   cmd/melg
+   cmd/fzoom
 
 Using ITK
 ####################################

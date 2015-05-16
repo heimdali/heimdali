@@ -134,7 +134,7 @@ Install Sphinx_ and Doxygen_:
 .. code-block:: bash
 
     sudo apt-get install doxygen
-    conda create -n heimdali-doc python=2 sphinx
+    conda create -n heimdali-doc python=2 sphinx sphinx_rtd_theme
     source activate heimdali-doc
 
 Build the documentation:
