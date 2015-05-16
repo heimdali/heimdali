@@ -80,3 +80,20 @@
 0.7.0 (2015-03-17)
   - Add commands: sba sha vb vh mb mh mo carflot fixflo flofix logic cim med
     rdf asm rot ddf ri ma conv fmoy izoom muls norma ce input detc
+
+0.7.1 (2015-05-16)
+  - Add map_to_itk_component_type function
+  - cim: new options, stdout
+  - simplify exceptions
+  - extg: new options, stdin ,stdout, pixel types
+  - cmdreader: support for requested region
+  - melg: stdin
+  - add hconv benchmark
+  - Add HEIMDALI_WORK_DIR env var for tests
+  - Travis: fix env vars
+  - all commands: manage non existing files (#31)
+  - Add heiminfo inrinfo commands (#46)
+  - raz: stdout, pixel types (#36)
+  - par print '<' filename for stdin (#35)
+  - cco: fix fixed point on stdout, "-" for stdin (#45)
+  - doc: use readthedocs sphinx theme
