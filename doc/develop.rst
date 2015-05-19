@@ -64,11 +64,18 @@ On Mac OS X your will need to install `/Developer/SDKs/MacOSX10.5`, and use it:
 
     export MACOSX_DEPLOYMENT_TARGET=10.5
 
+`CMAKE_INSTALL_PREFIX` is optinal. You may want to install `Heimdali` to test
+that `find_package(Heimdali)` works.
+
 .. code-block:: bash
 
     cd heimdali
     mkdir build; cd build
-    cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH ..
+    cmake \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
+        -DCMAKE_INSTALL_PREFIX=~/tmp/heimdali-install \
+        ..
     make
 
 Configure examples
