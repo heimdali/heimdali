@@ -70,7 +70,7 @@ that `find_package(Heimdali)` works.
 .. code-block:: bash
 
     cd heimdali
-    mkdir build; cd build
+    mkdir build_debug; cd build_debug
     cmake \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
@@ -82,7 +82,7 @@ Configure examples
 --------------------
 
 As before, the Conda environment is used. Moreover, because Heimdali has been
-built in `heimdali/build` and is not installed (development mode), we need to
+built in `heimdali/build_debug` and is not installed (development mode), we need to
 specified all paths to CMake.
 
 .. code-block:: bash
@@ -91,14 +91,14 @@ specified all paths to CMake.
     HEIMDALI_ROOT=$PWD
     [ `uname` == 'Darwin' ] && EXT=dylib || EXT=so
     cd example
-    mkdir build; cd build
+    mkdir build_debug; cd build_debug
     cmake \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
         -DHEIMDALI_INCLUDE=$HEIMDALI_ROOT/libheimdali \
         -DITKINRIMAGEIO_INCLUDE=$HEIMDALI_ROOT/itkINRimageIO/include \
-        -DHEIMDALI_LIBRARY=$HEIMDALI_ROOT/build/libheimdali/libheimdali.$EXT \
-        -DITKINRIMAGEIO_LIBRARY=$HEIMDALI_ROOT/build/itkINRimageIO/libitkINRImageIO.$EXT \
+        -DHEIMDALI_LIBRARY=$HEIMDALI_ROOT/build_debug/libheimdali/libheimdali.$EXT \
+        -DITKINRIMAGEIO_LIBRARY=$HEIMDALI_ROOT/build_debug/itkINRimageIO/libitkINRImageIO.$EXT \
         ..
 
 Run functional tests
@@ -116,7 +116,7 @@ Add path to the built executables:
 .. code-block:: bash
 
     cd heimdali
-    export PATH=$PWD/build/cmd:$PATH
+    export PATH=$PWD/build_debug/cmd:$PATH
 
 Specifiy a directory where test files will be created:
 
