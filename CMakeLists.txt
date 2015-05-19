@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 cmake_policy(VERSION 2.8)
 project(heimdali)
+set(version 0.7.1)
 
 # Search for ITK.
 find_package(ITK REQUIRED)
@@ -52,3 +53,17 @@ set(HEIMDALI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libheimdali)
 add_subdirectory(libheimdali)
 add_subdirectory(itkINRimageIO)
 add_subdirectory(cmd)
+
+configure_file(
+    ${heimdali_SOURCE_DIR}/itk_package_config/heimdali-config.cmake.in
+    ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config.cmake @ONLY)
+
+configure_file(
+    ${heimdali_SOURCE_DIR}/itk_package_config/heimdali-config-version.cmake.in
+    ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config-version.cmake @ONLY)
+
+install(
+    FILES ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config.cmake
+          ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config-version.cmake
+    DESTINATION lib
+)
