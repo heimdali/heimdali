@@ -5,6 +5,7 @@ project(heimdali)
 find_package(HEIMDALI REQUIRED)
 
 message(STATUS "HEIMDALI_INCLUDE_DIRS is ${HEIMDALI_INCLUDE_DIRS}")
+# message(STATUS "HEIMDALI_LIBRARY is ${HEIMDALI_LIBRARY}")
 
 # Search for ITK.
 #find_package(ITK REQUIRED)

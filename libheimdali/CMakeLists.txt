@@ -24,7 +24,7 @@ target_link_libraries(
 install(
     TARGETS ${HEIMDALI_LIBRARY} 
     DESTINATION lib
-    EXPORT export-libheimdali
+    EXPORT HEIMDALI_LIBRARY
 )
 install(
     DIRECTORY heimdali
@@ -33,6 +33,6 @@ install(
 
 # Install exports.
 install(
-    EXPORT export-libheimdali
-    DESTINATION lib
+    EXPORT HEIMDALI_LIBRARY
+    DESTINATION ${HEIMDALI_CONFIGDIR_FROM_PREFIX}
 )

@@ -50,6 +50,10 @@ set(ITKINRIMAGEIO_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/itkINRimageIO/include)
 set(HEIMDALI_LIBRARY heimdali)
 set(HEIMDALI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libheimdali)
 
+# Heimdali package configuration files, used by find_package CMake command.
+set(HEIMDALI_CONFIGDIR_FROM_PREFIX share/heimdali)
+set(HEIMDALI_PREFIX_FROM_CONFIGDIR ../../)
+
 add_subdirectory(libheimdali)
 add_subdirectory(itkINRimageIO)
 add_subdirectory(cmd)
@@ -65,5 +69,5 @@ configure_file(
 install(
     FILES ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config.cmake
           ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config-version.cmake
-    DESTINATION lib
+    DESTINATION ${HEIMDALI_CONFIGDIR_FROM_PREFIX}
 )
