@@ -11,7 +11,11 @@ target_link_libraries(${ITKINRIMAGEIO_LIBRARY}
   ${INRIMAGE_LIBRARY}
 )
 
-install(TARGETS ${ITKINRIMAGEIO_LIBRARY} DESTINATION lib)
+install(TARGETS ${ITKINRIMAGEIO_LIBRARY} 
+    DESTINATION lib
+    EXPORT ITKINRIMAGEIO_LIBRARY
+)
+
 install(FILES
     include/itkINRImageIOFactory.h
     include/itkINRImageIO.h 
@@ -19,3 +23,8 @@ install(FILES
     DESTINATION include
     )
 
+# Install exports.
+install(
+    EXPORT ITKINRIMAGEIO_LIBRARY
+    DESTINATION ${HEIMDALI_CONFIGDIR_FROM_PREFIX}
+)
