@@ -4,7 +4,7 @@ get_filename_component(_configdir "${CMAKE_CURRENT_LIST_FILE}" PATH)
 get_filename_component(_prefix "${_configdir}/@HEIMDALI_PREFIX_FROM_CONFIGDIR@" ABSOLUTE)
 
 # Import the target
-include("${_configdir}/libheimdali.cmake")
+include("${_configdir}/HEIMDALI_LIBRARY.cmake")
 
 # Report other informations.
 set(HEIMDALI_INCLUDE_DIRS "${_prefix}/include")
