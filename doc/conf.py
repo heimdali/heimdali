@@ -356,3 +356,6 @@ extlinks = {
     'libheimdali': (github+'/libheimdali/%s', ''),
     'example': (github+'/example/%s', ''),
 }
+
+#import write_example_tarballs
+#write_example_tarballs.main()

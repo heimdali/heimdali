@@ -28,3 +28,9 @@ install(
     EXPORT ITKINRIMAGEIO_LIBRARY
     DESTINATION ${HEIMDALI_CONFIGDIR_FROM_PREFIX}
 )
+
+# Make config file available in develop mode (build but no install)
+export(
+    TARGETS ${ITKINRIMAGEIO_LIBRARY}
+    FILE ${HEIMDALI_BINARY_DIR}/ITKINRIMAGEIO_LIBRARY.cmake
+)

@@ -5,6 +5,10 @@ get_filename_component(_prefix "${_configdir}/@HEIMDALI_PREFIX_FROM_CONFIGDIR@" 
 
 # Import the target
 include("${_configdir}/HEIMDALI_LIBRARY.cmake")
+include("${_configdir}/ITKINRIMAGEIO_LIBRARY.cmake")
+
+set(HEIMDALI_LIBRARIES heimdali itkINRImageIO)
 
 # Report other informations.
+find_package(ITK REQUIRED)
 set(HEIMDALI_INCLUDE_DIRS "${_prefix}/include")

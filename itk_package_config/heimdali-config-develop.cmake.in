@@ -1,0 +1,14 @@
+# Heimdali configuration for develop mode (build but no install)
+
+# Import the target
+include("@HEIMDALI_BINARY_DIR@/HEIMDALI_LIBRARY.cmake")
+include("@HEIMDALI_BINARY_DIR@/ITKINRIMAGEIO_LIBRARY.cmake")
+
+set(HEIMDALI_LIBRARIES heimdali itkINRImageIO)
+
+# Report other informations.
+find_package(ITK REQUIRED)
+set(HEIMDALI_INCLUDE_DIRS
+    "@HEIMDALI_SOURCE_DIR@/libheimdali"
+    "@HEIMDALI_SOURCE_DIR@/itkINRimageIO/include"
+)

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 cmake_policy(VERSION 2.8)
-project(heimdali)
+project(HEIMDALI)
 set(version 0.7.1)
 
 # Search for ITK.
@@ -50,15 +50,22 @@ add_subdirectory(itkINRimageIO)
 add_subdirectory(cmd)
 
 configure_file(
-    ${heimdali_SOURCE_DIR}/itk_package_config/heimdali-config.cmake.in
-    ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config.cmake @ONLY)
+    ${HEIMDALI_SOURCE_DIR}/itk_package_config/heimdali-config.cmake.in
+    ${HEIMDALI_BINARY_DIR}/itk_package_config/heimdali-config.cmake @ONLY
+)
 
 configure_file(
-    ${heimdali_SOURCE_DIR}/itk_package_config/heimdali-config-version.cmake.in
-    ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config-version.cmake @ONLY)
+    ${HEIMDALI_SOURCE_DIR}/itk_package_config/heimdali-config-version.cmake.in
+    ${HEIMDALI_BINARY_DIR}/heimdali-config-version.cmake @ONLY
+)
+
+configure_file(
+    ${HEIMDALI_SOURCE_DIR}/itk_package_config/heimdali-config-develop.cmake.in
+    ${HEIMDALI_BINARY_DIR}/heimdali-config.cmake @ONLY
+)
 
 install(
-    FILES ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config.cmake
-          ${heimdali_BINARY_DIR}/itk_package_config/heimdali-config-version.cmake
+    FILES ${HEIMDALI_BINARY_DIR}/itk_package_config/heimdali-config.cmake
+          ${HEIMDALI_BINARY_DIR}/heimdali-config-version.cmake
     DESTINATION ${HEIMDALI_CONFIGDIR_FROM_PREFIX}
 )

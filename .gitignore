@@ -9,10 +9,12 @@
 
 *.hdf5
 
-build/
+build_*/
 _build/
 install/
 
 doxyxml/xml/
 
 tests/workdir
+
+doc/_static/example/*.tar.gz

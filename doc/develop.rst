@@ -27,15 +27,6 @@ Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
     Do not install the `heimdali` package in the `heimdali-dev` environment,
     as it would conflicts with sources files (from your heimdali git
     repository) you are building.
-
-For the rest of the section, we need to activate the conda environment, and
-set the CONDA_ENV_PATH environment variable:
-
-.. code-block:: bash
-
-    source activate heimdali-dev
-    hash -r
-    CONDA_ENV_PATH=$(conda info -e | grep '*' | tr -s ' ' | cut -d" " -f3)
    
 Install lettuce:
 
@@ -43,20 +34,22 @@ Install lettuce:
 
     pip install lettuce
 
+For the rest of the section, we need to activate the conda environment, and
+define some variables for convenience:
+
+.. code-block:: bash
+
+    source activate heimdali-dev
+    hash -r
+    CONDA_ENV_PATH=$(conda info -e | grep '*' | tr -s ' ' | cut -d" " -f3)
+
+    cd heimdali
+    HEIMDALI_ROOT=$PWD
+
+    BUILD_DIR=build_debug
+
 Build Heimdali
 --------------------
-
-Build heidmali, asking CMake to search dependances in the Conda environment:
-
-+------------------------+----------------------------------------------------+
-| variable               |    meaning                                         |
-+========================+====================================================+
-| `CONDA_ENV_PATH`       | For example, `~/miniconda/envs/heimdali-dev`       |
-+------------------------+----------------------------------------------------+
-| `CMAKE_PREFIX_PATH`    | Where `CMake` will search for dependent libraries  |
-+------------------------+----------------------------------------------------+
-| `..`                   | Path to Heimdali main CMakeLists.txt               |
-+------------------------+----------------------------------------------------+
 
 On Mac OS X your will need to install `/Developer/SDKs/MacOSX10.5`, and use it:
 
@@ -64,13 +57,25 @@ On Mac OS X your will need to install `/Developer/SDKs/MacOSX10.5`, and use it:
 
     export MACOSX_DEPLOYMENT_TARGET=10.5
 
-`CMAKE_INSTALL_PREFIX` is optinal. You may want to install `Heimdali` to test
-that `find_package(Heimdali)` works.
+Build heidmali, asking CMake to search dependances in the Conda environment:
+
++------------------------+----------------------------------------------------+
+| Variable               | Description                                        |
++========================+====================================================+
+| `CONDA_ENV_PATH`       | For example, `~/miniconda/envs/heimdali-dev`       |
++------------------------+----------------------------------------------------+
+| `CMAKE_PREFIX_PATH`    | Where `CMake` will search for dependent libraries  |
++------------------------+----------------------------------------------------+
+| `CMAKE_INSTALL_PREFIX` | | Optional. You may want to install `Heimdali` to  |
+|                        | | test that `find_package(heimdali)` works.        |
++------------------------+----------------------------------------------------+
+| `..`                   | Path to Heimdali main CMakeLists.txt               |
++------------------------+----------------------------------------------------+
 
 .. code-block:: bash
 
     cd heimdali
-    mkdir build_debug; cd build_debug
+    mkdir $BUILD_DIR; cd $BUILD_DIR
     cmake \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
@@ -83,22 +88,17 @@ Configure examples
 
 As before, the Conda environment is used. Moreover, because Heimdali has been
 built in `heimdali/build_debug` and is not installed (development mode), we need to
-specified all paths to CMake.
+specified `Heimdali` path to CMake.
 
 .. code-block:: bash
 
     cd heimdali
-    HEIMDALI_ROOT=$PWD
-    [ `uname` == 'Darwin' ] && EXT=dylib || EXT=so
     cd example
-    mkdir build_debug; cd build_debug
+    mkdir $BUILD_DIR; cd $BUILD_DIR
     cmake \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
-        -DHEIMDALI_INCLUDE=$HEIMDALI_ROOT/libheimdali \
-        -DITKINRIMAGEIO_INCLUDE=$HEIMDALI_ROOT/itkINRimageIO/include \
-        -DHEIMDALI_LIBRARY=$HEIMDALI_ROOT/build_debug/libheimdali/libheimdali.$EXT \
-        -DITKINRIMAGEIO_LIBRARY=$HEIMDALI_ROOT/build_debug/itkINRimageIO/libitkINRImageIO.$EXT \
+        -DHEIMDALI_DIR=$HEIMDALI_ROOT/$BUILD_DIR
         ..
 
 Run functional tests
