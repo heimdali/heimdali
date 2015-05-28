@@ -40,15 +40,10 @@ def configure_example(name):
         return
     build_dir = world.example_build_dir(name)
     if not isdir(build_dir):
-        mkdir(world.build_dir)
+        mkdir(build_dir)
     conda_env_path = heimdali.get_active_conda_env_path()
-    args = ['cmake',
-            '-DCMAKE_BUILD_TYPE=Debug',
-            '-DCMAKE_PREFIX_PATH=%s' % (conda_env_path,),
-            '-DHEIMDALI_DIR=%s/%s' % (world.heimdali_root, world.build_dir),
-            '..'
-            ]
-    check_call(args, cwd=build_dir)
+    args = 'cmake -DCMAKE_BUILD_TYPE=Debug ..'
+    check_call(args.split(), cwd=build_dir)
 
 @before.all
 def configure_all_examples():
