@@ -68,9 +68,10 @@ def run_the_command(step, returncode, cmd):
     world.returncode = p.returncode
     check_command(returncode=returncode)
 
-@step('I run the example: (.*)')
-def run_the_example(step,cmd):
-    cmd = invoke_from(cmd, world.example_build_dir)
+@step('I run the example (.*?): (.*)')
+def run_the_example(step,name,cmd):
+    build_dir = world.example_build_dir(name)
+    cmd = invoke_from(cmd, build_dir)
     p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
     world.stdout, world.stderr = p.communicate()
     world.returncode = p.returncode
@@ -193,9 +194,10 @@ def images_are_almost_equal(step, fileA, fileB, relative):
             "but got %r and %r files" % (extA, extB)
 
 @step("I build the (.*) example")
-def build_example(step, target):
-    world.assert_examples_are_configured()
-    check_call(['make', target], cwd=world.example_build_dir)
+def build_example(step, name):
+    world.assert_examples_is_configured(name)
+    build_dir = world.example_build_dir(name)
+    check_call(['make', ], cwd=build_dir)
 
 @step('I run the interactive command: (.*)')
 def run_interactive_command(step, cmd):

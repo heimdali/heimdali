@@ -13,31 +13,47 @@ import heimdali
 
 @before.all
 def setup_directories():
+    world.heimdali_root = heimdali.get_heimdali_root()
     world.data_dir = heimdali.get_data_dir()
     world.example_dir = heimdali.get_example_dir()
-    world.example_build_dir = join(world.example_dir, 'build')
+    world.build_dir = 'build_debug'
 
 @world.absorb
-def examples_are_configured():
-    """ Is heidamli/example configured with CMakefile? """
-    makefile = join(world.example_build_dir, 'Makefile')
+def example_build_dir(name):
+    return join(world.example_dir, name, world.build_dir)
+
+@world.absorb
+def examples_is_configured(name):
+    """ Is heidamli/example/name configured with CMakefile? """
+    build_dir = world.example_build_dir(name)
+    makefile = join(world.example_build_dir(name), 'Makefile')
     return isfile(makefile)
 
 @world.absorb
-def assert_examples_are_configured():
-    if not world.examples_are_configured():
-        raise IOError, "heimdali/example is not configured with CMake"
+def assert_examples_is_configured(name):
+    if not world.examples_is_configured(name):
+        raise IOError, "heimdali/example/%s is not configured with CMake" % name
+
+def configure_example(name):
+    """Configure heimdali/example/name with CMake"""
+    if world.examples_is_configured(name):
+        return
+    build_dir = world.example_build_dir(name)
+    if not isdir(build_dir):
+        mkdir(world.build_dir)
+    conda_env_path = heimdali.get_active_conda_env_path()
+    args = ['cmake',
+            '-DCMAKE_BUILD_TYPE=Debug',
+            '-DCMAKE_PREFIX_PATH=%s' % (conda_env_path,),
+            '-DHEIMDALI_DIR=%s/%s' % (world.heimdali_root, world.build_dir),
+            '..'
+            ]
+    check_call(args, cwd=build_dir)
 
 @before.all
-def configure_example():
-    """Configure heimdali/example with CMake"""
-    if world.examples_are_configured():
-        return
-    if not isdir(world.example_build_dir):
-        mkdir(world.example_build_dir)
-    conda_env_path = heimdali.get_active_conda_env_path()
-    args = 'cmake -DCMAKE_PREFIX_PATH=%s ..' % (conda_env_path,)
-    check_call(args.split(), cwd=world.example_build_dir)
+def configure_all_examples():
+    for name in ['create_input_image', 'inrimage_read', 'inrimage_write']:
+        configure_example(name)
 
 @before.all
 def get_reference_inr_commands():
