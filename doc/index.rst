@@ -38,6 +38,7 @@ Using ITK
    :maxdepth: 1
 
    from_inrimage
+   examples
 
 
 Heimdali API

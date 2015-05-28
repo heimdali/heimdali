@@ -357,5 +357,6 @@ extlinks = {
     'example': (github+'/example/%s', ''),
 }
 
-#import write_example_tarballs
-#write_example_tarballs.main()
+sys.path.insert(0, os.path.abspath('.'))
+import write_example_tarballs
+write_example_tarballs.main()

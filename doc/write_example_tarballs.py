@@ -54,7 +54,7 @@ def write_example_tarball(static_dir, example_dir):
     :type static_dir: string
     """
     example_name = P.basename(example_dir)
-    prefix = 'heimdali-example'
+    prefix = 'heimdali'
     filename = prefix + '-' + example_name + '.tar.gz'
     filepath = P.join(static_dir, filename)
     with tarfile.open(filepath,'w:gz') as tar:
