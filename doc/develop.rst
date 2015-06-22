@@ -34,19 +34,68 @@ Install lettuce:
 
     pip install lettuce
 
-For the rest of the section, we need to activate the conda environment, and
-define some variables for convenience:
+Activate the conda environment:
 
 .. code-block:: bash
 
     source activate heimdali-dev
     hash -r
-    CONDA_ENV_PATH=$(conda info -e | grep '*' | tr -s ' ' | cut -d" " -f3)
+
+Get test datas
+--------------------
+
+Get Heimdali data files:
+
+.. code-block:: bash
+
+    git clone https://github.com/dfroger/heimdali-data
+
+Define directories
+--------------------
+
+For convenience, define these directories:
+
++------------------------+----------------------------------------------------+
+| Variable               | Description                                        |
++========================+====================================================+
+| `HEIMDALI_SRC_DIR`     | | Heimdali sources (git repo), containing the      |
+|                        | | main CMakeLists.txt                              |
++------------------------+----------------------------------------------------+
+| `HEIMDALI_DATA_DIR`    | | Heimdali data directory (heimdali-data git repo  |
+|                        | | cloned above)                                    |
++------------------------+----------------------------------------------------+
+| `HEIMDALI_CONDA_DIR`   | | Where Conda installed dependent libraries,       |
+|                        | | for example, `~/miniconda/envs/heimdali-dev`.    |
++------------------------+----------------------------------------------------+
+| `HEIMDALI_WORK_DIR`    | | Directory for temporary files (building sources, |
+|                        | | building examples, running tests).               |
++------------------------+----------------------------------------------------+
+
+For example:
+
+.. code-block:: bash
 
     cd heimdali
-    HEIMDALI_ROOT=$PWD
+    export HEIMDALI_SRC_DIR=$PWD
 
-    BUILD_DIR=build_debug
+    cd heimdali-data
+    export HEIMDALI_DATA_DIR=$PWD
+
+    export HEIMDALI_CONDA_DIR=$(conda info -e | grep '*' | tr -s ' ' | cut -d" " -f3)
+
+    export HEIMDALI_WORK_DIR=/path/to/<heimdali-work-dir>
+
+.. note::
+
+    It may be useful to have ``HEIMDALI_SRC_DIR`` and ``HEIMDALI_WORK_DIR`` if different
+    locations. A typical example is having ``HEIMDALI_SRC_DIR`` on a backed-up
+    ``NAS`` file system, while ``HEIMDALI_WORK_DIR`` on a local hard disk for speed
+    read/write operations.
+
+.. warning::
+
+    The conda environment must be activated and these 4 variables must be
+    defined for the sections bellow.
 
 Build Heimdali
 --------------------
@@ -59,77 +108,71 @@ On Mac OS X your will need to install `/Developer/SDKs/MacOSX10.5`, and use it:
 
 Build heidmali, asking CMake to search dependances in the Conda environment:
 
+.. note::
+
+    You may want to use ``ccache`` to speed-up re-compiling after cleaning.
+    (``conda install ccache``).
+
 +------------------------+----------------------------------------------------+
 | Variable               | Description                                        |
 +========================+====================================================+
-| `CONDA_ENV_PATH`       | For example, `~/miniconda/envs/heimdali-dev`       |
-+------------------------+----------------------------------------------------+
-| `CMAKE_PREFIX_PATH`    | Where `CMake` will search for dependent libraries  |
+| `CMAKE_PREFIX_PATH`    | | Where `CMake` will search for dependent          |
+|                        | | libraries                                        |
 +------------------------+----------------------------------------------------+
 | `CMAKE_INSTALL_PREFIX` | | Optional. You may want to install `Heimdali` to  |
 |                        | | test that `find_package(heimdali)` works.        |
 +------------------------+----------------------------------------------------+
-| `..`                   | Path to Heimdali main CMakeLists.txt               |
+| `CMAKE_CXX_COMPILER`   | | If using ``ccache``, points to the symbolic link |
+|                        | | to ``ccache``.                                   |
 +------------------------+----------------------------------------------------+
 
 .. code-block:: bash
 
-    cd heimdali
-    mkdir $BUILD_DIR; cd $BUILD_DIR
+    mkdir -p $HEIMDALI_WORK_DIR/build_debug/src
+    cd $HEIMDALI_WORK_DIR/build_debug/src
     cmake \
         -DCMAKE_BUILD_TYPE=Debug \
-        -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
-        -DCMAKE_INSTALL_PREFIX=~/tmp/heimdali-install \
-        ..
-    make
+        -DCMAKE_PREFIX_PATH=$HEIMDALI_CONDA_DIR \
+        # -DCMAKE_INSTALL_PREFIX=~/tmp/heimdali-install \
+        # -DCMAKE_CXX_COMPILER=$HEIMDALI_CONDA_DIR/bin/g++ \ 
+        $HEIMDALI_SRC_DIR
+    make -j 4
 
 Configure examples
 --------------------
 
 As before, the Conda environment is used. Moreover, because Heimdali has been
-built in `heimdali/build_debug` and is not installed (development mode), we need to
-specified `Heimdali` path to CMake.
+built in `HEIMDALI_WORK_DIR/build_debug/src` and is not installed (development
+mode), we need to specified `Heimdali` path to CMake.
 
 .. code-block:: bash
 
-    cd heimdali
-    cd example
-    mkdir $BUILD_DIR; cd $BUILD_DIR
-    cmake \
-        -DCMAKE_BUILD_TYPE=Debug \
-        -DCMAKE_PREFIX_PATH=$CONDA_ENV_PATH \
-        -DHEIMDALI_DIR=$HEIMDALI_ROOT/$BUILD_DIR
-        ..
+    for example in create_input_image inrimage_read inrimage_write
+    do
+        mkdir -p $HEIMDALI_WORK_DIR/build_debug/$example
+        cd $HEIMDALI_WORK_DIR/build_debug/$example
+        cmake \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DHEIMDALI_DIR=$HEIMDALI_WORK_DIR/build_debug/src \
+            $HEIMDALI_SRC_DIR/example/$example
+    done
+
+Example are built latter by ``lettuce``.
 
 Run functional tests
 --------------------
-
-Get Heimdali data files, and set `HEIMDALI_DATA_DIR`:
-
-.. code-block:: bash
-
-    git clone https://github.com/dfroger/heimdali-data
-    export HEIMDALI_DATA_DIR=/path/to/heimdali-data
 
 Add path to the built executables:
 
 .. code-block:: bash
 
-    cd heimdali
-    export PATH=$PWD/build_debug/cmd:$PATH
-
-Specifiy a directory where test files will be created:
-
-.. code-block:: bash
-
-    export HEIMDALI_WORK_DIR=/path/to/heimdali/work/dir
-
+    export PATH=$HEIMDALI_WORK_DIR/build_debug/src/cmd:$PATH
 
 Run the functional tests:
 
 .. code-block:: bash
 
-    cd tests
+    cd $HEIMDALI_SRC_DIR/tests
     lettuce
 
 Writting documentation

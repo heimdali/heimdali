@@ -50,8 +50,7 @@ def invoke_from(cmd_string, path):
     return ' '.join(cmd_list)
 
 def expand_env_var(text):
-    text = text.replace('$HEIMDALI_DATA_DIR', world.data_dir)
-    text = text.replace('$WORKDIR', world.workdir)
+    text = text.replace('$HEIMDALI_DATA_DIR', world.heimdali_data_dir)
     return text
 
 @step('I run the command: (.*)')
@@ -68,6 +67,13 @@ def run_the_command(step, returncode, cmd):
     world.returncode = p.returncode
     check_command(returncode=returncode)
 
+@step("I build the (.*) example")
+def build_example(step, name):
+    build_dir, is_configured = world.example_build_dir(name, check_config=True)
+    if not is_configured:
+        raise IOError, "%s is not configured with CMake" % (build_dir,)
+    check_call(['make', ], cwd=build_dir)
+
 @step('I run the example (.*?): (.*)')
 def run_the_example(step,name,cmd):
     build_dir = world.example_build_dir(name)
@@ -79,8 +85,7 @@ def run_the_example(step,name,cmd):
 
 @step('I see the line in standard output: (.*)')
 def i_see_the_line(step,line):
-    line = line.replace('$HEIMDALI_DATA_DIR', world.data_dir)
-    line = line.replace('$WORKDIR', world.workdir)
+    line = line.replace('$HEIMDALI_DATA_DIR', world.heimdali_data_dir)
     if not line in world.stdout:
         raise AssertionError, \
             "Expected line: %r in stdout, but stdout is: %r" % (

@@ -7,7 +7,7 @@ from subprocess import check_output
 import shutil
 import json
 
-def get_active_conda_env_path():
+def get_heimdali_conda_dir():
     """Path to the active conda environment"""
 
     args = 'conda info --json'.split()
@@ -54,10 +54,10 @@ def get_conda_env_path(env_name, ensure_is_active=False):
     return env_path
 
 def get_directory_from_envvar(name, must_contain=None):
-    data_dir = getenv(name)
+    directory = getenv(name)
 
     # Check environment variable exists.
-    if data_dir == None or not data_dir.strip():
+    if directory == None or not directory.strip():
         msg = "$%s environment variable " \
               "is required." % (name,)
         if must_contain:
@@ -66,40 +66,40 @@ def get_directory_from_envvar(name, must_contain=None):
         raise OSError, msg
 
     # Check directory exists.
-    data_dir = expanduser(data_dir)
-    if not isdir(data_dir):
+    directory = expanduser(directory)
+    if not isdir(directory):
         msg = "Directory $%s=%s " \
-              "does not exists" % (name,data_dir)
+              "does not exists" % (name,directory)
         raise OSError, msg
 
     # Check directory is correct, ie it contains the 'must_contain' file.
     if must_contain:
-        must_contain_path = join(data_dir, must_contain)
+        must_contain_path = join(directory, must_contain)
         if not isfile(must_contain_path):
             msg = "Directory $%s=%s " \
-                  "does not contain the file %s ." % (name, data_dir, must_contain)
+                  "does not contain the file %s ." % (name, directory, must_contain)
             raise OSError, msg
 
-    return data_dir
+    return directory
 
-def get_data_dir():
+def get_heimdali_data_dir():
     """Path to heimdali-data git repository"""
     return get_directory_from_envvar('HEIMDALI_DATA_DIR', must_contain='imtest_z5_y4_x3_c2.h5')
 
-def get_workdir():
+def get_heimdali_work_dir():
     """Path to working directory for test and benchmark"""
     return get_directory_from_envvar("HEIMDALI_WORK_DIR")
 
-def get_heimdali_root():
+def get_heimdali_src_dir():
     """Path to heimdali Git repository root directory"""
     here = dirname(__file__)
-    heimdali_root = join(here, '..')
-    return realpath(heimdali_root)
+    heimdali_src_dir = join(here, '..')
+    return realpath(heimdali_src_dir)
 
-def get_example_dir():
+def get_heimdali_example_dir():
     """heimdali/example directory"""
-    heimdali_root = get_heimdali_root()
-    return realpath(join(heimdali_root, 'example'))
+    heimdali_src_dir = get_heimdali_src_dir()
+    return realpath(join(heimdali_src_dir, 'example'))
 
 def setup_clean_directory(directory):
     """Create a directory, removing it before if existing"""

@@ -11,39 +11,35 @@ heimdali_python = join(here, '..', '..', 'python')
 sys.path.append(realpath(heimdali_python))
 import heimdali
 
+BUILD_DIR_NAME = 'build_debug'
+LETTUCE_DIR_NAME = 'lettuce'
+
 @before.all
 def setup_directories():
-    world.heimdali_root = heimdali.get_heimdali_root()
-    world.data_dir = heimdali.get_data_dir()
-    world.example_dir = heimdali.get_example_dir()
-    world.build_dir = 'build_debug'
+    world.heimdali_src_dir = heimdali.get_heimdali_src_dir()
+    world.heimdali_data_dir = heimdali.get_heimdali_data_dir()
+    world.heimdali_example_dir = heimdali.get_heimdali_example_dir()
+    world.heimdali_work_dir = heimdali.get_heimdali_work_dir()
+    world.lettuce_work_dir = join(world.heimdali_work_dir, LETTUCE_DIR_NAME)
 
 @world.absorb
-def example_build_dir(name):
-    return join(world.example_dir, name, world.build_dir)
-
-@world.absorb
-def examples_is_configured(name):
-    """ Is heidamli/example/name configured with CMakefile? """
-    build_dir = world.example_build_dir(name)
-    makefile = join(world.example_build_dir(name), 'Makefile')
-    return isfile(makefile)
-
-@world.absorb
-def assert_examples_is_configured(name):
-    if not world.examples_is_configured(name):
-        raise IOError, "heimdali/example/%s is not configured with CMake" % name
+def example_build_dir(name,check_config=False):
+    build_dir = join(world.heimdali_work_dir, BUILD_DIR_NAME, name)
+    if check_config:
+        makefile = join(build_dir, 'Makefile')
+        is_configured = isfile(makefile)
+        return build_dir, is_configured
+    else:
+        return build_dir
 
 def configure_example(name):
     """Configure heimdali/example/name with CMake"""
-    if world.examples_is_configured(name):
-        return
-    build_dir = world.example_build_dir(name)
-    if not isdir(build_dir):
-        mkdir(build_dir)
-    conda_env_path = heimdali.get_active_conda_env_path()
-    args = 'cmake -DCMAKE_BUILD_TYPE=Debug ..'
-    check_call(args.split(), cwd=build_dir)
+    build_dir,is_configured = world.example_build_dir(name, check_config=True)
+    if not is_configured:
+        if not isdir(build_dir):
+            mkdir(build_dir)
+        args = 'cmake -DCMAKE_BUILD_TYPE=Debug ..'
+        check_call(args.split(), cwd=build_dir)
 
 @before.all
 def configure_all_examples():
@@ -61,20 +57,16 @@ def get_reference_inr_commands():
     world.ical = join(inrimage_path, 'bin', 'ical')
 
 @before.all
-def setup_root_workdir():
+def setup_lettuce_workdir():
     """Clean and/or create root workdir for all tests"""
-    heimdali_workdir = heimdali.get_workdir()
-    root_workdir = join(heimdali_workdir, 'lettuce')
-    heimdali.setup_clean_directory(root_workdir)
-    world.root_workdir = root_workdir
+    heimdali.setup_clean_directory(world.lettuce_work_dir)
 
 @before.each_scenario
 def move_to_workdir(scenario):
-    chdir(world.workdir)
-    world.child = None
+    chdir(world.feature_workdir)
 
 @before.each_feature
 def setup_feature_workdir(feature):
     """Create workdir for this feature"""
-    world.workdir = join(world.root_workdir, feature.name)
-    mkdir(world.workdir)
+    world.feature_workdir = join(world.lettuce_work_dir, feature.name)
+    mkdir(world.feature_workdir)
