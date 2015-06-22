@@ -1,9 +1,9 @@
 from lettuce import *
 
 import sys
-from os import mkdir, chdir
+import os
 from os.path import join, isdir, isfile, realpath, dirname
-from subprocess import check_call
+import subprocess
 import platform
 
 here = dirname(__file__)
@@ -37,9 +37,9 @@ def configure_example(name):
     build_dir,is_configured = world.example_build_dir(name, check_config=True)
     if not is_configured:
         if not isdir(build_dir):
-            mkdir(build_dir)
+            os.makedirs(build_dir)
         args = 'cmake -DCMAKE_BUILD_TYPE=Debug ..'
-        check_call(args.split(), cwd=build_dir)
+        subprocess.check_call(args.split(), cwd=build_dir)
 
 @before.all
 def configure_all_examples():
@@ -63,10 +63,10 @@ def setup_lettuce_workdir():
 
 @before.each_scenario
 def move_to_workdir(scenario):
-    chdir(world.feature_workdir)
+    os.chdir(world.feature_workdir)
 
 @before.each_feature
 def setup_feature_workdir(feature):
     """Create workdir for this feature"""
     world.feature_workdir = join(world.lettuce_work_dir, feature.name)
-    mkdir(world.feature_workdir)
+    os.mkdir(world.feature_workdir)
