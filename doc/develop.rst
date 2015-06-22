@@ -104,7 +104,7 @@ On Mac OS X your will need to install `/Developer/SDKs/MacOSX10.5`, and use it:
 
 .. code-block:: bash
 
-    export MACOSX_DEPLOYMENT_TARGET=10.5
+    export MACOSX_DEPLOYMENT_TARGET=10.6
 
 Build heidmali, asking CMake to search dependances in the Conda environment:
 
