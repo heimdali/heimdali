@@ -67,14 +67,14 @@ def run_the_command(step, returncode, cmd):
 
 @step("I build the (.*) example")
 def build_example(step, name):
-    build_dir, is_configured = world.example_build_dir(name, check_config=True)
+    build_dir, is_configured = world.get_example_build_dir(name, check_config=True)
     if not is_configured:
         raise IOError, "%s is not configured with CMake" % (build_dir,)
     check_call(['make', ], cwd=build_dir)
 
 @step('I run the example (.*?): (.*)')
 def run_the_example(step,name,cmd):
-    build_dir = world.example_build_dir(name)
+    build_dir = world.get_example_build_dir(name)
     cmd = invoke_from(cmd, build_dir)
     p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
     world.stdout, world.stderr = p.communicate()

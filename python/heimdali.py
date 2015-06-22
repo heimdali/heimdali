@@ -96,10 +96,10 @@ def get_heimdali_src_dir():
     heimdali_src_dir = join(here, '..')
     return realpath(heimdali_src_dir)
 
-def get_heimdali_example_dir():
+def get_example_src_dir(name):
     """heimdali/example directory"""
     heimdali_src_dir = get_heimdali_src_dir()
-    return realpath(join(heimdali_src_dir, 'example'))
+    return join(heimdali_src_dir, 'example', name)
 
 def setup_clean_directory(directory):
     """Create a directory, removing it before if existing"""

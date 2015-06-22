@@ -18,12 +18,11 @@ LETTUCE_DIR_NAME = 'lettuce'
 def setup_directories():
     world.heimdali_src_dir = heimdali.get_heimdali_src_dir()
     world.heimdali_data_dir = heimdali.get_heimdali_data_dir()
-    world.heimdali_example_dir = heimdali.get_heimdali_example_dir()
     world.heimdali_work_dir = heimdali.get_heimdali_work_dir()
     world.lettuce_work_dir = join(world.heimdali_work_dir, LETTUCE_DIR_NAME)
 
 @world.absorb
-def example_build_dir(name,check_config=False):
+def get_example_build_dir(name,check_config=False):
     build_dir = join(world.heimdali_work_dir, BUILD_DIR_NAME, name)
     if check_config:
         makefile = join(build_dir, 'Makefile')
@@ -34,12 +33,13 @@ def example_build_dir(name,check_config=False):
 
 def configure_example(name):
     """Configure heimdali/example/name with CMake"""
-    build_dir,is_configured = world.example_build_dir(name, check_config=True)
+    build_dir, is_configured = world.get_example_build_dir(name, check_config=True)
     if not is_configured:
         if not isdir(build_dir):
             os.makedirs(build_dir)
-        args = 'cmake -DCMAKE_BUILD_TYPE=Debug ..'
-        subprocess.check_call(args.split(), cwd=build_dir)
+        args = ['cmake', '-DCMAKE_BUILD_TYPE=Debug',
+                heimdali.get_example_src_dir(name)]
+        subprocess.check_call(args, cwd=build_dir)
 
 @before.all
 def configure_all_examples():
