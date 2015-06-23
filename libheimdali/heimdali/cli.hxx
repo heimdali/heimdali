@@ -23,6 +23,11 @@ preprocess_argv(int argc, char** inrimage_argv);
 unsigned int
 count_arguments(std::vector<std::string> argv);
 
+std::vector<std::string>
+consume_option_values(std::string option,
+                      std::vector<std::string> & argv,
+                      int nconsumed_max);
+
 void
 parse_tclap_image_in_image_out(TCLAP::UnlabeledMultiArg<std::string>& filenamesArg,
                                std::string& inputFilename,

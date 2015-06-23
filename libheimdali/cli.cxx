@@ -59,6 +59,56 @@ count_arguments(vector<string> argv)
     return nargs;
 }
 
+/* Consums and returns command line option values.
+ *
+ * For example, with the command line invocation:
+ *     './main -n 0 1 arg1 arg2', argv is:
+ *
+ * the argv argument is:
+ *     ["./main", "-n", "0", "1", "arg1", "arg2"]:
+ *
+ * After calling:
+ *     vector<string> values = consume_options_values("-n", argv, 2);
+ *
+ * argv become:
+ *     ["./main", "arg1", "arg2"]:
+ *
+ * and the returned value 'values' is:
+ *     ["0", "1"]
+ */
+vector<string>
+consume_option_values(string option, vector<string> & argv, int nconsumed_max)
+{
+    char dash = '-';
+    bool consuming = false;
+    int nargs = argv.size();
+    vector<string> consumed_args;
+    int consuming_start = nargs;
+    int consuming_end = nargs;
+    for (int iarg = 0 ; iarg < nargs ; iarg++) {
+        string arg = argv[iarg];
+
+        if (consuming && arg[0] == dash || consumed_args.size() == nconsumed_max) {
+            consuming_end = iarg;
+            break;
+        }
+
+        if (consuming) {
+            consumed_args.push_back(arg);
+        }
+
+        if (arg == option) {
+            consuming = true;
+            consuming_start = iarg;
+        }
+    }
+    
+    argv.erase(argv.begin() + consuming_start,
+               argv.begin() + consuming_end);
+
+    return consumed_args;
+}
+
 /* Parse IMAGE-IN IMAGE-OUT command line arguments */
 void
 parse_tclap_image_in_image_out(TCLAP::UnlabeledMultiArg<string>& filenamesArg,

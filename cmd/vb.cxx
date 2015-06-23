@@ -19,19 +19,39 @@ int main(int argc, char** argv)
 { 
 
     try {
+    vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
+    vector<string> two_floats = Heimdali::consume_option_values("-n", tclap_argv, 2);
+    switch (two_floats.size())
+    {
+    case 0:
+        break;
+    case 1:
+        throw(Heimdali::Exception("Usage: -n THRESHOLD VALUE"));
+        break;
+    case 2:
+        tclap_argv.push_back("-t");
+        tclap_argv.push_back(two_floats[0]);
+        tclap_argv.push_back("-v");
+        tclap_argv.push_back(two_floats[1]);
+        break;
+    }
 
     TCLAP::CmdLine parser("Set image values to VALUE if values are below THRESHOLD",
                           ' ', HEIMDALI_VERSION);
-    // -n
-    TCLAP::ValueArg<float> numberArg("n","number", "Threshold",true,
-                                     1,"THRESHOLD", parser);
+    // -t
+    TCLAP::ValueArg<float> thresholdArg("t","threshold",
+        "Threshold ('-n THRESHOLD VALUE' is also supported "
+        "for INRimage backward compatibility)",
+        true, 1,"THRESHOLD", parser);
     // -v
-    TCLAP::ValueArg<float> valueArg("v","value", "Value to replace with",true,
-                                     1,"VALUE", parser);
+    TCLAP::ValueArg<float> valueArg("v","value",
+        "Value to replace with ('-n THRESHOLD VALUE' "
+        "is also supported for INRimage backward compatibility)",
+        true, 1,"VALUE", parser);
 
     HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-    parser.parse(argc,argv);
+    parser.parse(tclap_argv);
     string inputFilename;
     string outputFilename;
     Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
@@ -58,7 +78,7 @@ int main(int argc, char** argv)
     // thresholder
     typedef itk::ThresholdImageFilter<ScalarImageType> ThresholderType;
     ThresholderType::Pointer thresholder = ThresholderType::New();
-    thresholder->ThresholdBelow(numberArg.getValue());
+    thresholder->ThresholdBelow(thresholdArg.getValue());
     thresholder->SetOutsideValue(valueArg.getValue());
 
     // duplicator
