@@ -12,49 +12,6 @@
 
 using namespace std;
 
-void
-read_image_size(unsigned int& sz, unsigned int& sy, 
-                unsigned int& sx, unsigned int& sv)
-{
-    // Read image dimension
-    cout << "Enter sx, sy, sv, sz: ";
-    cin >> sx >> sy >> sv >> sz;
-}
-
-
-void
-read_pixel_type(itk::ImageIOBase::IOComponentType& type)
-{
-    ostringstream error_msg;
-
-    // Fixed point or floating point?
-    cout << "Enter pixel type (0: fixed point, 1: floating point): ";
-    const unsigned int FIXED_POINT=0, FLOATING_POINT=1;
-    unsigned int point_type;
-    cin >> point_type;
-    bool is_floating_point_type;
-    switch (point_type)
-    {
-    case FLOATING_POINT:
-        is_floating_point_type = true;
-        break;
-    case FIXED_POINT:
-        is_floating_point_type = false;
-        break;
-    default:
-        error_msg << "Pixel must be 0 (fixed point) or 1 (floating point) "
-                  << "but got: " << point_type;
-        throw(Heimdali::Exception(error_msg.str()));
-        break;
-    }
-
-    cout << "Enter byte size (1: unsigned char, 2: unsigned short, 4 unsigned int)";
-    unsigned int byte_size;
-    cin >> byte_size;
-
-    type = Heimdali::map_to_itk_component_type(is_floating_point_type, byte_size);
-}
-
 template<typename PixelType>
 void
 read_write_image(unsigned int sz, unsigned int sy,
@@ -62,7 +19,6 @@ read_write_image(unsigned int sz, unsigned int sy,
                  unsigned int fixed_point_multiplier,
                  string inputFilename,
                  string outputFilename,
-                 bool is_interactive,
                  string format)
 {
     FILE* inputfile;
@@ -99,7 +55,6 @@ read_write_image(unsigned int sz, unsigned int sy,
     VariableVectorType variableLengthVector;
     variableLengthVector.SetSize(sv);
     int nvalues;
-    if (is_interactive) cout << "Enter pixel values:" << endl;
     for (unsigned int iz=0 ; iz < sz ; ++iz) { pixelIndex[2] = iz;
     for (unsigned int iy=0 ; iy < sy ; ++iy) { pixelIndex[1] = iy;
     for (unsigned int ix=0 ; ix < sx ; ++ix) { pixelIndex[0] = ix;
@@ -122,8 +77,6 @@ read_write_image(unsigned int sz, unsigned int sy,
     WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
     cmdwriter->Write(image);
     cmdwriter->Update();
-
-    if (is_interactive) cout << outputFilename << endl;
 
     if (inputfile != NULL)
         fclose(inputfile);
@@ -168,10 +121,6 @@ int main(int argc, char** argv)
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
-    // Interactive command or not?
-    bool is_interactive = (!( zArg.isSet() || yArg.isSet() || xArg.isSet() || vArg.isSet()
-      || oArg.isSet() || floatingSwitch.isSet() || fixedSwitch.isSet() ));
-
     ostringstream error_msg;
 
     // Fixed point or floating point
@@ -181,17 +130,12 @@ int main(int argc, char** argv)
     // Set parameters.
     unsigned int sz, sy, sx, sv;
     itk::ImageIOBase::IOComponentType type;
-    if (is_interactive) {
-        read_image_size(sz, sy, sx, sv);
-        read_pixel_type(type);
-    } else {
-        sz = zArg.getValue();
-        sy = yArg.getValue();
-        sx = xArg.getValue();
-        sv = vArg.getValue();
-        type = Heimdali::map_to_itk_component_type(is_floating,
-                                                   oArg.getValue());
-    }
+    sz = zArg.getValue();
+    sy = yArg.getValue();
+    sx = xArg.getValue();
+    sv = vArg.getValue();
+    type = Heimdali::map_to_itk_component_type(is_floating,
+                                               oArg.getValue());
 
     string format;
     if (formatArg.isSet()) {
@@ -206,19 +150,19 @@ int main(int argc, char** argv)
     switch (type)
     {
     case itk::ImageIOBase::FLOAT:
-        read_write_image<float>(sz,sy,sx,sv,1,inputFilename,outputFilename,is_interactive,format);
+        read_write_image<float>(sz,sy,sx,sv,1,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::DOUBLE:
-        read_write_image<double>(sz,sy,sx,sv,1,inputFilename,outputFilename,is_interactive,format);
+        read_write_image<double>(sz,sy,sx,sv,1,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::UCHAR:
-        read_write_image<unsigned char>(sz,sy,sx,sv,255,inputFilename,outputFilename,is_interactive,format);
+        read_write_image<unsigned char>(sz,sy,sx,sv,255,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::USHORT:
-        read_write_image<unsigned short>(sz,sy,sx,sv,65535,inputFilename,outputFilename,is_interactive,format);
+        read_write_image<unsigned short>(sz,sy,sx,sv,65535,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::UINT:
-        read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,inputFilename,outputFilename,is_interactive,format);
+        read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,inputFilename,outputFilename,format);
         break;
     default:
         error_msg
