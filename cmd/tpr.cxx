@@ -46,6 +46,7 @@ int main(int argc, char** argv)
     // -c, -cz
     TCLAP::SwitchArg cSwitch("c","", "Compact format, suppress line and plane number printing", parser);
     TCLAP::SwitchArg czSwitch("","cz", "Compact format, but with plane number printing", parser);
+    TCLAP::SwitchArg zeroSwitch("","from-zero", "Count indices from 0.", parser);
 
     // -l 
     TCLAP::ValueArg<unsigned int> lArg("l","nvalues", "Maximal number of value printed per console row (0 for full line)",false,5,"NVALUES", parser);
@@ -65,6 +66,8 @@ int main(int argc, char** argv)
         error_msg << "Flags -c and -cz are incompatible";
         throw(TCLAP::ArgException(error_msg.str()));
     }
+
+    int offset = zeroSwitch.getValue() ? 0 : 1;
 
     //////////////////////////////////////////////////////////////////////////
     // Types and instances.
@@ -115,13 +118,13 @@ int main(int argc, char** argv)
     SC = reader->get_sc();
 
     // First plane to read and print
-    IZ = izArg.getValue();
+    IZ = izArg.getValue() - offset;
 
     // First row to read and print
-    IY = iyArg.getValue();
+    IY = iyArg.getValue() - offset;
 
     // First value in row to print
-    IV = ivArg.getValue();
+    IV = ivArg.getValue() - offset;
 
     // The row will be read.
     IX = 0;
@@ -181,10 +184,10 @@ int main(int argc, char** argv)
     for (unsigned int iz=IZ ; iz<IZ+NZ; iz++) { 
         ImageIndex[2] = iz;
         if (czSwitch.getValue())
-            cout << "plane " << iz << endl;
+            cout << "plane " << iz+offset << endl;
         for (unsigned int iy=IY ; iy<IY+NY; iy++) { 
             if (! cSwitch.getValue() && ! czSwitch.getValue())
-                cout << "plane " << iz << ", line " << iy << endl;
+                cout << "plane " << iz+offset << ", line " << iy+offset << endl;
             ImageIndex[1] = iy;
             iv = -1;
             for (unsigned int ix=IX ; ix<IX+NX; ix++) {

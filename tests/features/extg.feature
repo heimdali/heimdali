@@ -42,7 +42,7 @@ Feature: extg
         | inr |
 
     Scenario: Extract with sample steps.
-        When I run the command: extg -iz 5 -z 3 -zpas 2 -iy 4 -y 2 -ypas 3 -ix 3 -x 3 -xpas 3 -iv 1 -v 2 -vpas 5  $HEIMDALI_DATA_DIR/imtest_z15_y14_x13_c12.h5 | tpr -l 6
+        When I run the command: extg -iz 5 -z 3 -zpas 2 -iy 4 -y 2 -ypas 3 -ix 3 -x 3 -xpas 3 -iv 1 -v 2 -vpas 5  $HEIMDALI_DATA_DIR/imtest_z15_y14_x13_c12.h5 | tpr -l 6 --from-zero
         Then I see the standard output:
             """
             plane 0, line 0
