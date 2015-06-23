@@ -118,13 +118,31 @@ int main(int argc, char** argv)
     SC = reader->get_sc();
 
     // First plane to read and print
-    IZ = izArg.getValue() - offset;
+    if (! zeroSwitch.getValue() && izArg.getValue() == 0) {
+        // Problem is that TCLAP default value for izArg assume counting from
+        // zero.
+        IZ = 0;
+    } else {
+        IZ = izArg.getValue() - offset;
+    }
 
     // First row to read and print
-    IY = iyArg.getValue() - offset;
+    if (! zeroSwitch.getValue() && iyArg.getValue() == 0) {
+        // Problem is that TCLAP default value for izArg assume counting from
+        // zero.
+        IY = 0;
+    } else {
+        IY = iyArg.getValue() - offset;
+    }
 
     // First value in row to print
-    IV = ivArg.getValue() - offset;
+    if (! zeroSwitch.getValue() && ivArg.getValue() == 0) {
+        // Problem is that TCLAP default value for izArg assume counting from
+        // zero.
+        IV = 0;
+    } else {
+        IV = ivArg.getValue() - offset;
+    }
 
     // The row will be read.
     IX = 0;

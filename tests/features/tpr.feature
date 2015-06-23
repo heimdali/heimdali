@@ -14,6 +14,10 @@ Feature: tpr
         | cossin_z5_y5_x5_c2_f2.h5  | tpr_cossin_f2.txt |
         | cossin_z5_y5_x5_c2_f2.inr | tpr_cossin_f2.txt |
 
+    Scenario: Print a full image, counting from 1
+        When I run the command: tpr $HEIMDALI_DATA_DIR/cossin_z5_y5_x5_c2_r4.h5  
+        Then I see as standard output the content of the file $HEIMDALI_DATA_DIR/tpr_cossin_r4_from_1.txt 
+
     Scenario: Print a full image, reading from stdin
         When I run the command: cat $HEIMDALI_DATA_DIR/<input> | tpr --from-zero
         Then I see as standard output the content of the file $HEIMDALI_DATA_DIR/<stdout>
