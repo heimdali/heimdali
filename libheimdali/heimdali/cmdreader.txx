@@ -71,7 +71,8 @@ CmdReaderFromFile<ImageType>::CmdReaderFromFile(
     this->m_divider = CmdReader<ImageType>::DivideImageFilterType::New();
 }
 
-int get_fixed_point_divider(itk::ImageIOBase::Pointer io)
+unsigned int
+get_fixed_point_divider(itk::ImageIOBase::Pointer io)
 {
     if ( (string) io->GetNameOfClass() != (string) "HDF5ImageIO" &&
          (string) io->GetNameOfClass() != (string) "INRImageIO" ) return 0;
@@ -134,7 +135,7 @@ CmdReaderFromFile<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
     this->m_requestedRegion.SetIndex(this->m_index);
     this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
 
-    int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
+    unsigned int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
 
     this->m_convert_fixed_point_to_floating_point_required = 
         this->m_convert_fixed_point_to_floating_point && 
@@ -262,7 +263,7 @@ CmdReaderFromStdin<ImageType>::next_iteration(itk::ImageIOBase::Pointer io)
     this->m_reader->GetOutput()->SetRequestedRegion(this->m_requestedRegion);
     this->m_reader->Update();
 
-    int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
+    unsigned int fixed_point_divider = get_fixed_point_divider(this->m_reader->GetImageIO());
 
     this->m_convert_fixed_point_to_floating_point_required = 
         this->m_convert_fixed_point_to_floating_point && 
