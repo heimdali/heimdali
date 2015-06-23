@@ -77,3 +77,17 @@ Feature: itest
             Image informations are different: ncolumns ncomponents nplanes nrows
             ""
             """
+
+    Scenario: Read from stdin (check one image dimensions)
+        When I run the command: cat $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 | itest -z 5 -y 4 -x 3 -v 2
+        Then I see the standard output:
+            """
+            Image informations are the same.
+            ""
+            """
+        When I run the command (with return code 1):  cat $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 | itest -z 5 -y 7 -x 3 -v 2
+        Then I see the standard output:
+            """
+            Image informations are different: nrows
+            ""
+            """

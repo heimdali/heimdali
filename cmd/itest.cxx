@@ -65,7 +65,7 @@ read_image_info_from_file(map<string, T>& m, itk::ImageIOBase::Pointer io)
 /* Fill keys and values of maps.
  */
 void
-parse_cli_one_filename(vector<string> tclap_argv,
+parse_cli_one_or_zero_filename(vector<string> tclap_argv,
                        string& inputFilename,
                        map<string, unsigned int>& map_uint,
                        map<string, bool>& map_bool,
@@ -75,7 +75,7 @@ parse_cli_one_filename(vector<string> tclap_argv,
     TCLAP::CmdLine parser("Perform simple tests on image informations", ' ', HEIMDALI_VERSION);
 
     TCLAP::UnlabeledValueArg<string> inputFilenameArg("inputFilename", 
-        "Input image file name.",true,"","IMAGE-IN", parser);
+        "Input image file name.",false,"","IMAGE-IN", parser);
 
     // -z -y -x -v
     TCLAP::ValueArg<unsigned int> zValue("z","nplanes", "Number of planes",false,0,"NZ", parser);
@@ -209,8 +209,9 @@ int main(int argc, char** argv)
 
     switch (numberOfInputFilenames)
     {
+    case 0:
     case 1:
-        parse_cli_one_filename(tclap_argv, inputFilenameB, map_uintA, map_boolA, map_floatA);
+        parse_cli_one_or_zero_filename(tclap_argv, inputFilenameB, map_uintA, map_boolA, map_floatA);
         copy_map_keys(map_uintA, map_uintB);
         copy_map_keys(map_boolA, map_boolB);
         copy_map_keys(map_floatA, map_floatB);
