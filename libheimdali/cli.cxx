@@ -216,14 +216,16 @@ parse_tclap_image_in_image_in_image_out_image_out(
 }
 
 bool
-is_floating_point_type(bool floatingSwitchIsSet, bool fixedSwitchIsSet) 
+is_floating_point_type(bool floatingSwitchIsSet, bool fixedSwitchIsSet, bool defaultsToFloating) 
 {
-    if (fixedSwitchIsSet) {
-        if (floatingSwitchIsSet) 
-            throw(TCLAP::ArgException("-r and -f flags are incompatible"));
+    if (fixedSwitchIsSet && floatingSwitchIsSet) {
+        throw(TCLAP::ArgException("-r and -f flags are incompatible"));
+    } else if (floatingSwitchIsSet) {
+        return true;
+    } else if (fixedSwitchIsSet) {
         return false;
     } else {
-        return true;
+        return defaultsToFloating;
     }
 }
 

@@ -51,7 +51,8 @@ parse_tclap_image_in_image_in_image_out_image_out(
        std::string& outputFilename0, std::string& outputFilename1);
 
 bool
-is_floating_point_type(bool floatingSwitchIsSet, bool fixedSwitchIsSet);
+is_floating_point_type(bool floatingSwitchIsSet, bool fixedSwitchIsSet,
+                       bool defaultsToFloating = true);
 
 };
 

@@ -124,8 +124,10 @@ int main(int argc, char** argv)
     ostringstream error_msg;
 
     // Fixed point or floating point
+    bool defaultsToFloating = false;
     bool is_floating = Heimdali::is_floating_point_type(floatingSwitch.isSet(),
-                                                        fixedSwitch.isSet());
+                                                        fixedSwitch.isSet(),
+                                                        defaultsToFloating);
 
     // Set parameters.
     unsigned int sz, sy, sx, sv;
