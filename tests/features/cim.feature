@@ -21,5 +21,10 @@ Feature: cim
         The images cim_fixed_point.h5 and $HEIMDALI_DATA_DIR/cim_fixed_point.h5 are equal
 
     Scenario: Fixed point (-f) is the default
-        When I run the command: echo "0.1 0.2 0.3" | cim -x 3 cim_fixed_point.h5
-        The images cim_fixed_point.h5 and $HEIMDALI_DATA_DIR/cim_fixed_point.h5 are equal
+        When I run the command: echo "0.1 0.2 0.3" | cim -x 3 -o 1 --format '%g' | tpr -c
+        Then I see the standard output:
+            """
+            26 51 77
+            ""
+            """
+
