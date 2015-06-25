@@ -8,7 +8,7 @@ Feature: ical
         When I run the command: ical $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5
         Then I see the standard output:
             """
-            +1.0000000E+00 +2.1610000E+03 +4.3210000E+03
+            "             1          2161          4321"
             ""
             """
 
@@ -16,7 +16,7 @@ Feature: ical
         When I run the command: ical $HEIMDALI_DATA_DIR/lena_f1.<ext>
         Then I see the standard output:
             """
-            +1.1764706E-01 +4.9966636E-01 +9.3725491E-01
+            "      0.117647      0.499666      0.937255"
             ""
             """
     Examples:
@@ -28,13 +28,13 @@ Feature: ical
         When I run the command: ad $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> | ical -
         Then I see the standard output:
             """
-            +2.0000000E+00 +4.3220000E+03 +8.6420000E+03
+            "             2          4322          8642"
             ""
             """
         When I run the command: ad $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> | ical
         Then I see the standard output:
             """
-            +2.0000000E+00 +4.3220000E+03 +8.6420000E+03
+            "             2          4322          8642"
             ""
             """
     Examples:

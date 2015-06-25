@@ -12,8 +12,6 @@
 
 int main(int argc, char** argv)
 {
-    std::cout << scientific << showpos << setprecision(7) << uppercase;
-
     try {
 
     //////////////////////////////////////////////////////////////////////////
@@ -150,7 +148,7 @@ int main(int argc, char** argv)
              max = statisticsImageFilter->GetMaximum();
 
              if (perComponentSwitch.getValue()) {
-                 std::cout << ic << " " << min << " " << mean << " " << max << endl;
+                printf("%d %14g%14g%14g\n", ic, min ,mean, max);
              } else {
                  if (ic==0) {
                      min_all = min;
@@ -165,7 +163,7 @@ int main(int argc, char** argv)
         }
 
         if (! perComponentSwitch.getValue()) {
-            cout << min << " " << mean << " " << max << endl;
+            printf("%14g%14g%14g\n", min ,mean, max);
         }
 
 
