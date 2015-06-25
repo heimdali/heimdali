@@ -27,12 +27,6 @@ Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
     Do not install the `heimdali` package in the `heimdali-dev` environment,
     as it would conflicts with sources files (from your heimdali git
     repository) you are building.
-   
-Install lettuce:
-
-.. code-block:: bash
-
-    pip install lettuce
 
 Activate the conda environment:
 
@@ -40,6 +34,12 @@ Activate the conda environment:
 
     source activate heimdali-dev
     hash -r
+   
+Install lettuce:
+
+.. code-block:: bash
+
+    pip install lettuce
 
 Get test datas
 --------------------
