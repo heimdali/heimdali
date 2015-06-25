@@ -113,7 +113,7 @@ int main(int argc, char** argv)
     TCLAP::ValueArg<int> nvArg("v","ncomponents", "Number of components",false,1,"NV", cmd);
 
     // -o
-    TCLAP::ValueArg<int> oArg("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",cmd);
+    TCLAP::ValueArg<int> oArg("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",cmd);
 
     // -r
     TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", cmd, false);
@@ -134,8 +134,15 @@ int main(int argc, char** argv)
     // Set pixel type
     bool is_floating = Heimdali::is_floating_point_type(floatingSwitch.isSet(),
                                                         fixedSwitch.isSet());
+
+    unsigned int component_size;
+    if (is_floating && ! oArg.isSet() )
+        component_size = 4;
+    else
+        component_size = oArg.getValue();
+
     itk::ImageIOBase::IOComponentType type = 
-        Heimdali::map_to_itk_component_type(is_floating, oArg.getValue());
+        Heimdali::map_to_itk_component_type(is_floating, component_size);
 
     // Dimension (only used if new image)
     int nz = nzArg.getValue();
@@ -162,7 +169,17 @@ int main(int argc, char** argv)
         break;
 
     case itk::ImageIOBase::UCHAR:
+        if (image_exists)
+            existing_image<unsigned char>(filename);
+        else
+            new_image<unsigned char>(nz,ny,nx,nv,filename);
+        break;
     case itk::ImageIOBase::USHORT:
+        if (image_exists)
+            existing_image<unsigned short>(filename);
+        else
+            new_image<unsigned short>(nz,ny,nx,nv,filename);
+        break;
     case itk::ImageIOBase::UINT:
         if (image_exists)
             existing_image<unsigned int>(filename);

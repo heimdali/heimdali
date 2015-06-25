@@ -37,8 +37,12 @@ Feature: raz
 
     Scenario: Write new fixed point type image to starndard output
         When I run the command: raz -x 2 -y 3 -z 4 -f | par
-        Then I see the standard output:
-            """
-            "< -x 2	-y 3	-z 4	-o 4	-f"
-            ""
-            """
+        Then I see as standard output the line: < -x 2	-y 3	-z 4	-o 1	-f
+
+    Scenario: Write new fixed point (size 2) type image to starndard output
+        When I run the command: raz -x 2 -y 3 -z 4 -f -o 2 | par
+        Then I see as standard output the line: < -x 2	-y 3	-z 4	-o 2	-f
+
+    Scenario: Write new fixed point (size 2) type image to starndard output
+        When I run the command: raz -x 2 -y 3 -z 4 -f -o 4 | par
+        Then I see as standard output the line: < -x 2	-y 3	-z 4	-o 4	-f

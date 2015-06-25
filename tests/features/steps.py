@@ -95,13 +95,18 @@ def i_see_the_standard_output(step):
     check_stdout(world.stdout, expected_stdout)
 
 @step('I see on standard error:')
-def i_see_the_standard_output(step):
+def i_see_the_standard_error(step):
     expected_stderr = expand_env_var(step.multiline)
     check_stderr(world.stderr, expected_stderr)
 
 @step('I see as standard output the content of the file (.*)')
 def i_see_as_standard_output_file_content(step,filename):
     expected_stdout = open(expand_env_var(filename)).read()
+    check_stdout(world.stdout, expected_stdout)
+
+@step('I see as standard output the line: (.*)')
+def i_see_as_standard_output_the_line(step,line):
+    expected_stdout = line + '\n'
     check_stdout(world.stdout, expected_stdout)
 
 def invoke_inrimage_par(filename,flags='-F -x -y -f -o'):
