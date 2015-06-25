@@ -19,3 +19,15 @@ Feature: vb
     Scenario: INRimage command line interface backward compatibility (-n THRESHOLD VALUE)
         When I run the command: vb $HEIMDALI_DATA_DIR/cossin_z5_y5_x5_c2_r4.h5 cossin_z5_y5_x5_c2_r4_vb_0_5.h5 -n 0.5 2.
         Then images cossin_z5_y5_x5_c2_r4_vb_0_5.h5 and $HEIMDALI_DATA_DIR/cossin_z5_y5_x5_c2_r4_vb_0_5.h5 are equal
+
+    Scenario: Threshold an fixed-point image
+        When I run the command: vb -t 0.7 -v 2. $HEIMDALI_DATA_DIR/three_values_f1.<ext> | tpr -c
+        Then I see the standard output:
+        """
+        2 2 1
+        ""
+        """
+    Examples:
+      | ext |
+      | h5  |
+      | inr |

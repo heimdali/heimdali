@@ -50,6 +50,10 @@ int main(int argc, char** argv)
 
     ReaderType* cmdreader2 = ReaderType::make_cmd_reader(streaming.getValue(),
                                                          inputFilename1);
+
+    cmdreader1->convert_fixed_point_to_floating_point_on();
+    cmdreader2->convert_fixed_point_to_floating_point_on();
+
     // Command line tool writer.
     typedef Heimdali::CmdWriter<VectorImageType> WriterType;
     WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);

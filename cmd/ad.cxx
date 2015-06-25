@@ -40,8 +40,10 @@ int main(int argc, char** argv)
     // Command line tool readers.
     typedef Heimdali::CmdReader<ImageType> ReaderType;
     ReaderType* reader1 = ReaderType::make_cmd_reader( streaming.getValue(), inputFilename0);
-
     ReaderType* reader2 = ReaderType::make_cmd_reader(streaming.getValue(),inputFilename1);
+    reader1->convert_fixed_point_to_floating_point_on();
+    reader2->convert_fixed_point_to_floating_point_on();
+
     // Command line tool writer.
     typedef Heimdali::CmdWriter<ImageType> WriterType;
     WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);

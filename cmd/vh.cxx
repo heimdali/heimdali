@@ -66,6 +66,7 @@ int main(int argc, char** argv)
     // Command line tool readers.
     typedef Heimdali::CmdReader<VectorImageType> ReaderType;
     ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename);
+    cmdreader->convert_fixed_point_to_floating_point_on();
 
     // Command line tool writer.
     typedef Heimdali::CmdWriter<VectorImageType> WriterType;

@@ -49,6 +49,8 @@ int main(int argc, char** argv)
     ReaderType* cmdreader = ReaderType::make_cmd_reader(streaming.getValue(),
                                                         inputFilename);
 
+    cmdreader->convert_fixed_point_to_floating_point_on();
+
     // Command line tool writer.
     typedef Heimdali::CmdWriter<ImageType> WriterType;
     WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
