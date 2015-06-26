@@ -17,6 +17,31 @@
 
 namespace Heimdali{
 
+class PixelTypeArgParser
+{
+    public:
+        PixelTypeArgParser();
+
+        void
+        parse(TCLAP::SwitchArg* floating_switch,
+              TCLAP::SwitchArg* fixed_switch,
+              TCLAP::ValueArg<int>* nbytes_arg,
+              TCLAP::ValueArg<int>* nbits_arg=NULL);
+
+        bool is_floating_point;
+        bool is_fixed_point;
+        bool is_binary;
+        int nbytes;
+};
+
+std::ostream &operator<<(std::ostream &os, PixelTypeArgParser const &p) { 
+    return os 
+        << "is_floating_point: " << p.is_floating_point << std::endl
+        << "is_fixed_point: " << p.is_fixed_point << std::endl
+        << "number of bytes: " << p.nbytes << std::endl
+        << "is_binary: " << p.is_binary;
+}
+
 std::vector<std::string>
 preprocess_argv(int argc, char** inrimage_argv);
 

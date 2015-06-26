@@ -12,6 +12,85 @@ using namespace std;
 
 namespace Heimdali {
 
+PixelTypeArgParser::PixelTypeArgParser():
+    is_floating_point(false),
+    is_fixed_point(true),
+    is_binary(false),
+    nbytes(1)
+{
+}
+
+void
+PixelTypeArgParser::parse(TCLAP::SwitchArg* floating_switch,
+                          TCLAP::SwitchArg* fixed_switch,
+                          TCLAP::ValueArg<int>* nbytes_arg,
+                          TCLAP::ValueArg<int>* nbits_arg)
+{
+    // Check for incompatible args.
+    if (floating_switch->isSet() && fixed_switch->isSet())
+        throw(TCLAP::ArgException("-r and -f flags are incompatible."));
+
+    if (nbits_arg != NULL && nbits_arg->isSet()) {
+        if (floating_switch->isSet())
+            throw(TCLAP::ArgException("-r and -b flags are incompatible."));
+
+        if (nbytes_arg->isSet())
+            throw(TCLAP::ArgException("-o and -b flags are incompatible."));
+    }
+
+    // Process floating_switch switch.
+    if (floating_switch->isSet()) {
+        is_floating_point = true;
+        is_fixed_point = false;
+        if (nbytes_arg->isSet()) {
+            switch (nbytes_arg->getValue())
+            {
+            case 4:
+                nbytes = 4;
+                break;
+            case 8:
+                nbytes = 8;
+                break;
+            default:
+                throw(TCLAP::ArgException("-o for floating points must be 4 or 8."));
+            }
+        } else {
+            nbytes = 4;
+        }
+
+    // Process fixed switch.
+    } else {
+        is_floating_point = false;
+        is_fixed_point = true;
+        if (nbytes_arg->isSet()) {
+            switch (nbytes_arg->getValue())
+            {
+            case 1:
+                nbytes = 1;
+                break;
+            case 2:
+                nbytes = 2;
+                break;
+            case 4:
+                nbytes = 4;
+                break;
+            default:
+                throw(TCLAP::ArgException("-o for fixed points must be 1, 2 or 4."));
+            }
+        } else if (nbits_arg->isSet()) {
+            if (nbits_arg->getValue() == 8) {
+                is_binary = true;
+                nbytes = 1;
+            }
+            else  {
+                throw(TCLAP::ArgException("Only -b 8 is possible."));
+            }
+        } else {
+            nbytes = 1;
+        }
+    }
+}
+
 /* Convert INRimage command line argument format to TCLAP format.
  *
  * Long argument starting with only one dash '-' must be fixed by

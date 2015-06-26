@@ -9,7 +9,7 @@ namespace Heimdali {
 
 #define HEIMDALI_CATCH_EXCEPTIONS(name) \
     catch (TCLAP::ArgException &e) { \
-        cerr << name << ": ERROR: " << e.error() << " for arg " << e.argId() << endl; \
+        cerr << name << ": ERROR: " << e.error() << " " << e.argId() << endl; \
         return 1; \
     }  \
     catch (Heimdali::Exception &e) { \
@@ -24,7 +24,7 @@ namespace Heimdali {
 
 #define HEIMDALI_CATCH_EXCEPTIONS_WITHOUT_ITK(name) \
     catch (TCLAP::ArgException &e) { \
-        cerr << name << ": ERROR: " << e.error() << " for arg " << e.argId() << endl; \
+        cerr << name << ": ERROR: " << e.error() << " " << e.argId() << endl; \
         return 1; \
     }  \
     catch (Heimdali::Exception &e) { \

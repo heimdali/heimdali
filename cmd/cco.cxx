@@ -164,30 +164,25 @@ int main(int argc, char *argv[])
     // -f
     TCLAP::SwitchArg fixedSwitch("f","fixed", "Convert to fixed point.", parser, false);
 
-    // -b
-    TCLAP::ValueArg<int> binarySwitch("b","binary","Convert to binary",false,0,"NBITS",parser);
-
     // -o
-    TCLAP::ValueArg<int> oSwitch("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",parser);
+    TCLAP::ValueArg<int> nbytesArg("o","bytes","Number of bytes per pixel component.",false,1,"NBYTES",parser);
+
+    // -b
+    TCLAP::ValueArg<int> nbitsArg("b","nbits","Number of bits per pixel component",false,8,"NBITS",parser);
 
     HEIMDALI_TCLAP_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
     // Parse command line.
     vector<string> tclap_argv = Heimdali::preprocess_argv(argc, argv);
     parser.parse(tclap_argv);
-   
+
+    Heimdali::PixelTypeArgParser type;
+    type.parse(&floatingSwitch, &fixedSwitch, &nbytesArg, &nbitsArg);
+
     string inputFilename;
     string outputFilename;
     Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
 
-    int nbytes = oSwitch.getValue();
-    bool fixed_point = fixedSwitch.getValue();
-    bool floating_point = floatingSwitch.getValue();
-    bool binary = binarySwitch.getValue();
-    if ( (! fixed_point) && (! floating_point) && (binary == 0))
-        fixed_point = true;
-
-    // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
     // Command line tool readers.
@@ -197,11 +192,12 @@ int main(int argc, char *argv[])
 
     ostringstream error_msg;
 
-    if (fixed_point) {
-        switch (nbytes)
+    // Put our INRimage reader in the list of readers ITK knows.
+    if (type.is_fixed_point) {
+        switch (type.nbytes)
         {
         case(1):
-            write_output<unsigned char>(reader, outputFilename, 255);
+            write_output<unsigned char>(reader, outputFilename, 255, type.is_binary);
             break;
         case(2):
             write_output<unsigned short>(reader, outputFilename, 65535);
@@ -212,13 +208,13 @@ int main(int argc, char *argv[])
         default:
             error_msg << "Pixel component size must to be 1, 2 or 4 "
                       << "for fixed point number, but got "
-                      << nbytes;
+                      << type.nbytes;
             throw(Heimdali::Exception(error_msg.str()));
             break;
         }
 
-    } else if (floating_point) {
-        switch (nbytes)
+    } else {
+        switch (type.nbytes)
         {
         case(4):
             write_output<float>(reader, outputFilename, 0);
@@ -229,13 +225,11 @@ int main(int argc, char *argv[])
         default:
             error_msg << "Pixel component size must to be 4 or 8 "
                       << "for floating point number, but got "
-                      << nbytes;
+                      << type.nbytes;
             throw(Heimdali::Exception(error_msg.str()));
             break;
         }
-    } else if (binary) {
-        write_output<unsigned char>(reader, outputFilename, 255, true);
-    }
+    } 
 
     } // End of 'try' block.
 
