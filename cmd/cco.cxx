@@ -49,7 +49,7 @@ bool write_hdf5_to_stdout(string filename)
 
 template<typename OutputPixelType>
 void
-write_output(ReaderType* reader, string outputFilename, double fixed_point_divider, bool binary=false)
+cco(ReaderType* reader, string outputFilename, double fixed_point_divider, bool binary=false)
 {
     bool convert_floating_to_fixed_point = 
         (is_hdf5_or_inrimage(outputFilename) || write_hdf5_to_stdout(outputFilename)) &&
@@ -183,6 +183,7 @@ int main(int argc, char *argv[])
     string outputFilename;
     Heimdali::parse_tclap_image_in_image_out(filenamesArg, inputFilename, outputFilename);
 
+    // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
     // Command line tool readers.
@@ -192,18 +193,17 @@ int main(int argc, char *argv[])
 
     ostringstream error_msg;
 
-    // Put our INRimage reader in the list of readers ITK knows.
     if (type.is_fixed_point) {
         switch (type.nbytes)
         {
         case(1):
-            write_output<unsigned char>(reader, outputFilename, 255, type.is_binary);
+            cco<unsigned char>(reader, outputFilename, 255, type.is_binary);
             break;
         case(2):
-            write_output<unsigned short>(reader, outputFilename, 65535);
+            cco<unsigned short>(reader, outputFilename, 65535);
             break;
         case(4):
-            write_output<unsigned int>(reader, outputFilename, 4294967295);
+            cco<unsigned int>(reader, outputFilename, 4294967295);
             break;
         default:
             error_msg << "Pixel component size must to be 1, 2 or 4 "
@@ -217,10 +217,10 @@ int main(int argc, char *argv[])
         switch (type.nbytes)
         {
         case(4):
-            write_output<float>(reader, outputFilename, 0);
+            cco<float>(reader, outputFilename, 0);
             break;
         case(8):
-            write_output<double>(reader, outputFilename, 0);
+            cco<double>(reader, outputFilename, 0);
             break;
         default:
             error_msg << "Pixel component size must to be 4 or 8 "
