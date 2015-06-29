@@ -60,3 +60,5 @@ Feature: extg
             ""
             """
 
+    Scenario: Extract one in every two pixel
+        When I run the command: extg -xpas 2 $HEIMDALI_DATA_DIR/lena_f1.inr | par -x

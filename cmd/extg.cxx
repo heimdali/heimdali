@@ -48,10 +48,10 @@ templated_main(string inputFilename, string outputFilename,
     unsigned int SV = io->GetNumberOfComponents();
 
     // Number of plane/column/row.
-    unsigned int NZ = NZ0==0 ? SZ-IZ : NZ0;
-    unsigned int NY = NY0==0 ? SY-IY : NY0;
-    unsigned int NX = NX0==0 ? SX-IX : NX0;
-    unsigned int NV = NV0==0 ? SV-IV : NV0;
+    unsigned int NZ = NZ0==0 ? 1 + (SZ-IZ-1) / DZ : NZ0;
+    unsigned int NY = NY0==0 ? 1 + (SY-IY-1) / DY : NY0;
+    unsigned int NX = NX0==0 ? 1 + (SX-IX-1) / DX : NX0;
+    unsigned int NV = NV0==0 ? 1 + (SV-IV-1) / DV : NV0;
 
     // Buffer to read.
     unsigned int BZ = NZ + (NZ-1)*(DZ-1);
