@@ -97,3 +97,28 @@
   - par print '<' filename for stdin (#35)
   - cco: fix fixed point on stdout, "-" for stdin (#45)
   - doc: use readthedocs sphinx theme
+
+0.7.2 (2015-07-07)
+  - ITK is now built with fftw
+  - Moved from https://github.com/dfroger to https://github.com/heimdali 
+  - Moved from https://binstar.org/dfroger to https://binstar.org/dfroger
+  - Various fix/improvement in developer docs
+  - CMake config file for heimdali
+  - Build and run test in separate directory
+  - Heimdali example tarballs downloadable from the docs
+  - Add iterator example
+  - detc: can read fixed point image
+  - raz write fixed size images
+  - Arithmetic commands correctly read fixed-point images (#63)
+  - cim -o [1|2] activates -f (#48)
+  - cim: fixed point by default (#48)
+  - Fix integer overflow
+  - Drop cim interactive support
+  - Fix tpr defalut value when couting from zero
+  - tpr: count from 1 by default (#64)
+  - vb and vh: INRimage command line compatiblity (#65)
+  - itest can read from stdin
+  - extg: Fix dimensions when -xpas is used (#57)
+  - melg: Fix dimensions and pixel type default values
+  - cco: more robust pixel type command line parser (#59)
+  - Fix ical ouptut formatting (#53)
