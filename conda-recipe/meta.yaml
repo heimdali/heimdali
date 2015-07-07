@@ -5,7 +5,7 @@ package:
 source:
   path: ..
   #fn: heimdali-0.7.1.tar.gz
-  #url: https://github.com/dfroger/heimdali/archive/0.7.1.tar.gz
+  #url: https://github.com/heimdali/heimdali/archive/0.7.1.tar.gz
 
 build:
   number: 1
@@ -29,5 +29,5 @@ test:
     - par --help
 
 about:
-  home: https://github.com/dfroger/heimdali 
+  home: https://github.com/heimdali/heimdali 
   license: GPL

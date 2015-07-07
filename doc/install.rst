@@ -13,11 +13,11 @@ Download the Python `2.7` version of `miniconda` corresponding to your plateform
 Execute the downloaded file: this will install the
 `Conda <http://conda.pydata.org/docs/>`_ package manager.
 
-Add the `dfroger` `binstar` channel to your config:
+Add the `heimdali` `binstar` channel to your config:
 
 .. code-block:: bash
 
-  conda config --add channels https://conda.binstar.org/dfroger
+  conda config --add channels https://conda.binstar.org/heimdali
 
 **Heimdali** installation
 ------------------------------------
@@ -44,7 +44,7 @@ Download some input data to test:
 
 .. code-block:: bash
 
-  git clone https://github.com/dfroger/heimdali-data
+  git clone https://github.com/heimdali/heimdali-data
 
 Execute the :ref:`par <cmd-par>` command:
 

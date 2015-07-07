@@ -19,7 +19,7 @@ Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
 
 .. code-block:: bash
 
-    conda config --add channels http://conda.binstar.org/dfroger
+    conda config --add channels http://conda.binstar.org/heimdali
     conda create -n heimdali-dev h5unixpipe itk-heimdali-dbg libinrimage-dbg tclap cmake pip
 
 .. warning::
@@ -48,7 +48,7 @@ Get Heimdali data files:
 
 .. code-block:: bash
 
-    git clone https://github.com/dfroger/heimdali-data
+    git clone https://github.com/heimdali/heimdali-data
 
 Define directories
 --------------------
@@ -224,19 +224,19 @@ it:
 | libinrimage_                | `libinrimage recipe`_  |
 +-----------------------------+------------------------+
 
-Conda packages are hosted on `binstar dfroger channel`_.
+Conda packages are hosted on `binstar heimdali channel`_.
 
 .. _Sphinx: http://sphinx-doc.org/
 .. _Doxygen: www.doxygen.org/
 .. _breathe: https://breathe.readthedocs.org
-.. _heimdali: https://github.com/dfroger/heimdali
-.. _heimdali recipe: https://github.com/dfroger/heimdali/tree/master/conda-recipe
-.. _itk-heimdali: https://github.com/dfroger/itk/tree/heimdali
-.. _itk-heimdali recipe: https://github.com/dfroger/df-conda-recipe/tree/master/itk-heimdali
+.. _heimdali: https://github.com/heimdali/heimdali
+.. _heimdali recipe: https://github.com/heimdali/heimdali/tree/master/conda-recipe
+.. _itk-heimdali: https://github.com/heimdali/itk/tree/heimdali
+.. _itk-heimdali recipe: https://github.com/heimdali/df-conda-recipe/tree/master/itk-heimdali
 .. _tclap: http://tclap.sourceforge.net/
-.. _tclap recipe: https://github.com/dfroger/df-conda-recipe/tree/master/tclap
-.. _h5unixpipe: https://github.com/dfroger/h5unixpipe
-.. _h5unixpipe recipe: https://github.com/dfroger/h5unixpipe/tree/master/conda
+.. _tclap recipe: https://github.com/heimdali/df-conda-recipe/tree/master/tclap
+.. _h5unixpipe: https://github.com/heimdali/h5unixpipe
+.. _h5unixpipe recipe: https://github.com/heimdali/h5unixpipe/tree/master/conda
 .. _libinrimage: http://inrimage.gforge.inria.fr
-.. _libinrimage recipe: https://github.com/dfroger/df-conda-recipe/tree/master/libinrimage
-.. _binstar dfroger channel: https://binstar.org/dfroger 
+.. _libinrimage recipe: https://github.com/heimdali/df-conda-recipe/tree/master/libinrimage
+.. _binstar heimdali channel: https://binstar.org/heimdali 
