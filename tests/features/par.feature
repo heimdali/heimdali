@@ -8,7 +8,7 @@ Feature: par
         When I run the command: par $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext>
         Then I see the standard output:
             """
-            $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> -x 3	-y 4	-z 5	-v 2	-o 4	-r
+            $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.<ext> -x 3	-y 4	-z 5	-v 2	-r	-o 4
             ""
             """
     Examples:
@@ -27,7 +27,7 @@ Feature: par
         When I run the command: par $HEIMDALI_DATA_DIR/lena_f2.inr
         Then I see the standard output:
             """
-            $HEIMDALI_DATA_DIR/lena_f2.inr -x 256	-y 256	-o 2	-f
+            $HEIMDALI_DATA_DIR/lena_f2.inr -x 256	-y 256	-f	-o 2
             ""
             """
 
@@ -53,7 +53,7 @@ Feature: par
         When I run the command: par $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_origin_4_5_6.<ext>
         Then I see the standard output:
             """
-            $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_origin_4_5_6.<ext> -x 3	-y 4	-z 5	-v 2	-x0 4	-y0 5	-z0 6	-o 4	-r
+            $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2_origin_4_5_6.<ext> -x 3	-y 4	-z 5	-v 2	-x0 4	-y0 5	-z0 6	-r	-o 4
             ""
             """
     Examples:
@@ -65,7 +65,7 @@ Feature: par
         When I run the command: par $HEIMDALI_DATA_DIR/imtest_z1_y3_x2_c1.<ext>
         Then I see the standard output:
             """
-            $HEIMDALI_DATA_DIR/imtest_z1_y3_x2_c1.<ext> -x 2	-y 3	-o 4	-r
+            $HEIMDALI_DATA_DIR/imtest_z1_y3_x2_c1.<ext> -x 2	-y 3	-r	-o 4
             ""
             """
     Examples:
@@ -77,7 +77,7 @@ Feature: par
         When I run the command: cat $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 | par
         Then I see the standard output:
             """
-            "< -x 3	-y 4	-z 5	-v 2	-o 4	-r"
+            "< -x 3	-y 4	-z 5	-v 2	-r	-o 4"
             ""
             """
     Scenario: Read from stdin, one flag
@@ -106,7 +106,7 @@ Feature: par
         When I run the command (with return code 1): par no_such_0 $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.inr no_such_1
         Then I see the standard output:
             """
-            $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.inr -x 3	-y 4	-z 5	-v 2	-o 4	-r
+            $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.inr -x 3	-y 4	-z 5	-v 2	-r	-o 4
             ""
             """
         Then I see on standard error:
