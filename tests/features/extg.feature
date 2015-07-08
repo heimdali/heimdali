@@ -33,7 +33,7 @@ Feature: extg
         When I run the command: par lena_f1_extg.<ext>
         Then I see the standard output:
             """
-            lena_f1_extg.<ext> -x 100	-y 100	-o 1	-f
+            lena_f1_extg.<ext> -x 100	-y 100	-f	-o 1
             ""
             """
     Examples:

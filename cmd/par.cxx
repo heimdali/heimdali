@@ -138,7 +138,6 @@ print_informations(ImageIOBase::Pointer io, Options opt)
     print_switch(x0, io->GetOrigin(XD), 0);
     print_switch(y0, io->GetOrigin(YD), 0);
     print_switch(z0, io->GetOrigin(ZD), 0);
-    if (opt.o)  smsg << "-o " << io->GetComponentSize() << "\t";
     if (opt.F) {
         if ((string) io->GetNameOfClass() == (string) "HDF5ImageIO")
             smsg << "-F HDF5\t";
@@ -165,6 +164,8 @@ print_informations(ImageIOBase::Pointer io, Options opt)
                 smsg << "-f\t";
                 break;
         }
+
+    if (opt.o)  smsg << "-o " << io->GetComponentSize() << "\t";
     }
 
     string msg = smsg.str();
