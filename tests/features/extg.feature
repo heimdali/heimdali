@@ -33,13 +33,14 @@ Feature: extg
         When I run the command: par lena_f1_extg.<ext>
         Then I see the standard output:
             """
-            lena_f1_extg.<ext> -x 100	-y 100	-f	-o 1
+            lena_f1_extg.<ext> -F=<filetype>	-x 100	-y 100	-f	-o 1
             ""
             """
     Examples:
-        | ext |
-        | h5  |
-        | inr |
+        | ext | filetype |
+        | h5  | HDF5     |
+        | inr | Inrimage |
+
 
     Scenario: Extract with sample steps.
         When I run the command: extg -iz 5 -z 3 -zpas 2 -iy 4 -y 2 -ypas 3 -ix 3 -x 3 -xpas 3 -iv 1 -v 2 -vpas 5  $HEIMDALI_DATA_DIR/imtest_z15_y14_x13_c12.h5 | tpr -l 6 --from-zero
