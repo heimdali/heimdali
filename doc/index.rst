@@ -56,6 +56,7 @@ Developer guide
    :maxdepth: 2
 
    develop
+   ccache
 
 
 Indices and tables

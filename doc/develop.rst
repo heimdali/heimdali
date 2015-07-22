@@ -12,6 +12,10 @@ Working in development mode consists in iterating in the cycle:
 
 without having to run the ``make install`` step.
 
+.. note::
+
+    You may want to use :ref:`ccache_use` to speed-up compilation.
+
 Install dependencies
 --------------------
 
@@ -21,6 +25,12 @@ Create a ``conda`` enviromnent named ``heimdali-dev`` containing all dependencie
 
     conda config --add channels http://conda.binstar.org/heimdali
     conda create -n heimdali-dev h5unixpipe itk-heimdali-dbg libinrimage-dbg tclap cmake pip
+
+.. note::
+
+    As ``cmake`` executable is in the conda environment,  it will automatically
+    find dependant libraries provided by the conda environment . So using
+    ``-DCMAKE_PREFIX_PATH=/path/to/conda/env`` is not required.
 
 .. warning::
 
@@ -53,7 +63,7 @@ Get Heimdali data files:
 Define directories
 --------------------
 
-For convenience, define these directories:
+For convenience, define these 3 directories:
 
 +--------------------------+----------------------------------------------------+
 | Variable                 | Description                                        |
@@ -63,9 +73,6 @@ For convenience, define these directories:
 +--------------------------+----------------------------------------------------+
 | ``HEIMDALI_DATA_DIR``    | | Heimdali data directory (heimdali-data git repo  |
 |                          | | cloned above)                                    |
-+--------------------------+----------------------------------------------------+
-| ``HEIMDALI_CONDA_DIR``   | | Where Conda installed dependent libraries,       |
-|                          | | for example, ``~/miniconda/envs/heimdali-dev``.  |
 +--------------------------+----------------------------------------------------+
 | ``HEIMDALI_WORK_DIR``    | | Directory for temporary files (building sources, |
 |                          | | building examples, running tests).               |
@@ -81,8 +88,6 @@ For example:
     cd heimdali-data
     export HEIMDALI_DATA_DIR=$PWD
 
-    export HEIMDALI_CONDA_DIR=$(conda info -e | grep '*' | tr -s ' ' | cut -d" " -f3)
-
     export HEIMDALI_WORK_DIR=/path/to/<heimdali-work-dir>
 
 .. note::
@@ -94,7 +99,7 @@ For example:
 
 .. warning::
 
-    The conda environment must be activated and these 4 variables must be
+    The conda environment must be activated and these 3 variables must be
     defined for the sections bellow.
 
 Build Heimdali
@@ -107,44 +112,21 @@ it:
 
     export MACOSX_DEPLOYMENT_TARGET=10.6
 
-Build heidmali, asking CMake to search dependances in the Conda environment:
-
-.. note::
-
-    You may want to use ``ccache`` to speed-up re-compiling after cleaning.
-    (``conda install ccache``).
-
-+--------------------------+------------------------------------------------------+
-| Variable                 | Description                                          |
-+==========================+======================================================+
-| ``CMAKE_PREFIX_PATH``    | | Where ``CMake`` will search for dependent          |
-|                          | | libraries                                          |
-+--------------------------+------------------------------------------------------+
-| ``CMAKE_INSTALL_PREFIX`` | | Optional. You may want to install ``Heimdali`` to  |
-|                          | | test that ``find_package(heimdali)`` works.        |
-+--------------------------+------------------------------------------------------+
-| ``CMAKE_CXX_COMPILER``   | | If using ``ccache``, points to the symbolic link   |
-|                          | | to ``ccache``.                                     |
-+--------------------------+------------------------------------------------------+
+Build heidmali:
 
 .. code-block:: bash
 
     mkdir -p $HEIMDALI_WORK_DIR/build_debug/src
     cd $HEIMDALI_WORK_DIR/build_debug/src
-    cmake \
-        -DCMAKE_BUILD_TYPE=Debug \
-        -DCMAKE_PREFIX_PATH=$HEIMDALI_CONDA_DIR \
-        # -DCMAKE_INSTALL_PREFIX=~/tmp/heimdali-install \
-        # -DCMAKE_CXX_COMPILER=$HEIMDALI_CONDA_DIR/bin/g++ \ 
-        $HEIMDALI_SRC_DIR
+    cmake -DCMAKE_BUILD_TYPE=Debug $HEIMDALI_SRC_DIR
     make -j 4
 
 Configure examples
 --------------------
 
-As before, the Conda environment is used. Moreover, because Heimdali has been
-built in ``HEIMDALI_WORK_DIR/build_debug/src`` and is not installed (development
-mode), we need to specified ``Heimdali`` path to CMake.
+Heimdali has been built in ``HEIMDALI_WORK_DIR/build_debug/src`` and is not
+installed (development mode), we need to specified ``Heimdali`` path to
+``cmake``.
 
 .. code-block:: bash
 
@@ -204,6 +186,21 @@ View the documentation:
 
 Note that breathe_, a Sphinx extension, is already provided in
 ``heimdali/doc/ext/breathe``.
+
+
+Other ``CMake`` usefull variables
+====================================
+
++--------------------------+------------------------------------------------------+
+| Variable                 | Description                                          |
++==========================+======================================================+
+| ``CMAKE_PREFIX_PATH``    | | Where ``CMake`` will search for dependent          |
+|                          | | libraries.                                         |
++--------------------------+------------------------------------------------------+
+| ``CMAKE_INSTALL_PREFIX`` | | Where ``CMake`` will install things during         |
+|                          | | ``make install``.                                  |
++--------------------------+------------------------------------------------------+
+
 
 Dependencies
 ====================================
