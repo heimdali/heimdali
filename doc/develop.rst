@@ -1,8 +1,8 @@
 Build Heimdali in development mode
 ====================================
 
-Development mode means build Heimdali from its source code, typically the
-`develop` branch of heimdali_ Git repository.
+Development mode means building Heimdali from its source code, typically the
+``develop`` branch of heimdali_ Git repository.
 
 Working in development mode consists in iterating in the cycle:
 
@@ -10,12 +10,12 @@ Working in development mode consists in iterating in the cycle:
   - Build.
   - Run the test.
 
-without having to run the `make install` step.
+without having to run the ``make install`` step.
 
 Install dependencies
 --------------------
 
-Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
+Create a ``conda`` enviromnent named ``heimdali-dev`` containing all dependencies:
 
 .. code-block:: bash
 
@@ -24,7 +24,7 @@ Create a `conda` enviromnent named `heimdali-dev` containing all dependencies:
 
 .. warning::
 
-    Do not install the `heimdali` package in the `heimdali-dev` environment,
+    Do not install the ``heimdali`` package in the ``heimdali-dev`` environment,
     as it would conflicts with sources files (from your heimdali git
     repository) you are building.
 
@@ -55,21 +55,21 @@ Define directories
 
 For convenience, define these directories:
 
-+------------------------+----------------------------------------------------+
-| Variable               | Description                                        |
-+========================+====================================================+
-| `HEIMDALI_SRC_DIR`     | | Heimdali sources (git repo), containing the      |
-|                        | | main CMakeLists.txt                              |
-+------------------------+----------------------------------------------------+
-| `HEIMDALI_DATA_DIR`    | | Heimdali data directory (heimdali-data git repo  |
-|                        | | cloned above)                                    |
-+------------------------+----------------------------------------------------+
-| `HEIMDALI_CONDA_DIR`   | | Where Conda installed dependent libraries,       |
-|                        | | for example, `~/miniconda/envs/heimdali-dev`.    |
-+------------------------+----------------------------------------------------+
-| `HEIMDALI_WORK_DIR`    | | Directory for temporary files (building sources, |
-|                        | | building examples, running tests).               |
-+------------------------+----------------------------------------------------+
++--------------------------+----------------------------------------------------+
+| Variable                 | Description                                        |
++==========================+====================================================+
+| ``HEIMDALI_SRC_DIR``     | | Heimdali sources (git repo), containing the      |
+|                          | | main CMakeLists.txt                              |
++--------------------------+----------------------------------------------------+
+| ``HEIMDALI_DATA_DIR``    | | Heimdali data directory (heimdali-data git repo  |
+|                          | | cloned above)                                    |
++--------------------------+----------------------------------------------------+
+| ``HEIMDALI_CONDA_DIR``   | | Where Conda installed dependent libraries,       |
+|                          | | for example, ``~/miniconda/envs/heimdali-dev``.  |
++--------------------------+----------------------------------------------------+
+| ``HEIMDALI_WORK_DIR``    | | Directory for temporary files (building sources, |
+|                          | | building examples, running tests).               |
++--------------------------+----------------------------------------------------+
 
 For example:
 
@@ -100,7 +100,8 @@ For example:
 Build Heimdali
 --------------------
 
-On Mac OS X your will need to install `/Developer/SDKs/MacOSX10.5`, and use it:
+On Mac OS X your will need to install ``/Developer/SDKs/MacOSX10.6``, and use
+it:
 
 .. code-block:: bash
 
@@ -113,18 +114,18 @@ Build heidmali, asking CMake to search dependances in the Conda environment:
     You may want to use ``ccache`` to speed-up re-compiling after cleaning.
     (``conda install ccache``).
 
-+------------------------+----------------------------------------------------+
-| Variable               | Description                                        |
-+========================+====================================================+
-| `CMAKE_PREFIX_PATH`    | | Where `CMake` will search for dependent          |
-|                        | | libraries                                        |
-+------------------------+----------------------------------------------------+
-| `CMAKE_INSTALL_PREFIX` | | Optional. You may want to install `Heimdali` to  |
-|                        | | test that `find_package(heimdali)` works.        |
-+------------------------+----------------------------------------------------+
-| `CMAKE_CXX_COMPILER`   | | If using ``ccache``, points to the symbolic link |
-|                        | | to ``ccache``.                                   |
-+------------------------+----------------------------------------------------+
++--------------------------+------------------------------------------------------+
+| Variable                 | Description                                          |
++==========================+======================================================+
+| ``CMAKE_PREFIX_PATH``    | | Where ``CMake`` will search for dependent          |
+|                          | | libraries                                          |
++--------------------------+------------------------------------------------------+
+| ``CMAKE_INSTALL_PREFIX`` | | Optional. You may want to install ``Heimdali`` to  |
+|                          | | test that ``find_package(heimdali)`` works.        |
++--------------------------+------------------------------------------------------+
+| ``CMAKE_CXX_COMPILER``   | | If using ``ccache``, points to the symbolic link   |
+|                          | | to ``ccache``.                                     |
++--------------------------+------------------------------------------------------+
 
 .. code-block:: bash
 
@@ -142,8 +143,8 @@ Configure examples
 --------------------
 
 As before, the Conda environment is used. Moreover, because Heimdali has been
-built in `HEIMDALI_WORK_DIR/build_debug/src` and is not installed (development
-mode), we need to specified `Heimdali` path to CMake.
+built in ``HEIMDALI_WORK_DIR/build_debug/src`` and is not installed (development
+mode), we need to specified ``Heimdali`` path to CMake.
 
 .. code-block:: bash
 
@@ -202,7 +203,7 @@ View the documentation:
     firefox _build/html/index.html
 
 Note that breathe_, a Sphinx extension, is already provided in
-`heimdali/doc/ext/breathe`.
+``heimdali/doc/ext/breathe``.
 
 Dependencies
 ====================================
