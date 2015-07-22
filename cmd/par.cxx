@@ -123,6 +123,7 @@ postprocess_options(Options& opt)
         opt.o = true;
         opt.r = true;
         opt.f = true;
+	opt.F = true;
     }
 }
 
@@ -131,6 +132,16 @@ print_informations(ImageIOBase::Pointer io, Options opt)
 {
     ostringstream smsg; // Stream MeSsaGe
     bool print_canceled;
+
+    if (opt.F) {
+        if ((string) io->GetNameOfClass() == (string) "HDF5ImageIO")
+            smsg << "-F=HDF5\t";
+        else if ((string) io->GetNameOfClass() == (string) "INRImageIO")
+            smsg << "-F=Inrimage\t";
+        else
+            smsg << "-F=" << io->GetNameOfClass() << "\t";
+    }
+
     if (opt.x)  smsg << "-x " << io->GetDimensions(XD) << "\t";
     if (opt.y)  smsg << "-y " << io->GetDimensions(YD) << "\t";
     print_switch(z, io->GetDimensions(ZD), 1);
@@ -138,14 +149,7 @@ print_informations(ImageIOBase::Pointer io, Options opt)
     print_switch(x0, io->GetOrigin(XD), 0);
     print_switch(y0, io->GetOrigin(YD), 0);
     print_switch(z0, io->GetOrigin(ZD), 0);
-    if (opt.F) {
-        if ((string) io->GetNameOfClass() == (string) "HDF5ImageIO")
-            smsg << "-F HDF5\t";
-        else if ((string) io->GetNameOfClass() == (string) "INRImageIO")
-            smsg << "-F Inrimage\t";
-        else
-            smsg << "-F " << io->GetNameOfClass() << "\t";
-    }
+
 
     if (opt.r or opt.f) {
         ostringstream error_msg;
@@ -164,9 +168,9 @@ print_informations(ImageIOBase::Pointer io, Options opt)
                 smsg << "-f\t";
                 break;
         }
-
-    if (opt.o)  smsg << "-o " << io->GetComponentSize() << "\t";
     }
+    if (opt.o)  smsg << "-o " << io->GetComponentSize() << "\t";
+    
 
     string msg = smsg.str();
     msg = msg.substr(0, msg.size()-1); // Remove trailing tabluation.

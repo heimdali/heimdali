@@ -76,7 +76,7 @@ Feature: cco
         When I run the command: cat $HEIMDALI_DATA_DIR/lena_r4.h5 | cco -f <input> | par
         Then I see the standard output:
             """
-            < -x 256	-y 256	-f	-o 1
+            < -F=HDF5	-x 256	-y 256	-f	-o 1
             ""
             """
         Examples:

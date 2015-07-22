@@ -14,7 +14,7 @@ Feature: raz
         When I run the command: par zero.h5
         Then I see the standard output:
             """
-            "zero.h5 -x 2	-y 3	-z 4	-v 2	-r	-o 4"
+            "zero.h5 -F=HDF5	-x 2	-y 3	-z 4	-v 2	-r	-o 4"
             ""
             """
 
@@ -23,7 +23,7 @@ Feature: raz
         When I run the command: par zero_r8.h5
         Then I see the standard output:
             """
-            "zero_r8.h5 -x 2	-y 3	-z 4	-r	-o 8"
+            "zero_r8.h5 -F=HDF5	-x 2	-y 3	-z 4	-r	-o 8"
             ""
             """
 
@@ -31,18 +31,18 @@ Feature: raz
         When I run the command: raz -x 2 -y 3 -z 4  | par
         Then I see the standard output:
             """
-            "< -x 2	-y 3	-z 4	-r	-o 4"
+            "< -F=HDF5	-x 2	-y 3	-z 4	-r	-o 4"
             ""
             """
 
     Scenario: Write new fixed point type image to starndard output
         When I run the command: raz -x 2 -y 3 -z 4 -f | par
-        Then I see as standard output the line: < -x 2	-y 3	-z 4	-f	-o 1
+        Then I see as standard output the line: < -F=HDF5	-x 2	-y 3	-z 4	-f	-o 1
 
     Scenario: Write new fixed point (size 2) type image to starndard output
         When I run the command: raz -x 2 -y 3 -z 4 -f -o 2 | par
-        Then I see as standard output the line: < -x 2	-y 3	-z 4	-f	-o 2
+        Then I see as standard output the line: < -F=HDF5	-x 2	-y 3	-z 4	-f	-o 2
 
     Scenario: Write new fixed point (size 2) type image to starndard output
         When I run the command: raz -x 2 -y 3 -z 4 -f -o 4 | par
-        Then I see as standard output the line: < -x 2	-y 3	-z 4	-f	-o 4
+        Then I see as standard output the line: < -F=HDF5	-x 2	-y 3	-z 4	-f	-o 4
