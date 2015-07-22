@@ -21,7 +21,7 @@ Configure:
 
 .. code-block:: bash
 
-    mkdir -p ccache-3.2.2.tar.bz2 # for example
+    mkdir -p /usr/local/ccache/3.2.2 # for example
     ./configure --prefix=/usr/local/ccache/3.2.2
 
 Build and install:
