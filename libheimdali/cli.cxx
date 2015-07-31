@@ -77,7 +77,7 @@ PixelTypeArgParser::parse(TCLAP::SwitchArg* floating_switch,
             default:
                 throw(TCLAP::ArgException("-o for fixed points must be 1, 2 or 4."));
             }
-        } else if (nbits_arg->isSet()) {
+        } else if (nbits_arg && nbits_arg->isSet()) {
             if (nbits_arg->getValue() == 8) {
                 is_binary = true;
                 nbytes = 1;
