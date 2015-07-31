@@ -30,6 +30,8 @@ Command line tools
    cmd/raz
    cmd/melg
    cmd/fzoom
+   cmd/cim
+   fixed_point
 
 Using ITK
 ####################################
