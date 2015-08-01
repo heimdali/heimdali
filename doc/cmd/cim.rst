@@ -16,7 +16,7 @@ For example, to write in a file ``fixed_point_uchar.inr`` the pixel values
 (``uchar``):
 
 +-------------+----------------------+-------------------+--------------------+
-| pixel value | fixed_point_exponent | pixed_point_nbits | fixed_point_factor |
+| pixel value | fixed_point_exponent | fixed_point_nbits | fixed_point_factor |
 +=============+======================+===================+====================+
 | 0.1         | 0                    | 8                 | 25                 |
 +-------------+----------------------+-------------------+--------------------+
@@ -27,7 +27,7 @@ For example, to write in a file ``fixed_point_uchar.inr`` the pixel values
 
 .. code-block:: bash
 
-    echo 25 51 76 | cim -f -x 3 > fixed_point_uchar.inr
+    echo 25 51 76 | cim -f -o 1 -x 3 > fixed_point_uchar.inr
 
 Fixed point number on 2 or 4 bytes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

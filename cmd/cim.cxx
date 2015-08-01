@@ -12,7 +12,7 @@
 
 using namespace std;
 
-template<typename PixelType>
+template<typename PixelType, typename valueType>
 void
 read_write_image(unsigned int sz, unsigned int sy,
                  unsigned int sx, unsigned int sv,
@@ -42,7 +42,7 @@ read_write_image(unsigned int sz, unsigned int sy,
     image->SetVectorLength(sv);
     image->Allocate();
 
-    float value;
+    valueType value;
     float cast_to_near_int = 0;
     if (fixed_point_multiplier==1)
         cast_to_near_int = 0;
@@ -98,7 +98,7 @@ int main(int argc, char** argv)
     TCLAP::ValueArg<unsigned int> vArg("v","ncomponents", "Number of pixel components",false,1,"NV", parser);
 
     // -o
-    TCLAP::ValueArg<int> oArg("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
+    TCLAP::ValueArg<int> nbytesArg("o","bytes","Number of bytes per pixel component.",false,4,"NBYTES",parser);
 
     // -r
     TCLAP::SwitchArg floatingSwitch("r","floating", "Convert to floating point.", parser, false);
@@ -123,25 +123,19 @@ int main(int argc, char** argv)
 
     ostringstream error_msg;
 
-    // -o 1 or -o 2 activates -f
-    bool fixed = fixedSwitch.isSet();
-    bool floating = floatingSwitch.isSet();
-    if (oArg.getValue() == 1 || oArg.getValue() == 2)
-        fixed = true;
-
-    // Fixed point or floating point
-    bool defaultsToFloating = false;
-    bool is_floating = Heimdali::is_floating_point_type(floating, fixed, defaultsToFloating);
+    Heimdali::PixelTypeArgParser typeParser;
+    typeParser.parse(&floatingSwitch, &fixedSwitch, &nbytesArg);
 
     // Set parameters.
     unsigned int sz, sy, sx, sv;
-    itk::ImageIOBase::IOComponentType type;
     sz = zArg.getValue();
     sy = yArg.getValue();
     sx = xArg.getValue();
     sv = vArg.getValue();
-    type = Heimdali::map_to_itk_component_type(is_floating,
-                                               oArg.getValue());
+    itk::ImageIOBase::IOComponentType type = 
+        Heimdali::map_to_itk_component_type(
+            typeParser.is_floating_point,
+            typeParser.nbytes);
 
     string format;
     if (formatArg.isSet()) {
@@ -156,19 +150,19 @@ int main(int argc, char** argv)
     switch (type)
     {
     case itk::ImageIOBase::FLOAT:
-        read_write_image<float>(sz,sy,sx,sv,1,inputFilename,outputFilename,format);
+        read_write_image<float,float>(sz,sy,sx,sv,1,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::DOUBLE:
-        read_write_image<double>(sz,sy,sx,sv,1,inputFilename,outputFilename,format);
+        read_write_image<double,double>(sz,sy,sx,sv,1,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::UCHAR:
-        read_write_image<unsigned char>(sz,sy,sx,sv,255,inputFilename,outputFilename,format);
+        read_write_image<unsigned char,int>(sz,sy,sx,sv,1,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::USHORT:
-        read_write_image<unsigned short>(sz,sy,sx,sv,65535,inputFilename,outputFilename,format);
+        read_write_image<unsigned short,float>(sz,sy,sx,sv,65534,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::UINT:
-        read_write_image<unsigned int>(sz,sy,sx,sv,4294967295,inputFilename,outputFilename,format);
+        read_write_image<unsigned int,float>(sz,sy,sx,sv,4294967294,inputFilename,outputFilename,format);
         break;
     default:
         error_msg
