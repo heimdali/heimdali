@@ -91,14 +91,15 @@ int main(int argc, char** argv)
 
     // Set output format.
     string fmt = is_uchar && ! fArg.isSet() ? "%d" : fArg.getValue();
+    bool cast_to_int = fmt=="%d";
 
     // Readers
     typedef Heimdali::CmdReader<ImageType> CmdReaderType;
-    CmdReaderType* reader = CmdReaderType::make_cmd_reader(0, inputFilename);
-    if (fmt != "%d")
-        reader->convert_fixed_point_to_floating_point_on();
-    reader->next_iteration(io);
-    reader->Update();
+    CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, inputFilename);
+    if (! cast_to_int)
+        cmdreader->convert_fixed_point_to_floating_point_on();
+    cmdreader->next_iteration(io);
+    cmdreader->Update();
 
     // Region
     typedef itk::ImageRegion<Dimension> RegionType;
@@ -112,10 +113,10 @@ int main(int argc, char** argv)
     //////////////////////////////////////////////////////////////////////////
 
     // Total size.
-    SZ = reader->get_sz();
-    SY = reader->get_sy();
-    SX = reader->get_sx();
-    SC = reader->get_sc();
+    SZ = cmdreader->get_sz();
+    SY = cmdreader->get_sy();
+    SX = cmdreader->get_sx();
+    SC = cmdreader->get_sc();
 
     // First plane to read and print
     if (! zeroSwitch.getValue() && izArg.getValue() == 0) {
@@ -179,14 +180,8 @@ int main(int argc, char** argv)
     requestedRegion.SetIndex(ImageIndex);
     requestedRegion.SetSize(ImageSize);
 
-    // Read requested region.
-    //reader->GetOutput()->SetRequestedRegion(requestedRegion);
-    //reader->UpdateOutputInformation();
-
     // Read image.
-    image = reader->GetOutput();
-
-    bool cast_to_int = (fmt=="%d" && is_uchar);
+    image = cmdreader->GetOutput();
 
     // Print values.
     typedef itk::VariableLengthVector<PixelType> VariableVectorType;

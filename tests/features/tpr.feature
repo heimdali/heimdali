@@ -52,7 +52,7 @@ Feature: tpr
     Scenario: Print a 2D image region, reading from stding
        When I run the command: cat $HEIMDALI_DATA_DIR/<input> | tpr --from-zero -ix 1 -iy 1 -x 2 -y 2
        Then I see as standard output the content of the file $HEIMDALI_DATA_DIR/<stdout>
-   Examples:
+    Examples:
        | input                     | stdout                   |
        | lena_r4.h5                | tpr_lena_r4_region.txt   |
 
@@ -63,7 +63,7 @@ Feature: tpr
             <output>
             ""
             """
-   Examples:
+    Examples:
         | flag    | input       | output      |
         |         | lena_f1.inr | 165         |
         |         | lena_f1.h5  | 165         |
@@ -75,3 +75,16 @@ Feature: tpr
         |         | lena_f2.h5  | 0.647059    |
         | -f "%g" | lena_f2.inr | 0.647059    |
         | -f "%g" | lena_f2.h5  | 0.647059    |
+
+    Scenario: Print fixed point image with -f %d
+        When I run the command: tpr -f %d -c $HEIMDALI_DATA_DIR/<input>
+        Then I see the standard output:
+            """
+            <output>
+            ""
+            """
+    Examples:
+        | input                  | output                          |
+        | 0.11_0.22_0.33_f_o1.h5 | 28 56 84                        |
+        | 0.11_0.22_0.33_f_o2.h5 | 7209 14417 21626                |
+        | 0.11_0.22_0.33_f_o4.h5 | 472446400 944892800 1417339264  |
