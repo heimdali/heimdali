@@ -64,5 +64,11 @@ Feature: extg
     Scenario: Extract one in every two pixel
         When I run the command: extg -xpas 2 $HEIMDALI_DATA_DIR/lena_f1.inr | par -x
 
-    #Scenario: Extract with incorrect number of values
-        #When I run the command: extg -ix 1 -iy 1 -iz 1 -x 10 -y 10 -z 10 $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 imtest_z5_y4_x3_c2_extg.h5
+    Scenario: Extract with incorrect number of values
+        When I run the command (with return code 1): extg -ix 1 -iy 1 -iz 1 -x 10 -y 10 -z 10 $HEIMDALI_DATA_DIR/imtest_z5_y4_x3_c2.h5 imtest_z5_y4_x3_c2_extg.h5
+
+        Then I see in standard error:
+        """
+        Requested region is (at least partially) outside the largest possible region.
+        ""
+        """
