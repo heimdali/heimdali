@@ -13,6 +13,8 @@
 #include "heimdali/version.hxx"
 #include "heimdali/cli.hxx"
 
+// Note: MultiplyImageFilter do not work with VectorImage
+
 using namespace std;
 
 int main(int argc, char** argv)

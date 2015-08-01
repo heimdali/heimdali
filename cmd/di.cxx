@@ -11,6 +11,7 @@
 #include "heimdali/cmdwriter.hxx"
 #include "heimdali/itkhelper.hxx"
 #include "heimdali/version.hxx"
+#include "heimdali/cli.hxx"
 
 // Note: DivideImageFilter do not work with VectorImage
 
@@ -18,32 +19,21 @@ using namespace std;
 
 int main(int argc, char** argv)
 { 
-
     try {
 
-    TCLAP::CmdLine cmd("Divide two images", ' ', HEIMDALI_VERSION);
-
-    // -o output.h5
-    TCLAP::ValueArg<string> output("o","output", 
-        "Output image, instead of standard output",false,"","FILENAME", cmd);
+    TCLAP::CmdLine parser("Divide two images", ' ', HEIMDALI_VERSION);
 
     // -streaming N
     TCLAP::ValueArg<int> streaming("s","streaming", "Number of lines to stream",
-        false, 0,"NUMBER_OF_LINES", cmd);
+        false, 0,"NUMBER_OF_LINES", parser);
+    HEIMDALI_TCLAP_IMAGE_IN_IMAGE_IN_IMAGE_OUT(filenamesArg,parser)
 
-    // --force
-    TCLAP::SwitchArg forceSwitch("v","verbose",
-        "ITK HDF5 IO operation are verboses.", cmd);
-
-    // image0.h5
-    TCLAP::UnlabeledValueArg<string> input0("image0", 
-        "First image.",true,"","IMAGE1",cmd);
-
-    // image1.h5
-    TCLAP::UnlabeledValueArg<string> input1("image1", 
-        "Second image.",true,"","IMAGE2",cmd);
-
-    cmd.parse(argc,argv);
+    parser.parse(argc,argv);
+    string inputFilename0;
+    string inputFilename1;
+    string outputFilename;
+    Heimdali::parse_tclap_image_in_image_in_image_out(filenamesArg, inputFilename0,
+                                                      inputFilename1, outputFilename);
 
     // Put our INRimage reader in the list of readers ITK knows.
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
@@ -57,32 +47,31 @@ int main(int argc, char** argv)
     // Command line tool readers.
     typedef Heimdali::CmdReader<VectorImageType> ReaderType;
     ReaderType* cmdreader1 = ReaderType::make_cmd_reader( streaming.getValue(),
-                                                          input0.getValue());
+                                                          inputFilename0);
 
     ReaderType* cmdreader2 = ReaderType::make_cmd_reader(streaming.getValue(),
-                                                         input1.getValue());
+                                                         inputFilename1);
 
     cmdreader1->convert_fixed_point_to_floating_point_on();
     cmdreader2->convert_fixed_point_to_floating_point_on();
 
     // Command line tool writer.
     typedef Heimdali::CmdWriter<VectorImageType> WriterType;
-    WriterType* cmdwriter = WriterType::make_cmd_writer(output.getValue());
-
-    // Duplicator.
-    typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
-    DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    WriterType* cmdwriter = WriterType::make_cmd_writer(outputFilename);
 
     // VectorImage to Image
     typedef itk::VectorImageToImageAdaptor
         <Heimdali::PixelFloat, Heimdali::ImageDimension> ToImageType;
-    ToImageType::Pointer toImage1 = ToImageType::New();
-    ToImageType::Pointer toImage2 = ToImageType::New();
+    ToImageType::Pointer toImage1Filter = ToImageType::New();
+    ToImageType::Pointer toImage2Filter = ToImageType::New();
 
     // Divide filter.
-    typedef itk::DivideImageFilter <ToImageType,ToImageType,ScalarImageType> 
-        DividerType;
+    typedef itk::DivideImageFilter <ToImageType,ToImageType,ScalarImageType> DividerType;
     DividerType::Pointer divider = DividerType::New();
+
+    // Duplicator.
+    typedef itk::ImageDuplicator<ScalarImageType> DuplicatorType;
+    DuplicatorType::Pointer duplicator = DuplicatorType::New();
 
     // Image to VectorImage
     typedef itk::ComposeImageFilter<ScalarImageType> ToVectorImageType;
@@ -101,20 +90,20 @@ int main(int argc, char** argv)
         vectorImage1 = cmdreader1->GetOutput();
         vectorImage2 = cmdreader2->GetOutput();
 
-        toImage1->SetImage(vectorImage1);
-        toImage2->SetImage(vectorImage2);
+        toImage1Filter->SetImage(vectorImage1);
+        toImage2Filter->SetImage(vectorImage2);
 
         for (unsigned int ic = 0 ; ic < cmdreader1->get_sc() ; ++ic)
         {
             // VectorImage to Image
-            toImage1->SetExtractComponentIndex(ic);
-            toImage2->SetExtractComponentIndex(ic);
-            toImage1->Modified();
-            toImage2->Modified();
+            toImage1Filter->SetExtractComponentIndex(ic);
+            toImage2Filter->SetExtractComponentIndex(ic);
+            toImage1Filter->Modified();
+            toImage2Filter->Modified();
 
             // Divide images.
-            divider->SetInput1(toImage1);
-            divider->SetInput2(toImage2);
+            divider->SetInput1(toImage1Filter);
+            divider->SetInput2(toImage2Filter);
             divider->Update();
             divider->Modified();
 
@@ -122,7 +111,6 @@ int main(int argc, char** argv)
             duplicator->SetInputImage(divider->GetOutput());
             duplicator->Update();
 
-            // Image to VectorImage
             toVectorImage->SetInput(ic, duplicator->GetOutput());
             toVectorImage->Modified();
             toVectorImage->Update();
