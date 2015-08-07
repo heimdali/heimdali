@@ -2,7 +2,7 @@
 
 #include <itkImage.h>
 #include <itkINRImageIOFactory.h>
-#include "itkForwardFFTImageFilter.h"
+#include "itkFFTWForwardFFTImageFilter.h"
 #include "itkComplexToRealImageFilter.h"
 #include "itkComplexToImaginaryImageFilter.h"
 #include <itkVectorIndexSelectionCastImageFilter.h>
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     IndexerType::Pointer indexer = IndexerType::New();
 
     // FFT
-    typedef itk::ForwardFFTImageFilter<ScalarImageType> FFTType;
+    typedef itk::FFTWForwardFFTImageFilter<ScalarImageType> FFTType;
     FFTType::Pointer fftFilter = FFTType::New();
 
     typedef FFTType::OutputImageType FFTOutputImageType;
