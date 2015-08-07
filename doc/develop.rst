@@ -228,13 +228,13 @@ Conda packages are hosted on `binstar heimdali channel`_.
 .. _Doxygen: www.doxygen.org/
 .. _breathe: https://breathe.readthedocs.org
 .. _heimdali: https://github.com/heimdali/heimdali
-.. _heimdali recipe: https://github.com/heimdali/heimdali/tree/master/conda-recipe
+.. _heimdali recipe: https://github.com/heimdali/heimdali/tree/master/conda-recipe/heimdali
 .. _itk-heimdali: https://github.com/heimdali/itk/tree/heimdali
-.. _itk-heimdali recipe: https://github.com/heimdali/df-conda-recipe/tree/master/itk-heimdali
+.. _itk-heimdali recipe: https://github.com/heimdali/heimdali/tree/master/conda-recipe/itk-heimdali
 .. _tclap: http://tclap.sourceforge.net/
-.. _tclap recipe: https://github.com/heimdali/df-conda-recipe/tree/master/tclap
+.. _tclap recipe: https://github.com/heimdali/heimdali/tree/master/conda-recipe/tclap
 .. _h5unixpipe: https://github.com/heimdali/h5unixpipe
 .. _h5unixpipe recipe: https://github.com/heimdali/h5unixpipe/tree/master/conda
 .. _libinrimage: http://inrimage.gforge.inria.fr
-.. _libinrimage recipe: https://github.com/heimdali/df-conda-recipe/tree/master/libinrimage
+.. _libinrimage recipe: https://github.com/heimdali/heimdali/tree/master/conda-recipe/libinrimage
 .. _binstar heimdali channel: https://binstar.org/heimdali 

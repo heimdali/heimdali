@@ -1,0 +1,34 @@
+package:
+  name: libinrimage
+  version: 4.6.6
+
+source:
+  fn: inrimage-4.6.6.tar.gz
+  url: https://who.rocq.inria.fr/Dominique.Bereziat/ftp/inrimage/4.6.6/inrimage-4.6.6.tar.gz
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - system # [linux]
+    - libxaw # [osx]
+    - gfortran # [osx]
+  run:
+    - system # [linux]
+    - libxaw # [osx]
+    - libgfortran # [osx]
+
+test:
+  files:
+    - a-1o-s.inr 
+  commands:
+    - cp $SRC_DIR/share/examples/main.c .
+    - cp $SRC_DIR/share/examples/scale.c .
+    - gcc -I$PREFIX/include -c main.c
+    - gcc -I$PREFIX/include -c scale.c
+    - gcc -o main main.o scale.o -L$PREFIX/lib -Wl,-rpath,$PREFIX/lib -linrimage
+    - ./main a-1o-s.inr out.inr
+
+about:
+  home: http://inrimage.gforge.inria.fr/

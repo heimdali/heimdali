@@ -1,0 +1,47 @@
+package:
+  name: itk-heimdali-dbg
+  version: 4.7.0.3
+
+source:
+  git_url: https://github.com/dfroger/ITK
+  git_tag: v4.7.0heimdali.3
+
+build:
+  number: 1
+  binary_relocation: true
+
+requirements:
+  build:
+    - cmake
+    - system # [linux]
+    - zlib
+    - libtiff
+    - libpng
+    - jpeg
+    - hdf5_cxx
+    - fftw
+  run:
+    - system # [linux]
+    - zlib
+    - libtiff
+    - libpng
+    - jpeg
+    - hdf5_cxx
+    - fftw
+
+test:
+  files:
+    - CMakeLists.txt
+    - CreateVector.cxx
+  requires:
+    - cmake
+  commands:
+    - mkdir build
+    - cd build
+    - hash -r
+    - cmake -DCMAKE_PREFIX_PATH=$PREFIX ..
+    - make
+
+about:
+  home: http://www.itk.org/
+  license: Apache 2.0
