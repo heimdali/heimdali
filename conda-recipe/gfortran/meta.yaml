@@ -1,0 +1,39 @@
+package:
+  name: gfortran
+  version: 4.8.2
+
+source:
+  fn: gcc-4.8.2-5.tar.bz2 
+  url: https://binstar.org/asmeurer/gcc/4.8.2/download/osx-64/gcc-4.8.2-5.tar.bz2 
+
+build:                            # [osx or linux64]
+  number: 0                       # [linux64]
+  number: 0                       # [osx]
+  detect_binary_files_with_prefix: true
+
+requirements:
+  build:
+    # These are taken from the output of the configure scripts
+    - gmp >=4.2
+    - isl
+    - cloog 0.18.0
+    - libgfortran
+  run:
+    - gmp >=4.2
+    - isl
+    - cloog 0.18.0
+    - libgfortran
+
+test:
+  files:
+    - main.f90
+  commands:
+    - gfortran --help
+    - gfortran -o hello_gfortran -Wl,-rpath,$PREFIX/lib main.f90 
+    - ./hello_gfortran
+
+about:
+  home: http://gcc.gnu.org/
+  summary: The GNU Compiler Collection
+  license: GPL
+

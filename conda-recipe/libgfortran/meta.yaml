@@ -1,0 +1,23 @@
+package:
+  name: libgfortran
+  version: 4.8.2
+
+source:
+  fn: gcc-4.8.2-5.tar.bz2 
+  url: https://binstar.org/asmeurer/gcc/4.8.2/download/osx-64/gcc-4.8.2-5.tar.bz2 
+
+build:                            # [osx or linux64]
+  number: 0                       # [linux64]
+  number: 0                       # [osx]
+  detect_binary_files_with_prefix: true
+
+test:
+  files:
+    - hello_gfortran
+  commands:
+    - ./hello_gfortran
+
+about:
+  home: http://gcc.gnu.org/
+  summary: The GNU Compiler Collection
+  license: GPL

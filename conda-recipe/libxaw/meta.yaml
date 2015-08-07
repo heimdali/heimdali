@@ -1,0 +1,20 @@
+package:
+  name: libxaw
+  version: 1.0.11
+
+source:
+  fn: libXaw-1.0.11.tar.gz
+  url: http://www.x.org/releases/X11R7.7/src/lib/libXaw-1.0.11.tar.gz
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - pkg-config
+    - zlib
+  run:
+    - zlib
+
+about:
+  home: http://www.x.org/wiki/
