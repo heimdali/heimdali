@@ -3,7 +3,7 @@
 #include <itkImage.h>
 #include <itkINRImageIOFactory.h>
 #include <itkComplexToComplexFFTImageFilter.h>
-#include <itkVnlComplexToComplexFFTImageFilter.h>
+#include <itkFFTWComplexToComplexFFTImageFilter.h>
 #include "itkComplexToRealImageFilter.h"
 #include "itkComplexToImaginaryImageFilter.h"
 #include <itkVectorIndexSelectionCastImageFilter.h>
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
     complexer->Update();
 
     // FFT
-    typedef itk::VnlComplexToComplexFFTImageFilter<ComplexVectorImageType> FFTType;
+    typedef itk::FFTWComplexToComplexFFTImageFilter<ComplexVectorImageType> FFTType;
     FFTType::Pointer fftFilter = FFTType::New();
     fftFilter->SetInput(complexer->GetOutput());
 
