@@ -3,7 +3,7 @@ package:
   version: 0.7.2
 
 source:
-  path: ..
+  path: ../..
   #fn: heimdali-0.7.2.tar.gz
   #url: https://github.com/heimdali/heimdali/archive/0.7.2.tar.gz
 

@@ -16,7 +16,7 @@ before_install:
   - conda config --set always_yes yes --set changeps1 no
   - conda config --add channels http://conda.binstar.org/heimdali
   - conda update conda
-  - conda install conda-build pip
+  - conda install conda-build pip jinja2
   - conda create -n inrimage inrimage
   - pip install lettuce
   - hash -r
