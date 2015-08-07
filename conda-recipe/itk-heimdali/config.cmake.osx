@@ -125,10 +125,10 @@ set(ITK_USE_SYSTEM_GDCM "OFF" CACHE PATH "")
 #==========================================================
 
 # Use an installed version of fftw
-set(ITK_USE_SYSTEM_FFTW "OFF" CACHE PATH "")
+set(ITK_USE_SYSTEM_FFTW "ON" CACHE PATH "")
 
 # Use double precision fftw if found
-set(ITK_USE_FFTWD "OFF" CACHE PATH "")
+set(ITK_USE_FFTWD "ON" CACHE PATH "")
 
 # Use single precision fftw if found
-set(ITK_USE_FFTWF "OFF" CACHE PATH "")
+set(ITK_USE_FFTWF "ON" CACHE PATH "")

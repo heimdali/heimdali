@@ -6,7 +6,6 @@
 set(CMAKE_INSTALL_PREFIX "CONDA_PREFIX" CACHE PATH "")
 
 # Choose the type of build.
-#set(CMAKE_BUILD_TYPE "Release" CACHE PATH "")
 set(CMAKE_BUILD_TYPE "Debug" CACHE PATH "")
 
 # Build the Examples directory.

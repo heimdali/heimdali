@@ -7,7 +7,7 @@ source:
   git_tag: v4.7.0heimdali.3
 
 build:
-  number: 0
+  number: 1
   binary_relocation: true
 
 requirements:
@@ -19,6 +19,7 @@ requirements:
     - libpng
     - jpeg
     - hdf5_cxx
+    - fftw
   run:
     - system # [linux]
     - zlib
@@ -26,6 +27,7 @@ requirements:
     - libpng
     - jpeg
     - hdf5_cxx
+    - fftw
 
 test:
   files:
