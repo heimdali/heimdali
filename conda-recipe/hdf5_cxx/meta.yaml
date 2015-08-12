@@ -1,14 +1,13 @@
 package:
   name: hdf5_cxx
-  version: 1.8.13
+  version: 1.8.15.1
 
 source:
-  fn: hdf5-1.8.13.tar.bz2
-  url: http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.13/src/hdf5-1.8.13.tar.bz2
-  md5: b060bb137d6bd8accf8f0c4c59d2746d
+  fn: hdf5-1.8.15-patch1.tar.bz2
+  url: http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.15-patch1.tar.bz2
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
