@@ -21,7 +21,7 @@ Configure:
 
 .. code-block:: bash
 
-    mkdir -p /usr/local/ccache/3.2.2 # for example
+    sudo mkdir -p /usr/local/ccache/3.2.2 # for example
     ./configure --prefix=/usr/local/ccache/3.2.2
 
 Build and install:
@@ -29,7 +29,7 @@ Build and install:
 .. code-block:: bash
 
     make
-    make install
+    sudo make install
 
 Create symbolic links:
 
@@ -37,7 +37,7 @@ Create symbolic links:
 
     for COMP in gcc g++ cc c++
     do
-        ln -s /usr/local/ccache/3.2.2/bin/ccache /usr/local/ccache/3.2.2/bin/$COMP  
+        sudo ln -s /usr/local/ccache/3.2.2/bin/ccache /usr/local/ccache/3.2.2/bin/$COMP  
     done
 
 And add ``/usr/local/ccache/3.2.2/bin`` to your ``PATH``.
