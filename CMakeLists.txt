@@ -25,7 +25,7 @@ find_path(H5UNIXPIPE_INCLUDE h5unixpipe.h)
 find_library(MINIMAL_TRACEBACK_LIBRARIES NAMES minimal_traceback)
 
 # HDF5 libraries
-find_package(HDF5 REQUIRED)
+find_package(HDF5 REQUIRED COMPONENTS CXX HL)
 
 # INRimage include.
 find_path(INRIMAGE_INCLUDE inrimage/image.h)

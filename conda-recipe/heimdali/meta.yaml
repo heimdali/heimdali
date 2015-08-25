@@ -8,17 +8,19 @@ source:
   #url: https://github.com/heimdali/heimdali/archive/0.7.2.tar.gz
 
 build:
-  number: 0
+  number: 1
   binary_relocation: true
 
 requirements:
   build:
+    - gcc ==4.8.4.99
     - cmake
     - tclap
     - itk-heimdali
     - h5unixpipe
     - libinrimage
   run:
+    - libgcc
     - tclap
     - itk-heimdali
     - h5unixpipe

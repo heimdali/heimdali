@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Notes :
+# Notes for OS X:
 #   0- XQuartz must be installed
 #   1- https://conda.binstar.org/asmeurer is required for pkg-config
 

@@ -7,12 +7,14 @@ source:
   url: http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.15-patch1.tar.bz2
 
 build:
-  number: 0
+  number: 4
 
 requirements:
   build:
+    - gcc ==4.8.4.99
     - zlib
   run:
+    - libgcc
     - zlib
 
 about:
