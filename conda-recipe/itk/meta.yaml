@@ -5,15 +5,17 @@ package:
 source:
   fn: InsightToolkit-4.7.0.tar.gz
   url: http://downloads.sourceforge.net/project/itk/itk/4.7/InsightToolkit-4.7.0.tar.gz
+  md5: afe407b78a8ef68a7097f3413d122e35
 
 build:
-  number: 6
+  number: 8
   binary_relocation: true
 
 requirements:
   build:
+    - gcc ==4.8.5
+    - libgcc
     - cmake
-    - system # [linux]
     - zlib
     - libtiff
     - libpng
@@ -21,7 +23,7 @@ requirements:
     - hdf5_cxx
     - fftw
   run:
-    - system # [linux]
+    - libgcc
     - zlib
     - libtiff
     - libpng

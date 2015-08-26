@@ -11,5 +11,5 @@ fi
 sed s:CONDA_PREFIX:$PREFIX: $RECIPE_DIR/$config > config.cmake
 
 cmake -C config.cmake ..
-make -j$CPU_COUNT
+VERBOSE=1 make -j$CPU_COUNT
 make install
