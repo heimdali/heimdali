@@ -8,12 +8,12 @@ source:
   #url: https://github.com/heimdali/heimdali/archive/0.7.2.tar.gz
 
 build:
-  number: 1
+  number: 2
   binary_relocation: true
 
 requirements:
   build:
-    - gcc ==4.8.4.99
+    - gcc ==4.8.5
     - cmake
     - tclap
     - itk-heimdali

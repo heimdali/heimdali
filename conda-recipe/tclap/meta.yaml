@@ -7,12 +7,12 @@ source:
   url: http://downloads.sourceforge.net/project/tclap/tclap-1.2.1.tar.gz
 
 build:
-  number: 4
+  number: 5
   binary_relocation: true
 
 requirements:
   build:
-    - gcc ==4.8.4.99
+    - gcc ==4.8.5
   run:
     - libgcc
 

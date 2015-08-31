@@ -9,11 +9,11 @@ source:
   url: https://who.rocq.inria.fr/Dominique.Bereziat/ftp/inrimage/4.6.6/inrimage-4.6.6.tar.gz
 
 build:
-  number: 2
+  number: 3
 
 requirements:
   build:
-    - gcc ==4.8.4.99
+    - gcc ==4.8.5
     - libxaw # [osx]
   run:
     - libxaw # [osx]
