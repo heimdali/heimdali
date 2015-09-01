@@ -1,31 +1,32 @@
 #!/bin/bash
 
-
 if [ -z "$OSX_ARCH" ]
 then
     ./configure \
+        F77="$PREFIX/bin/gfortran" \
+        LDFLAGS="-L$PREFIX/lib" \
         CFLAGS="-g -O0" \
         FFLAGS="-g -O0" \
-        LDFLAGS"=-L$PREFIX/lib" \
-        F77"=/usr/bin/gfortran" \
         --disable-build-fonts \
         --disable-libtiff \
         --disable-netpbm \
         --disable-libjpeg \
         --disable-libpng \
+        --disable-Xaw3d \
         --enable-shared=yes \
         --enable-static=no \
         --prefix=$PREFIX
 else
     ./configure \
+        F77="$PREFIX/bin/gfortran" \
         CFLAGS="-g -O0 -Wno-return-type" \
         FFLAGS="-g -O0" \
-        F77="$PREFIX/bin/gfortran" \
         --disable-build-fonts \
         --disable-libtiff \
         --disable-netpbm \
         --disable-libjpeg \
         --disable-libpng \
+        --disable-Xaw3d \
         --enable-shared=yes \
         --enable-static=no \
         --prefix=$PREFIX
