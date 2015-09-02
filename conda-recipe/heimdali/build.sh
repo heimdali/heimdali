@@ -5,8 +5,9 @@ export LIBRARY_PATH=""
 mkdir build
 cd build
 
-if [ -e "$RECIPE_DIR/travis.txt" ]
+if [ "$TRAVIS" == "true" ]
 then
+    echo "On Travis, set CPU_COUNT to 2 cores"
     CPU_COUNT=2
 fi
 

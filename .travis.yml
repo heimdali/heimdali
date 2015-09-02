@@ -23,7 +23,6 @@ before_install:
   - conda info -a
 
 install:
-  - touch conda-recipe/heimdali/travis.txt
   - conda build --no-test conda-recipe/heimdali
 
 script:

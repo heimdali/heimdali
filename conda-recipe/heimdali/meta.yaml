@@ -2,6 +2,10 @@ package:
   name: heimdali
   version: 0.7.2
 
+script_env:
+  - CONTINUOUS_INTEGRATION
+  - TRAVIS
+
 source:
   path: ../..
   #fn: heimdali-0.7.2.tar.gz
