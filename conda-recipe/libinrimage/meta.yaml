@@ -1,3 +1,5 @@
+# Note: This require on centos 5 to install libXaw-devel.x86_64
+
 package:
   name: libinrimage
   version: 4.6.6
@@ -7,17 +9,15 @@ source:
   url: https://who.rocq.inria.fr/Dominique.Bereziat/ftp/inrimage/4.6.6/inrimage-4.6.6.tar.gz
 
 build:
-  number: 0
+  number: 3
 
 requirements:
   build:
-    - system # [linux]
+    - gcc ==4.8.5
     - libxaw # [osx]
-    - gfortran # [osx]
   run:
-    - system # [linux]
     - libxaw # [osx]
-    - libgfortran # [osx]
+    - libgcc
 
 test:
   files:

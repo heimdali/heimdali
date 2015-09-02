@@ -16,5 +16,17 @@ cmake \
   -DCMAKE_INSTALL_PREFIX=$PREFIX \
   -DCMAKE_PREFIX_PATH=$PREFIX \
   ..
-make -j$CPU_COUNT
+
+# Build
+LD_LIBRARY_PATH=$PREFIX/lib VERBOSE=1 make -j$CPU_COUNT
+
 make install
+
+# Fix absolute path to system libaries, that are different for example on
+# Ubuntu.
+for config in $(find $PREFIX -name '*.cmake')
+do
+    sed -i s:/usr/lib64/libm.so:libm.so:g   $config
+    sed -i s:/usr/lib64/libdl.so:libdl.so:g $config
+    sed -i s:/usr/lib64/librt.so:librt.so:g $config
+done

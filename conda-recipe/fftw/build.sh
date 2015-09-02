@@ -1,5 +1,4 @@
 # float
-make clean
 ./configure \
     --prefix=$PREFIX \
     --enable-shared \
@@ -10,6 +9,7 @@ make
 make install
 
 # double
+make clean
 ./configure \
     --prefix=$PREFIX \
     --enable-shared \

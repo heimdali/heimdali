@@ -11,9 +11,11 @@ build:
 
 requirements:
   build:
-    - pkg-config
+    - gcc ==4.8.4.99 # [linux]
+    - pkg-config # [osx]
     - zlib
   run:
+    - libgcc
     - zlib
 
 about:

@@ -1,14 +1,20 @@
 package:
   name: tclap
-  version: 4.2.1
+  version: 1.2.1
 
 source:
   fn: tclap-1.2.1.tar.gz
   url: http://downloads.sourceforge.net/project/tclap/tclap-1.2.1.tar.gz
 
 build:
-  number: 2
+  number: 5
   binary_relocation: true
+
+requirements:
+  build:
+    - gcc ==4.8.5
+  run:
+    - libgcc
 
 about:
   home: http://tclap.sourceforge.net/

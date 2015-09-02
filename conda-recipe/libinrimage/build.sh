@@ -2,21 +2,33 @@
 
 if [ -z "$OSX_ARCH" ]
 then
-  FLAGS="LDFLAGS=-L$PREFIX/lib F77=/usr/bin/gfortran"
+    ./configure \
+        F77="$PREFIX/bin/gfortran" \
+        LDFLAGS="-L$PREFIX/lib" \
+        --disable-build-fonts \
+        --disable-libtiff \
+        --disable-netpbm \
+        --disable-libjpeg \
+        --disable-libpng \
+        --disable-Xaw3d \
+        --enable-shared=yes \
+        --enable-static=no \
+        --prefix=$PREFIX
 else
-  FLAGS="CFLAGS=-Wno-return-type F77=$PREFIX/bin/gfortran"
+    ./configure \
+        F77="$PREFIX/bin/gfortran" \
+        CFLAGS="-Wno-return-type" \
+        --disable-build-fonts \
+        --disable-libtiff \
+        --disable-netpbm \
+        --disable-libjpeg \
+        --disable-libpng \
+        --disable-Xaw3d \
+        --enable-shared=yes \
+        --enable-static=no \
+        --prefix=$PREFIX
 fi
 
-./configure \
-    --disable-build-fonts \
-    --disable-libtiff \
-    --disable-netpbm \
-    --disable-libjpeg \
-    --disable-libpng \
-    --enable-shared=yes \
-    --enable-static=no \
-    --prefix=$PREFIX \
-    $FLAGS
 cd src/inrimage
 make
 make install

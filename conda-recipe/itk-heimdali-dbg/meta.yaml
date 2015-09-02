@@ -7,13 +7,14 @@ source:
   git_tag: v4.7.0heimdali.3
 
 build:
-  number: 1
+  number: 3
   binary_relocation: true
 
 requirements:
   build:
+    - gcc ==4.8.5
+    - libgcc
     - cmake
-    - system # [linux]
     - zlib
     - libtiff
     - libpng
@@ -21,7 +22,7 @@ requirements:
     - hdf5_cxx
     - fftw
   run:
-    - system # [linux]
+    - libgcc
     - zlib
     - libtiff
     - libpng
