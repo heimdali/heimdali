@@ -4,11 +4,11 @@ Releasing a new Heimdali version
 Preliminary checks
 ------------------
 
-Check the conda package can build (on both GNU/Linux and OS X):
+Check the conda package can build (on both ``GNU/Linux`` and ``OS X``):
 
 .. code-block:: bash
 
-    conda build conda-recipe
+    conda build conda-recipe/heimdali
 
 Update CHANGELOG
 -------------------
@@ -18,13 +18,17 @@ Update the changes log file.
 Bump version number
 -------------------
 
-Update version number X.X.X in `conda-recipe/meta.yaml` and `libheimdali/heimdali/version.hxx`
+Update version number ``X.X.X`` in files:
+
+  - `conda-recipe/heimdali/meta.yaml` 
+  - `libheimdali/heimdali/version.hxx`
+
 and commit:
 
 .. code-block:: bash
 
-    git add conda-recipe/meta.yaml libheimdali/heimdali/version.hxx
-    git commit -m 'Update version number
+    git add conda-recipe/heimdali/meta.yaml libheimdali/heimdali/version.hxx
+    git commit -m 'Bumped version number to X.X.X'
 
 Tag the new version:
 
@@ -49,10 +53,10 @@ Push to GitHub, with tags:
     git push origin --tags develop
     git push origin master
 
-Build conda package
+Build conda packages
 ---------------------
 
-Build and upload the Conda package.
+Build and upload the Conda packages for ``GNU/Linux`` and ``OS X``.
 
 .. code-block:: bash
 
@@ -61,10 +65,10 @@ Build and upload the Conda package.
 
 .. note::
 
-    For portability, GNU/Linux conda packages are built on Centos OS 5.11, like
-    official conda packages. A virtual machine is used managed by `Vagrant`_,
-    using this `box`_ . Conda packages on anaconda.org are tagged with the
-    box version (for example: 0.4.0).
+    For portability, ``GNU/Linux`` conda packages are built on ``Centos 5.11``,
+    like official conda packages. This can be done on a virtual machine managed
+    by `Vagrant`_, using this `box`_ . Conda packages on ``anaconda.org`` are tagged
+    with the box version (for example: 0.4.0).
 
 .. _Vagrant: https://www.vagrantup.com/
 .. _box: https://github.com/dfroger/conda-build-env
