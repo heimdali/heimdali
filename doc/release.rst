@@ -51,7 +51,8 @@ Build and upload the conda package.
 
     For portability, GNU/Linux conda packages are built on Centos OS 5.11, like
     official conda packages. A virtual machine is used managed by `Vagrant`_,
-    using this `box`_ .
+    using this `box`_ . Conda packages on anaconda.org are tagged with the
+    box version (for example: 0.4.0).
 
 .. _Vagrant: https://www.vagrantup.com/
 .. _box: https://github.com/dfroger/conda-build-env
