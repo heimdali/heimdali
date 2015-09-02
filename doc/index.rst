@@ -55,10 +55,12 @@ Developer guide
 ####################################
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    develop
    ccache
+   documentation
+   release
 
 
 Indices and tables

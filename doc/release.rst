@@ -1,3 +1,6 @@
+Releasing a new Heimdali version
+=================================
+
 Check the conda package can build:
 
 .. code-block:: bash
@@ -43,3 +46,12 @@ Build and upload the conda package.
 
     conda build conda-recipe
     binstar upload -u heimdali /path/to/heimdali-X.X.X-X.tar.bz2 # See output of previous command
+
+.. note::
+
+    For portability, GNU/Linux conda packages are built on Centos OS 5.11, like
+    official conda packages. A virtual machine is used managed by `Vagrant`_,
+    using this `box`_ .
+
+.. _Vagrant: https://www.vagrantup.com/
+.. _box: https://github.com/dfroger/conda-build-env

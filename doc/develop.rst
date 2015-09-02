@@ -158,38 +158,10 @@ Run the functional tests:
     cd $HEIMDALI_SRC_DIR/tests
     lettuce
 
-Writting documentation
-====================================
-
-
-Install Sphinx_ and Doxygen_:
-
-.. code-block:: bash
-
-    sudo apt-get install doxygen
-    conda create -n heimdali-doc python=2 sphinx sphinx_rtd_theme
-    source activate heimdali-doc
-
-Build the documentation:
-
-.. code-block:: bash
-    
-    cd doc
-    make html
-
-View the documentation:
-
-.. code-block:: bash
-
-    cd doc
-    firefox _build/html/index.html
-
-Note that breathe_, a Sphinx extension, is already provided in
-``heimdali/doc/ext/breathe``.
 
 
 Other ``CMake`` usefull variables
-====================================
+---------------------------------
 
 +--------------------------+------------------------------------------------------+
 | Variable                 | Description                                          |
@@ -201,9 +173,8 @@ Other ``CMake`` usefull variables
 |                          | | ``make install``.                                  |
 +--------------------------+------------------------------------------------------+
 
-
 Dependencies
-====================================
+------------------------------------
 
 Here is a summary of Heimdali dependencies, if you want to apply modifications on
 it:
@@ -224,9 +195,6 @@ it:
 
 Conda packages are hosted on `binstar heimdali channel`_.
 
-.. _Sphinx: http://sphinx-doc.org/
-.. _Doxygen: www.doxygen.org/
-.. _breathe: https://breathe.readthedocs.org
 .. _heimdali: https://github.com/heimdali/heimdali
 .. _heimdali recipe: https://github.com/heimdali/heimdali/tree/master/conda-recipe/heimdali
 .. _itk-heimdali: https://github.com/heimdali/itk/tree/heimdali
@@ -238,3 +206,4 @@ Conda packages are hosted on `binstar heimdali channel`_.
 .. _libinrimage: http://inrimage.gforge.inria.fr
 .. _libinrimage recipe: https://github.com/heimdali/heimdali/tree/master/conda-recipe/libinrimage
 .. _binstar heimdali channel: https://binstar.org/heimdali 
+
