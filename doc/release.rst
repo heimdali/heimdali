@@ -1,46 +1,58 @@
 Releasing a new Heimdali version
 =================================
 
-Check the conda package can build:
+Preliminary checks
+------------------
+
+Check the conda package can build (on both GNU/Linux and OS X):
 
 .. code-block:: bash
 
     conda build conda-recipe
 
-Update version number X.X.X in `conda-recipe/meta.yaml` and `libheimdali/heimdali/version.hxx`
+Update CHANGELOG
+-------------------
 
-Commit:
+Update the changes log file.
+
+Bump version number
+-------------------
+
+Update version number X.X.X in `conda-recipe/meta.yaml` and `libheimdali/heimdali/version.hxx`
+and commit:
 
 .. code-block:: bash
 
     git add conda-recipe/meta.yaml libheimdali/heimdali/version.hxx
     git commit -m 'Update version number
 
-Tag.
+Tag the new version:
 
 .. code-block:: bash
 
     git tag X.X.X
 
-Merge develop into master
+Merge into master
+-------------------
+
+Merge develop into master:
 
 .. code-block:: bash
 
     git checkout master
     git merge develop
 
-Push with tags.
+Push to GitHub, with tags:
 
 .. code-block:: bash
 
     git push origin --tags develop
     git push origin master
 
+Build conda package
+---------------------
 
-In `conda-recipe/meta.yaml` source section, comment `path` and uncomment `fn`
-and `url` (do not commit).
-
-Build and upload the conda package.
+Build and upload the Conda package.
 
 .. code-block:: bash
 
