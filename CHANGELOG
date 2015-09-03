@@ -122,3 +122,18 @@
   - melg: Fix dimensions and pixel type default values
   - cco: more robust pixel type command line parser (#59)
   - Fix ical ouptut formatting (#53)
+
+0.7.3 (2015/09/03)
+  - Document release process
+  - Document fixed points
+  - Simplify develop mode documentation
+  - Move conda reicpes of dependencies here
+  - Build ITK with FFTW
+  - Use FFTW in rdf, ddf
+  - Travis config improvments
+  - Build GNU/Linux conda packages on Vagrant machine
+  - Fix Tpr output order (#91)
+  - Fix par output order (#52)
+  - Fix di interface (#84)
+  - tpr correctly -f %d for fixed point (#87)
+  - cim correctly manage fixed point representation (#88)
