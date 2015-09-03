@@ -16,14 +16,14 @@ build:
 
 requirements:
   build:
-    - gcc ==4.8.5
+    - gcc ==4.8.5 # [linux]
     - cmake
     - tclap
     - itk-heimdali
     - h5unixpipe
     - libinrimage
   run:
-    - libgcc
+    - libgcc # [linux]
     - tclap
     - itk-heimdali
     - h5unixpipe

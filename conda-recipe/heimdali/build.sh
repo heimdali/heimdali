@@ -25,9 +25,12 @@ make install
 
 # Fix absolute path to system libaries, that are different for example on
 # Ubuntu.
-for config in $(find $PREFIX -name '*.cmake')
-do
-    sed -i s:/usr/lib64/libm.so:libm.so:g   $config
-    sed -i s:/usr/lib64/libdl.so:libdl.so:g $config
-    sed -i s:/usr/lib64/librt.so:librt.so:g $config
-done
+if [ -z "$OSX_ARCH" ]
+then
+    for config in $(find $PREFIX -name '*.cmake')
+    do
+        sed -i s:/usr/lib64/libm.so:libm.so:g   $config
+        sed -i s:/usr/lib64/libdl.so:libdl.so:g $config
+        sed -i s:/usr/lib64/librt.so:librt.so:g $config
+    done
+fi
