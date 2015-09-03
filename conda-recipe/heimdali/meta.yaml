@@ -1,11 +1,11 @@
 package:
   name: heimdali
-  version: 0.7.2
+  version: 0.7.3
 
 source:
   path: ../.. # [USER == 'travis']
-  fn: heimdali-0.7.2.tar.gz # [USER != 'travis']
-  url: https://github.com/heimdali/heimdali/archive/0.7.2.tar.gz # [USER != 'travis']
+  fn: heimdali-0.7.3.tar.gz # [USER != 'travis']
+  url: https://github.com/heimdali/heimdali/archive/0.7.3.tar.gz # [USER != 'travis']
 
 build:
   number: 3
