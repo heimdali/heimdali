@@ -43,7 +43,7 @@ read_write_image(unsigned int sz, unsigned int sy,
     image->Allocate();
 
     valueType value;
-    float cast_to_near_int = 0;
+    double cast_to_near_int = 0;
     if (fixed_point_multiplier==1)
         cast_to_near_int = 0;
     else
@@ -64,7 +64,7 @@ read_write_image(unsigned int sz, unsigned int sy,
             else
                 nvalues = fscanf(inputfile,format.c_str(), &value);
             if (nvalues == 1) {
-                variableLengthVector[iv] = (PixelType) (value * fixed_point_multiplier + cast_to_near_int);
+                variableLengthVector[iv] = (PixelType) ((double) value * (double) fixed_point_multiplier + cast_to_near_int);
             } else {
                 throw(Heimdali::Exception("Failed to read input value"));
             }
@@ -140,8 +140,12 @@ int main(int argc, char** argv)
     string format;
     if (formatArg.isSet()) {
         format = formatArg.getValue();
+    } else if (type == itk::ImageIOBase::UCHAR) {
+        format = "%d";
+    } else if (type == itk::ImageIOBase::DOUBLE) {
+        format = "%lg";
     } else {
-        format = (type == itk::ImageIOBase::UCHAR) ? "%d" : "%g";
+        format = "%g";
     }
 
     string inputFilename = rdArg.getValue();
@@ -159,10 +163,10 @@ int main(int argc, char** argv)
         read_write_image<unsigned char,int>(sz,sy,sx,sv,1,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::USHORT:
-        read_write_image<unsigned short,float>(sz,sy,sx,sv,65534,inputFilename,outputFilename,format);
+        read_write_image<unsigned short,float>(sz,sy,sx,sv,65535,inputFilename,outputFilename,format);
         break;
     case itk::ImageIOBase::UINT:
-        read_write_image<unsigned int,float>(sz,sy,sx,sv,4294967294,inputFilename,outputFilename,format);
+        read_write_image<unsigned int,float>(sz,sy,sx,sv,4294967295,inputFilename,outputFilename,format);
         break;
     default:
         error_msg

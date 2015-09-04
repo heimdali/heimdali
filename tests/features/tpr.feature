@@ -76,15 +76,15 @@ Feature: tpr
         | -f "%g" | lena_f2.inr | 0.647059    |
         | -f "%g" | lena_f2.h5  | 0.647059    |
 
-    Scenario: Print fixed point image with -f %d
-        When I run the command: tpr -f %d -c $HEIMDALI_DATA_DIR/<input>
+    Scenario: Print fixed point image with -f %u
+        When I run the command: tpr -f %u -c $HEIMDALI_DATA_DIR/<input>
         Then I see the standard output:
             """
             <output>
             ""
             """
     Examples:
-        | input                  | output                          |
-        | 0.11_0.22_0.33_f_o1.h5 | 28 56 84                        |
-        | 0.11_0.22_0.33_f_o2.h5 | 7209 14417 21626                |
-        | 0.11_0.22_0.33_f_o4.h5 | 472446400 944892800 1417339264  |
+        | input                 | output                  | 
+        | zero_half_one_f_o1.h5 | 0 128 255               |
+        | zero_half_one_f_o2.h5 | 0 32768 65535           |
+        | zero_half_one_f_o4.h5 | 0 2147483648 4294967295 |

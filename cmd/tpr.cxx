@@ -77,7 +77,7 @@ int main(int argc, char** argv)
     itk::ObjectFactoryBase::RegisterFactory( itk::INRImageIOFactory::New() ); 
 
     // Pixel
-    typedef float PixelType;
+    typedef double PixelType;
 
     // Images
     const unsigned int Dimension = 3;
@@ -91,12 +91,12 @@ int main(int argc, char** argv)
 
     // Set output format.
     string fmt = is_uchar && ! fArg.isSet() ? "%d" : fArg.getValue();
-    bool cast_to_int = fmt=="%d";
+    bool is_fixed_point = (fmt=="%d" || fmt=="%u");
 
     // Readers
     typedef Heimdali::CmdReader<ImageType> CmdReaderType;
     CmdReaderType* cmdreader = CmdReaderType::make_cmd_reader(0, inputFilename);
-    if (! cast_to_int)
+    if (! is_fixed_point)
         cmdreader->convert_fixed_point_to_floating_point_on();
     cmdreader->next_iteration(io);
     cmdreader->Update();
@@ -213,14 +213,14 @@ int main(int argc, char** argv)
                     nprinted++;
                     if (nprinted == nprinted_by_console_line || 
                             (iv==IV+NV-1) ) {
-                        if (cast_to_int)
-                            printf(fmt_newline.c_str(), (int) value[ic]);
+                        if (is_fixed_point)
+                            printf(fmt_newline.c_str(), (unsigned int) value[ic]);
                         else
                             printf(fmt_newline.c_str(), value[ic]);
                         nprinted = 0;
                     } else {
-                        if (cast_to_int)
-                            printf(fmt_space.c_str(), (int) value[ic]);
+                        if (is_fixed_point)
+                            printf(fmt_space.c_str(), (unsigned int) value[ic]);
                         else
                             printf(fmt_space.c_str(), value[ic]);
                     }
