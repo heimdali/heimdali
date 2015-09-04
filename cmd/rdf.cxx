@@ -42,7 +42,8 @@ int main(int argc, char** argv)
 
     // Command line tool readers.
     typedef Heimdali::CmdReader<VectorImageType> ReaderType;
-    ReaderType* reader = ReaderType::make_cmd_reader(0, inputFilename);
+    ReaderType* cmdreader = ReaderType::make_cmd_reader(0, inputFilename);
+    cmdreader->convert_fixed_point_to_floating_point_on();
 
     // indexer
     typedef itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType> IndexerType;
@@ -81,13 +82,13 @@ int main(int argc, char** argv)
     unsigned int iregionmax = 1E+06;
     for (unsigned int iregion=0 ; iregion<iregionmax ; iregion++) {
         // Read input.
-        reader->next_iteration();
-        if (reader->is_complete()) break;
+        cmdreader->next_iteration();
+        if (cmdreader->is_complete()) break;
 
-        indexer->SetInput(reader->GetOutput());
+        indexer->SetInput(cmdreader->GetOutput());
 
         for (unsigned int componentIndex = 0 ;
-                          componentIndex < reader->get_sc();
+                          componentIndex < cmdreader->get_sc();
                           componentIndex++)
         {
             indexer->SetIndex(componentIndex);

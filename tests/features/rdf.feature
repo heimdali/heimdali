@@ -8,3 +8,8 @@ Feature: rdf
         When I run the command: rdf $HEIMDALI_DATA_DIR/lena_r4.inr lena_r4_rdf_re.inr lena_r4_rdf_im.inr
         Then images lena_r4_rdf_re.inr and $HEIMDALI_DATA_DIR/lena_r4_rdf_re.inr are equal
         Then images lena_r4_rdf_im.inr and $HEIMDALI_DATA_DIR/lena_r4_rdf_im.inr are equal
+
+    Scenario: Compute direct FFT on fixed point image
+        When I run the command: rdf $HEIMDALI_DATA_DIR/lena_f4.inr lena_r4_rdf_f4_re.inr lena_r4_rdf_f4_im.inr
+        Then images lena_r4_rdf_f4_re.inr and $HEIMDALI_DATA_DIR/lena_r4_rdf_re.inr are equal
+        Then images lena_r4_rdf_f4_im.inr and $HEIMDALI_DATA_DIR/lena_r4_rdf_im.inr are equal
