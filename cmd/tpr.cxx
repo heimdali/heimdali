@@ -85,7 +85,7 @@ int main(int argc, char** argv)
     typedef itk::VectorImage<PixelType, Dimension> ImageType;
     ImageType::Pointer image;
 
-    // Read mage information.
+    // Read image information.
     itk::ImageIOBase::Pointer io = Heimdali::open_from_stdin_or_file(inputFilename);
     bool is_uchar = (io->GetComponentType() == itk::ImageIOBase::UCHAR);
 
