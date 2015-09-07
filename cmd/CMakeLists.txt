@@ -32,4 +32,7 @@ add_custom_command(TARGET ddf POST_BUILD COMMAND ln -sf ddf dmo)
 add_custom_command(TARGET idf POST_BUILD COMMAND ln -sf idf imo)
 
 install(TARGETS ${CMD_LIST} DESTINATION bin)
-install(PROGRAMS bin/rmo bin/dmo bin/imo DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rmo
+              ${CMAKE_CURRENT_BINARY_DIR}/dmo
+              ${CMAKE_CURRENT_BINARY_DIR}/imo
+        DESTINATION bin)
