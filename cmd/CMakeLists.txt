@@ -27,9 +27,9 @@ foreach(cmd ${CMD_LIST})
     )
 endforeach(cmd)
 
-add_custom_command(TARGET rdf POST_BUILD COMMAND ln -s rdf rmo)
-add_custom_command(TARGET ddf POST_BUILD COMMAND ln -s ddf dmo)
-add_custom_command(TARGET idf POST_BUILD COMMAND ln -s idf imo)
+add_custom_command(TARGET rdf POST_BUILD COMMAND ln -sf rdf rmo)
+add_custom_command(TARGET ddf POST_BUILD COMMAND ln -sf ddf dmo)
+add_custom_command(TARGET idf POST_BUILD COMMAND ln -sf idf imo)
 
 install(TARGETS ${CMD_LIST} DESTINATION bin)
-install(PROGRAMS rmo dmo imo DESTINATION bin)
+install(PROGRAMS bin/rmo bin/dmo bin/imo DESTINATION bin)
